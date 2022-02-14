@@ -1,14 +1,12 @@
 ---
 name: Refactor
-about: Refactor
+about: Template for issue with refactor
 title: refactor/{scope}-description
-labels: 'type: refactor'
-assignees: ''
-
+labels: "type: refactor"
+assignees: ""
 ---
 
 **Description**
-
 Describe which part of the project and why need refactor, and how should refactor look like.
 
-Remember to add proper labels for priority and scope
+For each task remember to add correct labels for scope.

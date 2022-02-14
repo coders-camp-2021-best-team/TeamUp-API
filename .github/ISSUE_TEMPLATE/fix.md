@@ -1,16 +1,12 @@
 ---
 name: Fix
-about: Issue for common fix in project, issue with some functions etc. It's not a
-  bug
-title: ''
-labels: 'type: fix'
-assignees: ''
-
+about: Template for issue with a bug fix
+title: fix/{scope}-title
+labels: "type: fix"
+assignees: ""
 ---
 
 **Description**
-
 Describe what's the problem, and suggest what should be fixed
 
-
-Remember to add proper labels for priority and scope
+For each task remember to add correct labels for scope.
