@@ -3,7 +3,7 @@
         "outDir": "build",
         "module": "CommonJS",
         "target": "ESNext",
-        "lib": ["ESNext"],
+        "lib": ["ESNext", "DOM"],
         "inlineSources": true,
         "inlineSourceMap": true,
         "incremental": true,
