@@ -1,0 +1,14 @@
+{
+    "name": "nodejs-project",
+    "version": "1.0.0",
+    "main": "src/index.ts",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com:coders-camp-2021-best-team/nodejs-project.git"
+    },
+    "license": "GPL-3.0",
+    "engines": {
+        "npm": "please-use-yarn",
+        "yarn": ">= 1.19.1"
+    }
+}
