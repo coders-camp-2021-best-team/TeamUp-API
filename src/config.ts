@@ -1,7 +1,16 @@
 import Joi from 'joi';
 
+export const LoggingLevels = {
+    error: 1,
+    warn: 2,
+    info: 3,
+    http: 4,
+    debug: 5
+};
+
 export interface EnvVariables {
     NODE_ENV: 'production' | 'development';
+    LOGGING_LEVEL: string;
     PORT: number;
 }
 
@@ -9,6 +18,15 @@ const envSchema = Joi.object<EnvVariables>({
     NODE_ENV: Joi.string()
         .valid('production', 'development')
         .default('development'),
+    LOGGING_LEVEL: Joi.alternatives().conditional('NODE_ENV', {
+        is: 'development',
+        then: Joi.string()
+            .valid(...Object.keys(LoggingLevels))
+            .default('debug'),
+        otherwise: Joi.string()
+            .valid(...Object.keys(LoggingLevels))
+            .default('info')
+    }),
     PORT: Joi.number().port().default(3000)
 }).unknown();
 
