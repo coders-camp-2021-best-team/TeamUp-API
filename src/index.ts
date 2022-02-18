@@ -1,5 +1,6 @@
 import express from 'express';
 
+import logger from './logger';
 import env from './config';
 const { PORT } = env;
 
@@ -15,5 +16,11 @@ app.get('/', (req, res) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`Server listening on port ${PORT}`);
+    logger.info(`Server listening on port ${PORT}`);
+
+    logger.error('test!');
+    logger.warn('test!');
+    logger.info('test!');
+    logger.http('test!');
+    logger.debug('test!');
 });
