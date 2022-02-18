@@ -8,7 +8,9 @@
         "build": "tsc",
         "build:watch": "tsc --watch",
         "start": "node build/src/index.js",
-        "start:dev": "nodemon -e js --exec node --require dotenv/config --inspect=9229 build/src/index.js"
+        "start:dev": "nodemon -e js --exec node --require dotenv/config --inspect=9229 build/src/index.js",
+        "format": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\" \".+(prettier|eslint)rc\"",
+        "lint": "eslint --ext .js,.ts src/"
     },
     "repository": {
         "type": "git",
@@ -19,7 +21,12 @@
     },
     "devDependencies": {
         "@types/node": "^17.0.18",
+        "@typescript-eslint/eslint-plugin": "^5.12.0",
+        "@typescript-eslint/parser": "^5.12.0",
         "dotenv": "^16.0.0",
+        "eslint": "^8.9.0",
+        "eslint-config-prettier": "^8.3.0",
+        "prettier": "^2.5.1",
         "typescript": "^4.5.5"
     },
     "engines": {
