@@ -1,12 +1,27 @@
 {
     "name": "nodejs-project",
     "version": "1.0.0",
-    "main": "src/index.ts",
+    "license": "GPL-3.0",
+    "scripts": {
+        "preinstall": "test -f .env || cp -n .env.example .env",
+        "prebuild": "rimraf build/",
+        "build": "tsc",
+        "build:watch": "tsc --watch",
+        "start": "node build/src/index.js",
+        "start:dev": "nodemon -e js --exec node --require dotenv/config --inspect=9229 build/src/index.js"
+    },
     "repository": {
         "type": "git",
         "url": "https://github.com:coders-camp-2021-best-team/nodejs-project.git"
     },
-    "license": "GPL-3.0",
+    "dependencies": {
+        "rimraf": "^3.0.2"
+    },
+    "devDependencies": {
+        "@types/node": "^17.0.18",
+        "dotenv": "^16.0.0",
+        "typescript": "^4.5.5"
+    },
     "engines": {
         "npm": "please-use-yarn",
         "yarn": ">= 1.19.1"
