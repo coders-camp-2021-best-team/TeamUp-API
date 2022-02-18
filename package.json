@@ -8,7 +8,8 @@
         "build": "tsc",
         "build:watch": "tsc --watch",
         "start": "node build/src/index.js",
-        "start:dev": "nodemon -e js --exec node --require dotenv/config --inspect=9229 build/src/index.js"
+        "start:dev": "nodemon -e js --exec node --require dotenv/config --inspect=9229 build/src/index.js",
+        "format": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\" \".+(prettier|eslint)rc\"",
     },
     "repository": {
         "type": "git",
