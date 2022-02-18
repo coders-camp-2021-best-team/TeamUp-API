@@ -2,8 +2,8 @@
 name: Refactor
 about: Template for issue with refactor
 title: refactor/{scope}-description
-labels: "type: refactor"
-assignees: ""
+labels: 'type: refactor'
+assignees: ''
 ---
 
 **Description**

@@ -2,8 +2,8 @@
 name: Chore
 about: Template for issue that does not change production code
 title: chore/{scope}-description
-labels: "type: chore"
-assignees: ""
+labels: 'type: chore'
+assignees: ''
 ---
 
 **AC**

@@ -2,8 +2,8 @@
 name: Bug
 about: Template for issue with bug report
 title: bug/{scope}-title
-labels: "type: bug"
-assignees: ""
+labels: 'type: bug'
+assignees: ''
 ---
 
 **Description of the bug**
