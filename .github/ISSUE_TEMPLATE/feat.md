@@ -2,8 +2,8 @@
 name: Feature
 about: Template for issue with a new feature
 title: feat/{scope}-description
-labels: "type: feat"
-assignees: ""
+labels: 'type: feat'
+assignees: ''
 ---
 
 **AC**

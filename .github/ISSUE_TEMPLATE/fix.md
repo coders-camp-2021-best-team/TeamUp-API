@@ -2,8 +2,8 @@
 name: Fix
 about: Template for issue with a bug fix
 title: fix/{scope}-title
-labels: "type: fix"
-assignees: ""
+labels: 'type: fix'
+assignees: ''
 ---
 
 **Description**
