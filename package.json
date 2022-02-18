@@ -3,13 +3,14 @@
     "version": "1.0.0",
     "license": "GPL-3.0",
     "scripts": {
+        "prepare": "husky install",
         "preinstall": "test -f .env || cp -n .env.example .env",
         "prebuild": "rimraf build/",
         "build": "tsc",
         "build:watch": "tsc --watch",
         "start": "node build/src/index.js",
         "start:dev": "nodemon -e js --exec node --require dotenv/config --inspect=9229 build/src/index.js",
-        "format": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\" \".+(prettier|eslint)rc\"",
+        "format": "prettier --ignore-unknown --ignore-path .gitignore --write .",
         "lint": "eslint --ext .js,.ts src/"
     },
     "repository": {
@@ -27,6 +28,7 @@
         "eslint": "^8.9.0",
         "eslint-config-prettier": "^8.3.0",
         "husky": "^7.0.4",
+        "lint-staged": ">=10",
         "prettier": "^2.5.1",
         "typescript": "^4.5.5"
     },
