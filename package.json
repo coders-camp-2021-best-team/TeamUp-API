@@ -22,7 +22,9 @@
     "dependencies": {
         "express": "^4.17.3",
         "joi": "^17.6.0",
+        "reflect-metadata": "^0.1.13",
         "rimraf": "^3.0.2",
+        "typeorm": "^0.2.43",
         "winston": "^3.6.0"
     },
     "devDependencies": {
