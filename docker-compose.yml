@@ -1,0 +1,122 @@
+version: '3'
+
+services:
+    nginx:
+        container_name: nginx
+        image: nginx:latest
+        ports:
+            - 80:80
+        volumes:
+            - ./nginx.conf:/etc/nginx/nginx.conf
+        networks:
+            - nginx
+            - api
+            - redis
+            - mariadb
+            - minio
+        depends_on:
+            - api
+
+    api:
+        container_name: api
+        build:
+            context: .
+            target: development
+        ports:
+            - 9229:9229
+        volumes:
+            - ./:/app
+            - /app/node_modules
+        env_file:
+            - .env
+        networks:
+            - api
+            - redis
+            - mariadb
+            - minio
+        depends_on:
+            - redis
+            - mariadb
+            - minio
+
+    redis:
+        container_name: redis
+        image: redis:latest
+        volumes:
+            - redis-data:/data
+        env_file:
+            - .env
+        networks:
+            - redis
+
+    redis-commander:
+        container_name: redis-commander
+        image: rediscommander/redis-commander:latest
+        env_file:
+            - .env
+        networks:
+            - redis
+        depends_on:
+            - redis
+
+    mariadb:
+        container_name: mariadb
+        image: mariadb:latest
+        volumes:
+            - mariadb-data:/var/lib/mysql
+        env_file:
+            - .env
+        networks:
+            - mariadb
+
+    phpmyadmin:
+        container_name: phpmyadmin
+        image: phpmyadmin/phpmyadmin:latest
+        env_file:
+            - .env
+        environment:
+            - PMA_ABSOLUTE_URI=/dev/phpmyadmin/
+        networks:
+            - mariadb
+        depends_on:
+            - mariadb
+
+    minio:
+        container_name: minio
+        image: minio/minio:latest
+        command: server --console-address ":9001" /data
+        ports:
+            - 9000:9000
+            - 9001:9001
+        volumes:
+            - minio-data:/data
+        env_file:
+            - .env
+        networks:
+            - minio
+        healthcheck:
+            test:
+                ['CMD', 'curl', '-f', 'http://localhost:9000/minio/health/live']
+            interval: 30s
+            timeout: 20s
+            retries: 3
+
+volumes:
+    redis-data:
+        driver: local
+    mariadb-data:
+        driver: local
+    minio-data:
+        driver: local
+
+networks:
+    nginx:
+        driver: bridge
+    api:
+        driver: bridge
+    redis:
+        driver: bridge
+    mariadb:
+        driver: bridge
+    minio:
+        driver: bridge
