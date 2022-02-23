@@ -1,4 +1,4 @@
-# nodejs-project
+# TeamUp-API
 
 This project was made due to the **[CodersCamp2021](https://www.coderscamp.edu.pl/)**
 
