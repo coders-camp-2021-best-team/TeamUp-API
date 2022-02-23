@@ -4,12 +4,11 @@
     "license": "GPL-3.0",
     "scripts": {
         "prepare": "husky install",
-        "preinstall": "test -f .env || cp -n .env.example .env",
         "prebuild": "rimraf build/",
         "build": "tsc",
         "build:watch": "tsc --watch",
         "start": "node build/src/index.js",
-        "start:dev": "nodemon -e js --exec node --require dotenv/config --inspect=9229 build/src/index.js",
+        "start:dev": "nodemon -e js --exec node --require dotenv/config --inspect=0.0.0.0:9229 build/src/index.js",
         "test": "jest",
         "test:watch": "jest --watch",
         "format": "prettier --ignore-unknown --ignore-path .gitignore --write .",
