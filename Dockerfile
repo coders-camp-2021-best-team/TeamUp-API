@@ -33,7 +33,8 @@ WORKDIR /app
 
 ENV NODE_ENV development
 
-COPY --from=build /app /app
+COPY --from=dependencies /app/node_modules ./node_modules
+COPY . .
 
 EXPOSE 3000
 

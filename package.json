@@ -8,7 +8,7 @@
         "build": "tsc",
         "build:watch": "tsc --watch",
         "start": "node build/src/index.js",
-        "start:dev": "nodemon -e js --exec node --require dotenv/config --inspect=0.0.0.0:9229 build/src/index.js",
+        "start:dev": "nodemon -r dotenv/config --inspect=0.0.0.0:9229 build/src/index.js",
         "test": "jest",
         "test:watch": "jest --watch",
         "format": "prettier --ignore-unknown --ignore-path .gitignore --write .",
@@ -19,9 +19,15 @@
         "url": "https://github.com/coders-camp-2021-best-team/TeamUp-API.git"
     },
     "dependencies": {
+        "class-transformer": "^0.5.1",
+        "class-validator": "^0.13.2",
         "express": "^4.17.3",
         "joi": "^17.6.0",
+        "mysql": "^2.18.1",
+        "reflect-metadata": "^0.1.13",
         "rimraf": "^3.0.2",
+        "typeorm": "^0.2.43",
+        "typeorm-logger-adaptor": "^1.0.4",
         "winston": "^3.6.0"
     },
     "devDependencies": {
