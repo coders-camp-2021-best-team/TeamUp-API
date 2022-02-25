@@ -1,28 +1,15 @@
-import express from 'express';
 import { getConnectionOptions, createConnection } from 'typeorm';
 import { WinstonAdaptor } from 'typeorm-logger-adaptor/logger/winston';
 
-import { funnyHeaderMiddleware } from './common/middlewares';
-import { HelloWorldRouter } from './hello-world';
-
 import logger from './logger';
-import env from './config';
-const { PORT } = env;
 
-const server = () => {
-    const app = express();
+import { API, funnyHeaderMiddleware } from './common';
+import { HelloWorldController } from './hello-world';
 
-    app.use(express.json());
-    app.use(express.urlencoded({ extended: true }));
-
-    app.use(funnyHeaderMiddleware);
-
-    app.use('/hello-world', HelloWorldRouter);
-
-    app.listen(PORT, () => {
-        logger.info(`Server listening on port ${PORT}`);
-    });
-};
+const server = new API({
+    middlewares: [funnyHeaderMiddleware],
+    controllers: [new HelloWorldController()]
+});
 
 getConnectionOptions()
     .then((connectionOptions) => {
@@ -31,4 +18,4 @@ getConnectionOptions()
             logger: new WinstonAdaptor(logger, 'all')
         });
     })
-    .then(server);
+    .then(() => server.initialize());

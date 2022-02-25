@@ -5,6 +5,6 @@ export class Greeting {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @Column()
+    @Column('varchar', { length: 512 })
     text: string;
 }

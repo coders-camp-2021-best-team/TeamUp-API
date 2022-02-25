@@ -1,10 +1,6 @@
-import { NextFunction, Request, Response } from 'express';
+import { Middleware } from '.';
 
-export const funnyHeaderMiddleware = (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+export const funnyHeaderMiddleware: Middleware = (req, res, next) => {
     res.header('X-Funny-Header', 'example!');
     next();
 };

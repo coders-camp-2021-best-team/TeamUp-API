@@ -1,7 +1,8 @@
-import { IsNotEmpty, IsString, validate } from 'class-validator';
 import { Request, Response } from 'express';
+import { IsNotEmpty, IsString, validate } from 'class-validator';
 import { GreetingDto } from './greeting.dto';
 import { HelloWorldService } from './hello-world.service';
+import { Controller } from '../common/controller.class';
 
 class GreetBody {
     @IsString()
@@ -13,8 +14,21 @@ class GreetBody {
     name: string;
 }
 
-export const HelloWorldController = new (class {
-    async greet(req: Request<unknown, unknown, GreetBody>, res: Response) {
+export class HelloWorldController extends Controller {
+    constructor() {
+        super('/hello-world');
+
+        const router = this.getRouter();
+
+        router.get('/greet', this.greet);
+        router.get('/greetings', this.getAllGreetings);
+        router.post('/greetings', this.createGreeting);
+    }
+
+    async greet(
+        req: Request<Record<string, never>, Record<string, never>, GreetBody>,
+        res: Response
+    ) {
         const body = new GreetBody();
         body.id = req.body.id;
         body.name = req.body.name;
@@ -51,4 +65,4 @@ export const HelloWorldController = new (class {
 
         res.send(created);
     }
-})();
+}
