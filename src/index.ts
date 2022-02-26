@@ -1,29 +1,21 @@
-import express from 'express';
 import { getConnectionOptions, createConnection } from 'typeorm';
 import { WinstonAdaptor } from 'typeorm-logger-adaptor/logger/winston';
 
 import logger from './logger';
-import env from './config';
-const { PORT } = env;
 
-const app = express();
+import { API, funnyHeaderMiddleware } from './common';
+import { HelloWorldController } from './hello-world';
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-app.get('/', (req, res) => {
-    res.json({
-        message: 'Hello, world!'
-    });
+const server = new API({
+    middlewares: [funnyHeaderMiddleware],
+    controllers: [new HelloWorldController()]
 });
 
-getConnectionOptions().then((connectionOptions) => {
-    return createConnection({
-        ...connectionOptions,
-        logger: new WinstonAdaptor(logger, 'all')
-    });
-});
-
-app.listen(PORT, () => {
-    logger.info(`Server listening on port ${PORT}`);
-});
+getConnectionOptions()
+    .then((connectionOptions) => {
+        return createConnection({
+            ...connectionOptions,
+            logger: new WinstonAdaptor(logger, 'all')
+        });
+    })
+    .then(() => server.initialize());
