@@ -1,24 +1,21 @@
-import {
-    Entity,
-    JoinColumn,
-    ManyToOne,
-    OneToOne,
-    PrimaryGeneratedColumn
-} from 'typeorm';
+import { Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Game } from '../game/game.entity';
 import { ExperienceLevel } from '../game/level.entity';
 import { User } from './user.entity';
 
-@Entity('user_games')
-export class UserGame {
+@Entity('user_skills')
+export class UserSkill {
     @PrimaryGeneratedColumn('uuid')
     id: string;
-    @ManyToOne(() => User, (u) => u.games)
+
+    @ManyToOne(() => User, (u) => u.skills)
     user: User;
-    @OneToOne(() => Game)
+
+    @ManyToOne(() => Game)
     @JoinColumn()
     game: Game;
-    @OneToOne(() => ExperienceLevel)
+
+    @ManyToOne(() => ExperienceLevel)
     @JoinColumn()
     level: ExperienceLevel;
 }
