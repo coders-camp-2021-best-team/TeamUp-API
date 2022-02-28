@@ -1,4 +1,4 @@
-import { Entity, JoinColumn, OneToOne, Column } from 'typeorm';
+import { Entity, JoinColumn, OneToOne } from 'typeorm';
 import { Asset } from '../assets/asset.entity';
 import { User } from './user.entity';
 
