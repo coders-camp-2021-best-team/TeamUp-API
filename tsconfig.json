@@ -12,7 +12,8 @@
         "emitDecoratorMetadata": true,
         "resolveJsonModule": true,
         "strict": true,
-        "strictPropertyInitialization": false
+        "strictPropertyInitialization": false,
+        "skipLibCheck": true
     },
     "include": ["src/**/*", "package.json"]
 }
