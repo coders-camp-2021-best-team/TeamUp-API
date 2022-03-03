@@ -1,15 +1,18 @@
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from '../user/user.entity';
 import { Chat } from './chat.entity';
 
-@Entity('messages')
-export class message {
+@Entity('chat_messages')
+export class Message {
     @PrimaryGeneratedColumn('uuid')
     id: string;
-    @OneToOne(() => Chat)
+
+    @ManyToOne(() => Chat, (c) => c.messages)
     chat: Chat;
-    @OneToOne(() => User)
+
+    @ManyToOne(() => User)
     author: User;
+
     @Column('longtext')
     content: string;
 }

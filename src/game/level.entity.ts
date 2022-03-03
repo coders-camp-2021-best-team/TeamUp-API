@@ -5,8 +5,10 @@ import { Game } from './game.entity';
 export class ExperienceLevel {
     @PrimaryGeneratedColumn('uuid')
     id: string;
+
     @ManyToOne(() => Game, (g) => g.levels)
     game: Game;
+
     @Column()
     name: string;
 }
