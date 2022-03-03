@@ -1,4 +1,3 @@
-import { object } from 'joi';
 import { getRepository } from 'typeorm';
 import { User } from './user.entity';
 

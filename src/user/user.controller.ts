@@ -1,7 +1,5 @@
 import { Request, Response } from 'express';
 import { IsNotEmpty, IsString, validate } from 'class-validator';
-import { GreetingDto } from './greeting.dto';
-import { HelloWorldService } from './hello-world.service';
 import { Controller } from '../common/controller.class';
 import { UserService } from './user-service';
 
