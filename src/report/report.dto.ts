@@ -1,10 +1,6 @@
 import { Length, IsString, IsEnum } from 'class-validator';
+import { UserReportStatus } from '.';
 
-export enum UserReportStatus {
-    PENDING = 'PENDING',
-    RESOLVED = 'RESOLVED',
-    REJECTED = 'REJECTED'
-}
 export class ReportDto {
     @IsString()
     @Length(5, 256)
