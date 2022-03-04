@@ -15,13 +15,11 @@ export const UserService = new (class {
     async updateUser(userId: string, userData: Partial<User>) {
         const userRepo = getRepository(User);
 
-        const user = await userRepo.findOne(userId);
+        let user = await userRepo.findOne(userId);
 
         if (!user) return null;
 
-        for (const property in userData) {
-            user[property] = userData[property];
-        }
+        user = { ...user, ...userData };
 
         await userRepo.save(user);
 
