@@ -1,9 +1,9 @@
-import { Entity, JoinColumn, OneToOne } from 'typeorm';
+import { BaseEntity, Entity, JoinColumn, OneToOne } from 'typeorm';
 import { Asset } from '../assets/asset.entity';
 import { User } from './user.entity';
 
 @Entity('user_avatars')
-export class UserAvatar {
+export class UserAvatar extends BaseEntity {
     @OneToOne(() => User, (u) => u.avatar, { primary: true })
     @JoinColumn()
     user: User;

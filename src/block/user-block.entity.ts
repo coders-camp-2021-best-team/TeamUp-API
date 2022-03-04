@@ -1,4 +1,5 @@
 import {
+    BaseEntity,
     CreateDateColumn,
     Entity,
     ManyToOne,
@@ -7,7 +8,7 @@ import {
 import { User } from '../user/user.entity';
 
 @Entity('user_blocks')
-export class UserBlock {
+export class UserBlock extends BaseEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
