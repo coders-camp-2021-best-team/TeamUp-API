@@ -1,21 +1,12 @@
 import { Request, Response } from 'express';
-import { IsNotEmpty, IsString, validate } from 'class-validator';
+import { validate } from 'class-validator';
 import { Controller } from '../common/controller.class';
 import { UserService } from './user-service';
-
-// class GreetBody {
-//     @IsString()
-//     @IsNotEmpty()
-//     id: string;
-
-//     @IsString()
-//     @IsNotEmpty()
-//     name: string;
-// }
-
+import { UpdateUserDto } from './dto/updateUser.dto';
+import { instanceToPlain, plainToInstance } from 'class-transformer';
 export class UserController extends Controller {
     constructor() {
-        super('/users');
+        super('/user');
 
         const router = this.getRouter();
 
@@ -23,10 +14,7 @@ export class UserController extends Controller {
         router.put('/:id', this.updateUser);
     }
 
-    async getUser(
-        req: Request<Record<string, never>, Record<string, never>>,
-        res: Response
-    ) {
+    async getUser(req: Request, res: Response) {
         const id = req.params.id;
 
         try {
@@ -35,34 +23,26 @@ export class UserController extends Controller {
             if (!user) {
                 return res.status(404).send('Not Found');
             }
-            return res.status(200).json(user);
+            return res.status(200).json(instanceToPlain(user));
         } catch (error) {
             console.error(error);
             return res.status(500).send('Server error');
         }
     }
 
-    async updateUser(
-        req: Request<
-            Record<string, never>,
-            Record<string, never>,
-            { name: string; age: number }
-        >,
-        res: Response
-    ) {
-        // const data = new GreetingDto();
-        // data.text = req.body.text;
-        // const errors = await validate(data);
-        // if (errors.length > 0) {
-        //     return res.status(400).json(errors);
-        // }
+    async updateUser(req: Request, res: Response) {
+        const body = plainToInstance(UpdateUserDto, req.body as UpdateUserDto);
+        const errors = await validate(body);
+        if (errors.length > 0) {
+            return res.status(400).json(errors);
+        }
 
-        const userToUpdate = req.body;
+        const userToUpdate = body;
 
         const id = req.params.id;
 
         const created = await UserService.updateUser(id, userToUpdate);
 
-        res.send(created);
+        res.send(instanceToPlain(created));
     }
 }
