@@ -38,14 +38,14 @@ Runs a TypeScript build task in watch mode. It watches for any changes in your c
 Creates env config files with all default values.
 **Without this you will not be able to run the app.**
 
-### `docker compose up -d`
+### `docker-compose up -d`
 
 Starts all required Docker containers. Docker container that API lives in is also watching for any changes in the code. You don't need to restart all Docker containers.
 **This is how you run the app.**
 
 **API exposes an open debugger port 9229! Please don't work in any public WiFi networks or setup correct firewall rules to block network traffic on port 9229!!!**
 
-### `docker compose down`
+### `docker-compose down`
 
 Stops all Docker containers.
 
