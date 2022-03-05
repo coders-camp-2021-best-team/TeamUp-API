@@ -37,11 +37,9 @@ export class UserController extends Controller {
             return res.status(400).json(errors);
         }
 
-        const userToUpdate = body;
-
         const id = req.params.id;
 
-        const created = await UserService.updateUser(id, userToUpdate);
+        const created = await UserService.updateUser(id, body);
 
         res.send(instanceToPlain(created));
     }

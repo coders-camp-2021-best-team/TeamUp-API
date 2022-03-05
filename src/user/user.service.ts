@@ -8,7 +8,9 @@ export const UserService = new (class {
 
         const user = await userRepo.findOne(userId);
 
-        if (!user) return null;
+        if (!user) {
+            return null;
+        }
 
         return user;
     }
@@ -18,7 +20,9 @@ export const UserService = new (class {
 
         const user = await userRepo.findOne(userId);
 
-        if (!user) return null;
+        if (!user) {
+            return null;
+        }
 
         user.email = userData.email || user.email;
         user.username = userData.username || user.username;
