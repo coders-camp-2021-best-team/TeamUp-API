@@ -1,6 +1,7 @@
 import { instanceToPlain, plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { Request, Response } from 'express';
+import { StatusCodes } from 'http-status-codes';
 
 import { Controller } from '../common';
 
@@ -22,13 +23,13 @@ export class AuthController extends Controller {
         const body = plainToInstance(LoginDto, req.body as LoginDto);
         const errors = await validate(body);
         if (errors.length > 0) {
-            return res.status(400).json(errors);
+            return res.status(StatusCodes.BAD_REQUEST).json(errors);
         }
 
         const user = await AuthService.login(body);
 
         if (!user) {
-            return res.status(401).send();
+            return res.status(StatusCodes.UNAUTHORIZED).send();
         }
 
         req.session.userID = user.id;
@@ -40,13 +41,13 @@ export class AuthController extends Controller {
         const body = plainToInstance(RegisterDto, req.body as RegisterDto);
         const errors = await validate(body);
         if (errors.length > 0) {
-            return res.status(400).json(errors);
+            return res.status(StatusCodes.BAD_REQUEST).json(errors);
         }
 
         const user = await AuthService.register(body);
 
         if (!user) {
-            return res.status(409).send();
+            return res.status(StatusCodes.CONFLICT).send();
         }
 
         return res.json(instanceToPlain(user));
