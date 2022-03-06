@@ -1,10 +1,16 @@
-import { Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+    BaseEntity,
+    Entity,
+    JoinColumn,
+    ManyToOne,
+    PrimaryGeneratedColumn
+} from 'typeorm';
 import { Game } from '../game/game.entity';
 import { ExperienceLevel } from '../game/level.entity';
 import { User } from './user.entity';
 
 @Entity('user_skills')
-export class UserSkill {
+export class UserSkill extends BaseEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 

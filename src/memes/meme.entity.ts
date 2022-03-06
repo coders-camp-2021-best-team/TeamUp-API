@@ -1,4 +1,5 @@
 import {
+    BaseEntity,
     Column,
     Entity,
     JoinColumn,
@@ -12,7 +13,7 @@ import { User } from '../user/user.entity';
 import { MemeVote } from './meme-vote.entity';
 
 @Entity('memes')
-export class Meme {
+export class Meme extends BaseEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 

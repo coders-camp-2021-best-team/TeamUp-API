@@ -3,6 +3,7 @@ import { IsNotEmpty, IsString, validate } from 'class-validator';
 import { GreetingDto } from './greeting.dto';
 import { HelloWorldService } from './hello-world.service';
 import { Controller } from '../common/controller.class';
+import { StatusCodes } from 'http-status-codes';
 
 class GreetBody {
     @IsString()
@@ -34,13 +35,13 @@ export class HelloWorldController extends Controller {
         body.name = req.body.name;
         const errors = await validate(body);
         if (errors.length > 0) {
-            return res.status(400).json(errors);
+            return res.status(StatusCodes.BAD_REQUEST).json(errors);
         }
 
         const greeting = await HelloWorldService.greet(body.id, body.name);
 
         if (!greeting) {
-            return res.status(404).send('Not Found');
+            return res.status(StatusCodes.NOT_FOUND).send('Not Found');
         }
 
         return res.send(greeting);
@@ -58,7 +59,7 @@ export class HelloWorldController extends Controller {
         data.text = req.body.text;
         const errors = await validate(data);
         if (errors.length > 0) {
-            return res.status(400).json(errors);
+            return res.status(StatusCodes.BAD_REQUEST).json(errors);
         }
 
         const created = await HelloWorldService.createGreeting(data);

@@ -1,10 +1,13 @@
+import { Exclude } from 'class-transformer';
 import {
     Column,
     Entity,
     OneToMany,
     OneToOne,
-    PrimaryGeneratedColumn
+    PrimaryGeneratedColumn,
+    BaseEntity
 } from 'typeorm';
+
 import { UserBlock } from '../block/user-block.entity';
 import { Meme } from '../memes/meme.entity';
 import { UserReport } from '../report/user-report.entity';
@@ -19,7 +22,7 @@ export enum UserStatus {
 }
 
 @Entity('users')
-export class User {
+export class User extends BaseEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
@@ -30,6 +33,7 @@ export class User {
     username: string;
 
     @Column()
+    @Exclude()
     passwordHash: string;
 
     @Column()
@@ -38,20 +42,22 @@ export class User {
     @Column()
     last_name: string;
 
-    @OneToOne(() => UserAvatar, (a) => a.user)
-    avatar: UserAvatar;
+    @Column('date')
+    birthdate: Date;
 
-    @OneToMany(() => UserPhoto, (p) => p.user)
-    photos: UserPhoto[];
-
-    @Column('int')
-    age: number;
-
-    @Column('longtext')
+    @Column('longtext', { default: '' })
     biogram: string;
 
     @Column('enum', { enum: UserStatus, default: UserStatus.ACTIVE })
     status: UserStatus;
+
+    @OneToOne(() => UserAvatar, (a) => a.user, {
+        eager: true
+    })
+    avatar: UserAvatar;
+
+    @OneToMany(() => UserPhoto, (p) => p.user)
+    photos: UserPhoto[];
 
     @OneToMany(() => UserSkill, (ug) => ug.user)
     skills: UserSkill[];
