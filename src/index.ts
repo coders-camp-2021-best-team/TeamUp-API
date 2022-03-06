@@ -5,10 +5,11 @@ import logger from './logger';
 
 import { API, funnyHeaderMiddleware } from './common';
 import { AuthController } from './auth';
+import { UserController } from './user';
 
 const server = new API({
     middlewares: [funnyHeaderMiddleware],
-    controllers: [new AuthController()]
+    controllers: [new UserController(), new AuthController()]
 });
 
 getConnectionOptions()
