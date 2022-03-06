@@ -1,5 +1,5 @@
 import { getRepository } from 'typeorm';
-import { UserReport, UserReportStatus } from '.';
+import { UserReport } from '.';
 import { ReportDto } from '.';
 
 export const ReportService = new (class {
@@ -13,9 +13,12 @@ export const ReportService = new (class {
 
         return reportsRepo.save(report);
     }
-    updateReportStatus(reportID: string, status: UserReportStatus) {
+    updateReportStatus(
+        reportID: string,
+        status: Partial<Pick<ReportDto, 'status'>>
+    ) {
         const reportsRepo = getRepository(UserReport);
 
-        return reportsRepo.update(reportID, { status });
+        return reportsRepo.update(reportID, status);
     }
 })();

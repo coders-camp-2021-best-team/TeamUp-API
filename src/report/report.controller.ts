@@ -1,13 +1,10 @@
 import { Request, Response } from 'express';
-import { IsEnum, validate, IsString, IsNotEmpty } from 'class-validator';
+import { IsEnum, validate } from 'class-validator';
 import { ReportDto, ReportService, UserReportStatus } from '.';
 import { Controller } from '../common/controller.class';
+import { plainToInstance } from 'class-transformer';
 
 class updateStatus {
-    @IsString()
-    @IsNotEmpty()
-    id: string;
-
     @IsEnum(UserReportStatus)
     status: UserReportStatus;
 }
@@ -39,19 +36,15 @@ export class ReportController extends Controller {
         res.send(created);
     }
     async updateReportStatus(req: Request, res: Response) {
-        const data = new updateStatus();
+        const body = plainToInstance(updateStatus, req.body as updateStatus);
 
-        data.id = req.params.id;
-        data.status = req.body.status;
-
-        const errors = await validate(data);
+        const errors = await validate(body);
         if (errors.length > 0) {
             return res.status(400).json(errors);
         }
-        const updated = await ReportService.updateReportStatus(
-            data.id,
-            data.status
-        );
+        const id = req.params.id;
+
+        const updated = await ReportService.updateReportStatus(id, body);
 
         res.send(updated);
     }
