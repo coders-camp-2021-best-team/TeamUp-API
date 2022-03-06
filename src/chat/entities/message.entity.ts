@@ -5,8 +5,8 @@ import {
     ManyToOne,
     PrimaryGeneratedColumn
 } from 'typeorm';
-import { User } from '../user/user.entity';
-import { Chat } from './chat.entity';
+import { User } from '../../user';
+import { Chat } from '.';
 
 @Entity('chat_messages')
 export class Message extends BaseEntity {

@@ -1,6 +1,5 @@
 import { getRepository } from 'typeorm';
-import { UpdateUserDto } from './dto/updateUser.dto';
-import { User } from './user.entity';
+import { User, UpdateUserDto } from '.';
 
 export const UserService = new (class {
     async getUser(userId: string) {

@@ -1,9 +1,8 @@
 import { Request, Response } from 'express';
-import { validate } from 'class-validator';
-import { Controller } from '../common/controller.class';
-import { UserService } from './user.service';
-import { UpdateUserDto } from './dto/updateUser.dto';
 import { instanceToPlain, plainToInstance } from 'class-transformer';
+import { validate } from 'class-validator';
+import { Controller } from '../common';
+import { UserService, UpdateUserDto } from '.';
 
 export class UserController extends Controller {
     constructor() {

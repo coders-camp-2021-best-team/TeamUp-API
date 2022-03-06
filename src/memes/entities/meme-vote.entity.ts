@@ -5,8 +5,8 @@ import {
     ManyToOne,
     PrimaryGeneratedColumn
 } from 'typeorm';
-import { User } from '../user/user.entity';
-import { Meme } from './meme.entity';
+import { User } from '../../user';
+import { Meme } from '.';
 
 export enum MemeVoteType {
     UPVOTE = 'UPVOTE',
