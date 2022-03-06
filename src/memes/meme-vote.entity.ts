@@ -1,4 +1,10 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+    BaseEntity,
+    Column,
+    Entity,
+    ManyToOne,
+    PrimaryGeneratedColumn
+} from 'typeorm';
 import { User } from '../user/user.entity';
 import { Meme } from './meme.entity';
 
@@ -8,7 +14,7 @@ export enum MemeVoteType {
 }
 
 @Entity('meme_votes')
-export class MemeVote {
+export class MemeVote extends BaseEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 

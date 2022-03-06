@@ -1,4 +1,10 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+    BaseEntity,
+    Column,
+    Entity,
+    ManyToOne,
+    PrimaryGeneratedColumn
+} from 'typeorm';
 import { User } from '../user/user.entity';
 
 export enum UserSwipeType {
@@ -7,7 +13,7 @@ export enum UserSwipeType {
 }
 
 @Entity('user_swipes')
-export class UserSwipe {
+export class UserSwipe extends BaseEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 

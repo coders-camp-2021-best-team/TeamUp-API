@@ -1,4 +1,5 @@
 import {
+    BaseEntity,
     Column,
     CreateDateColumn,
     Entity,
@@ -14,7 +15,7 @@ export enum UserReportStatus {
 }
 
 @Entity('user_reports')
-export class UserReport {
+export class UserReport extends BaseEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 

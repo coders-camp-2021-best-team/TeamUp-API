@@ -1,12 +1,9 @@
-import { getRepository } from 'typeorm';
 import { GreetingDto } from './greeting.dto';
 import { Greeting } from './greeting.entity';
 
 export const HelloWorldService = new (class {
     async greet(greetingID: string, name: string) {
-        const greetingsRepo = getRepository(Greeting);
-
-        const greeting = await greetingsRepo.findOne(greetingID);
+        const greeting = await Greeting.findOne(greetingID);
 
         if (!greeting) return null;
 
@@ -16,14 +13,10 @@ export const HelloWorldService = new (class {
     }
 
     getAllGreetings() {
-        const greetingsRepo = getRepository(Greeting);
-
-        return greetingsRepo.find();
+        return Greeting.find();
     }
 
     createGreeting(greeting: GreetingDto) {
-        const greetingsRepo = getRepository(Greeting);
-
-        return greetingsRepo.save(greeting);
+        return Greeting.save(Greeting.create(greeting));
     }
 })();
