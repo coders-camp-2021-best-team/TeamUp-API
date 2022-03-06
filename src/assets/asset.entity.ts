@@ -4,6 +4,7 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 export class Asset {
     @PrimaryGeneratedColumn('uuid')
     id: string;
+
     @Column()
     etag: string;
 }

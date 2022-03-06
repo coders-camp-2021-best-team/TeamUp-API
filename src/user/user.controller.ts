@@ -4,6 +4,7 @@ import { Controller } from '../common/controller.class';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/updateUser.dto';
 import { instanceToPlain, plainToInstance } from 'class-transformer';
+
 export class UserController extends Controller {
     constructor() {
         super('/user');
