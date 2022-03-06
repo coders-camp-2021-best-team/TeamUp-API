@@ -6,10 +6,14 @@ export const AuthService = new (class {
     async login(data: LoginDto) {
         const user = await this.getUserByEmail(data.email);
 
-        if (!user) return null;
+        if (!user) {
+            return null;
+        }
 
         const ok = this.verifyPassword(data.password, user.passwordHash);
-        if (!ok) return null;
+        if (!ok) {
+            return null;
+        }
         return user;
     }
 
