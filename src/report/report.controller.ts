@@ -2,9 +2,6 @@ import { Request, Response } from 'express';
 import { IsEnum, validate, IsString, IsNotEmpty } from 'class-validator';
 import { ReportDto, ReportService, UserReport, UserReportStatus } from '.';
 import { Controller } from '../common/controller.class';
-import { adminAuthMiddleware } from '../common/middlewares/admin.middleware';
-import { loggedInUserMiddleware } from '../common/middlewares/logged-in.middleware';
-// TODO Inject proper auth middleware
 
 class updateStatus {
     @IsString()
@@ -21,9 +18,9 @@ export class ReportController extends Controller {
 
         const router = this.getRouter();
 
-        router.post('/report/:id', loggedInUserMiddleware, this.createReport);
-        router.get('/report', adminAuthMiddleware, this.getAllReports);
-        router.put('report/:id', adminAuthMiddleware, this.updateReportStatus);
+        router.post('/report/:id', this.createReport);
+        router.get('/report', this.getAllReports);
+        router.put('report/:id', this.updateReportStatus);
     }
     async getAllReports(req: Request, res: Response) {
         res.send(await ReportService.getAllReports());
