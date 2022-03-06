@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { IsEnum, validate, IsString, IsNotEmpty } from 'class-validator';
-import { ReportDto, ReportService, UserReport, UserReportStatus } from '.';
+import { ReportDto, ReportService, UserReportStatus } from '.';
 import { Controller } from '../common/controller.class';
 
 class updateStatus {
@@ -25,10 +25,7 @@ export class ReportController extends Controller {
     async getAllReports(req: Request, res: Response) {
         res.send(await ReportService.getAllReports());
     }
-    async createReport(
-        req: Request<Pick<UserReport, 'id'>, unknown, ReportDto>,
-        res: Response
-    ) {
+    async createReport(req: Request, res: Response) {
         const data = new ReportDto();
         data.reason = req.body.reason;
         data.status = req.body.status;
@@ -41,14 +38,7 @@ export class ReportController extends Controller {
 
         res.send(created);
     }
-    async updateReportStatus(
-        req: Request<
-            Pick<UserReport, 'id'>,
-            unknown,
-            Pick<ReportDto, 'status'>
-        >,
-        res: Response
-    ) {
+    async updateReportStatus(req: Request, res: Response) {
         const data = new updateStatus();
 
         data.id = req.params.id;
