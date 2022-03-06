@@ -22,7 +22,7 @@ export class AuthController extends Controller {
     async login(req: Request, res: Response) {
         const body = plainToInstance(LoginDto, req.body as LoginDto);
         const errors = await validate(body);
-        if (errors.length > 0) {
+        if (errors.length) {
             return res.status(StatusCodes.BAD_REQUEST).json(errors);
         }
 
@@ -40,7 +40,7 @@ export class AuthController extends Controller {
     async register(req: Request, res: Response) {
         const body = plainToInstance(RegisterDto, req.body as RegisterDto);
         const errors = await validate(body);
-        if (errors.length > 0) {
+        if (errors.length) {
             return res.status(StatusCodes.BAD_REQUEST).json(errors);
         }
 
