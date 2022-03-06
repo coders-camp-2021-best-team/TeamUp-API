@@ -1,5 +1,5 @@
 import { compareSync, hashSync } from 'bcryptjs';
-import { User } from '../user/user.entity';
+import { User } from '../user';
 import { LoginDto, RegisterDto } from './dto';
 
 export const AuthService = new (class {

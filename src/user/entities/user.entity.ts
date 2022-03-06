@@ -8,13 +8,11 @@ import {
     BaseEntity
 } from 'typeorm';
 
-import { UserBlock } from '../block/user-block.entity';
-import { Meme } from '../memes/meme.entity';
-import { UserReport } from '../report/user-report.entity';
-import { UserSwipe } from '../swipe/user-swipes.entity';
-import { UserAvatar } from './user-avatar.entity';
-import { UserPhoto } from './user-photo.entity';
-import { UserSkill } from './user-skill.entity';
+import { UserBlock } from '../../block';
+import { Meme } from '../../memes';
+import { UserReport } from '../../report';
+import { UserSwipe } from '../../swipe';
+import { UserAvatar, UserPhoto, UserSkill } from '.';
 
 export enum UserStatus {
     BLOCKED = 'BLOCKED',

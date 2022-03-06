@@ -5,9 +5,8 @@ import {
     ManyToOne,
     PrimaryGeneratedColumn
 } from 'typeorm';
-import { Game } from '../game/game.entity';
-import { ExperienceLevel } from '../game/level.entity';
-import { User } from './user.entity';
+import { Game, ExperienceLevel } from '../../game';
+import { User } from '.';
 
 @Entity('user_skills')
 export class UserSkill extends BaseEntity {

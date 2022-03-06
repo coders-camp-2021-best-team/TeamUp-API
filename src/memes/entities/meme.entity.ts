@@ -8,9 +8,9 @@ import {
     OneToOne,
     PrimaryGeneratedColumn
 } from 'typeorm';
-import { Asset } from '../assets/asset.entity';
-import { User } from '../user/user.entity';
-import { MemeVote } from './meme-vote.entity';
+import { Asset } from '../../assets';
+import { User } from '../../user';
+import { MemeVote } from '.';
 
 @Entity('memes')
 export class Meme extends BaseEntity {

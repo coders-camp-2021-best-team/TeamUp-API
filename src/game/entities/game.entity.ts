@@ -5,7 +5,7 @@ import {
     OneToMany,
     PrimaryGeneratedColumn
 } from 'typeorm';
-import { ExperienceLevel } from './level.entity';
+import { ExperienceLevel } from '.';
 
 @Entity('games')
 export class Game extends BaseEntity {
