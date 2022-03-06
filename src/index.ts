@@ -4,12 +4,17 @@ import { WinstonAdaptor } from 'typeorm-logger-adaptor/logger/winston';
 import logger from './logger';
 
 import { API, funnyHeaderMiddleware } from './common';
-import { HelloWorldController } from './hello-world';
 import { ReportController } from './report';
+import { AuthController } from './auth';
+import { UserController } from './user';
 
 const server = new API({
     middlewares: [funnyHeaderMiddleware],
-    controllers: [new HelloWorldController(), new ReportController()]
+    controllers: [
+        new UserController(),
+        new AuthController(),
+        new ReportController()
+    ]
 });
 
 getConnectionOptions()
