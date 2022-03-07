@@ -17,9 +17,7 @@ export class ReportController extends Controller {
     }
 
     async getAllReports(req: Request, res: Response) {
-        return res
-            .status(StatusCodes.OK)
-            .send(await ReportService.getAllReports());
+        return res.send(await ReportService.getAllReports());
     }
 
     async createReport(req: Request, res: Response) {
@@ -49,6 +47,6 @@ export class ReportController extends Controller {
 
         const updated = await ReportService.updateReportStatus(id, body);
 
-        return res.status(StatusCodes.OK).send(instanceToPlain(updated));
+        return res.send(instanceToPlain(updated));
     }
 }
