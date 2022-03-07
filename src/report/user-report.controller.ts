@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { validate } from 'class-validator';
-import { ReportDto, ReportService, UpdateStatusDto } from '.';
+import { ReportDto, UpdateStatusDto, ReportService } from '.';
 import { Controller } from '../common/controller.class';
 import { plainToInstance } from 'class-transformer';
 

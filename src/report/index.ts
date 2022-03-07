@@ -1,4 +1,4 @@
-export * from './report.dto';
-export * from './report.controller';
-export * from './report.service';
+export * from './user-report.dto';
+export * from './user-report.controller';
+export * from './user-report.service';
 export * from './entities/';
