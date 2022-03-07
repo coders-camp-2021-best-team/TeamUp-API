@@ -21,7 +21,7 @@ export class ReportController extends Controller {
         const body = plainToInstance(ReportDto, req.body as ReportDto);
         body.reason = req.body.reason;
         const errors = await validate(body);
-        if (errors.length > 0) {
+        if (errors.length) {
             return res.status(400).json(errors);
         }
 
@@ -36,7 +36,7 @@ export class ReportController extends Controller {
         );
 
         const errors = await validate(body);
-        if (errors.length > 0) {
+        if (errors.length) {
             return res.status(400).json(errors);
         }
         const id = req.params.id;
