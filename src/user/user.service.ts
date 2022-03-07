@@ -1,11 +1,8 @@
-import { getRepository } from 'typeorm';
 import { User, UpdateUserDto } from '.';
 
 export const UserService = new (class {
     async getUser(userId: string) {
-        const userRepo = getRepository(User);
-
-        const user = await userRepo.findOne(userId);
+        const user = await User.findOne(userId);
 
         if (!user) {
             return null;
@@ -15,9 +12,7 @@ export const UserService = new (class {
     }
 
     async updateUser(userId: string, userData: UpdateUserDto) {
-        const userRepo = getRepository(User);
-
-        const user = await userRepo.findOne(userId);
+        const user = await User.findOne(userId);
 
         if (!user) {
             return null;
@@ -29,6 +24,6 @@ export const UserService = new (class {
         user.last_name = userData.last_name || user.last_name;
         user.biogram = userData.biogram || user.biogram;
 
-        return userRepo.save(user);
+        return user.save();
     }
 })();
