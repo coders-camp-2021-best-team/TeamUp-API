@@ -15,11 +15,13 @@ export class ReportController extends Controller {
         router.get('/report', this.getAllReports);
         router.put('report/:id', this.updateReportStatus);
     }
+
     async getAllReports(req: Request, res: Response) {
         return res
             .status(StatusCodes.OK)
             .send(await ReportService.getAllReports());
     }
+
     async createReport(req: Request, res: Response) {
         const body = plainToInstance(ReportDto, req.body as ReportDto);
         body.reason = req.body.reason;
@@ -32,6 +34,7 @@ export class ReportController extends Controller {
 
         return res.status(StatusCodes.CREATED).send(instanceToPlain(created));
     }
+
     async updateReportStatus(req: Request, res: Response) {
         const body = plainToInstance(
             UpdateStatusDto,
