@@ -1,11 +1,8 @@
-import { getRepository } from 'typeorm';
 import { UserReport, CreateReportDto, UpdateStatusDto } from '.';
 
 export const ReportService = new (class {
     async getAllReports() {
-        const reportsRepo = getRepository(UserReport);
-
-        const reports = await reportsRepo.find();
+        const reports = await UserReport.find();
 
         if (!reports.length) {
             return null;
@@ -14,19 +11,15 @@ export const ReportService = new (class {
     }
 
     async createReport(data: CreateReportDto) {
-        const reportsRepo = getRepository(UserReport);
-
         const report = new UserReport();
 
         report.reason = data.reason;
 
-        return await reportsRepo.save(report);
+        return report.save();
     }
 
     async updateReportStatus(reportID: string, statusData: UpdateStatusDto) {
-        const reportRepo = getRepository(UserReport);
-
-        const report = await reportRepo.findOne(reportID);
+        const report = await UserReport.findOne(reportID);
 
         if (!report) {
             return null;
@@ -34,6 +27,6 @@ export const ReportService = new (class {
 
         report.status = statusData.status || report.status;
 
-        return reportRepo.save(report);
+        return report.save();
     }
 })();
