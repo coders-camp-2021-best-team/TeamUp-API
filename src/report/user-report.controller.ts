@@ -13,7 +13,7 @@ export class ReportController extends Controller {
 
         router.post('/report/:id', this.createReport);
         router.get('/report/:id', this.getAllReports);
-        router.put('report/:id', this.updateReportStatus);
+        router.put('/report/:id', this.updateReportStatus);
     }
 
     async getAllReports(req: Request, res: Response) {
