@@ -13,10 +13,14 @@ export const ReportService = new (class {
         return reports;
     }
 
-    async createReport(report: CreateReportDto) {
+    async createReport(data: CreateReportDto) {
         const reportsRepo = getRepository(UserReport);
 
-        return reportsRepo.save(report);
+        const report = new UserReport();
+
+        report.reason = data.reason;
+
+        return await reportsRepo.save(report);
     }
 
     async updateReportStatus(reportID: string, statusData: UpdateStatusDto) {
