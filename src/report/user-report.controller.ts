@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { validate } from 'class-validator';
-import { ReportDto, UpdateStatusDto, ReportService } from '.';
+import { CreateReportDto, UpdateStatusDto, ReportService } from '.';
 import { Controller } from '../common/controller.class';
 import { instanceToPlain, plainToInstance } from 'class-transformer';
 import { StatusCodes } from 'http-status-codes';
@@ -21,7 +21,10 @@ export class ReportController extends Controller {
     }
 
     async createReport(req: Request, res: Response) {
-        const body = plainToInstance(ReportDto, req.body as ReportDto);
+        const body = plainToInstance(
+            CreateReportDto,
+            req.body as CreateReportDto
+        );
         const errors = await validate(body);
         if (errors.length) {
             return res.status(StatusCodes.BAD_REQUEST).json(errors);

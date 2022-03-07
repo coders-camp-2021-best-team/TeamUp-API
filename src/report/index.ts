@@ -1,4 +1,4 @@
-export * from './user-report.dto';
+export * from './dto/';
 export * from './entities/';
 
 export * from './user-report.controller';

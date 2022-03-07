@@ -1,5 +1,5 @@
 import { getRepository } from 'typeorm';
-import { UserReport, ReportDto, UpdateStatusDto } from '.';
+import { UserReport, CreateReportDto, UpdateStatusDto } from '.';
 
 export const ReportService = new (class {
     async getAllReports() {
@@ -13,7 +13,7 @@ export const ReportService = new (class {
         return reports;
     }
 
-    async createReport(report: ReportDto) {
+    async createReport(report: CreateReportDto) {
         const reportsRepo = getRepository(UserReport);
 
         return reportsRepo.save(report);
