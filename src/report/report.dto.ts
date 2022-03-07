@@ -5,7 +5,8 @@ export class ReportDto {
     @IsString()
     @Length(5, 256)
     reason: string;
-
+}
+export class UpdateStatusDto {
     @IsEnum(UserReportStatus)
     status: UserReportStatus;
 }

@@ -1,13 +1,8 @@
 import { Request, Response } from 'express';
-import { IsEnum, validate } from 'class-validator';
-import { ReportDto, ReportService, UserReportStatus } from '.';
+import { validate } from 'class-validator';
+import { ReportDto, ReportService, UpdateStatusDto } from '.';
 import { Controller } from '../common/controller.class';
 import { plainToInstance } from 'class-transformer';
-
-class updateStatus {
-    @IsEnum(UserReportStatus)
-    status: UserReportStatus;
-}
 
 export class ReportController extends Controller {
     constructor() {
@@ -23,20 +18,22 @@ export class ReportController extends Controller {
         res.send(await ReportService.getAllReports());
     }
     async createReport(req: Request, res: Response) {
-        const data = new ReportDto();
-        data.reason = req.body.reason;
-        data.status = req.body.status;
-        const errors = await validate(data);
+        const body = plainToInstance(ReportDto, req.body as ReportDto);
+        body.reason = req.body.reason;
+        const errors = await validate(body);
         if (errors.length > 0) {
             return res.status(400).json(errors);
         }
 
-        const created = await ReportService.createReport(data);
+        const created = await ReportService.createReport(body);
 
         res.send(created);
     }
     async updateReportStatus(req: Request, res: Response) {
-        const body = plainToInstance(updateStatus, req.body as updateStatus);
+        const body = plainToInstance(
+            UpdateStatusDto,
+            req.body as UpdateStatusDto
+        );
 
         const errors = await validate(body);
         if (errors.length > 0) {
