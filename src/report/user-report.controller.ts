@@ -22,7 +22,6 @@ export class ReportController extends Controller {
 
     async createReport(req: Request, res: Response) {
         const body = plainToInstance(ReportDto, req.body as ReportDto);
-        body.reason = req.body.reason;
         const errors = await validate(body);
         if (errors.length) {
             return res.status(StatusCodes.BAD_REQUEST).json(errors);
