@@ -3,6 +3,7 @@ import { validate } from 'class-validator';
 import { ReportDto, UpdateStatusDto, ReportService } from '.';
 import { Controller } from '../common/controller.class';
 import { instanceToPlain, plainToInstance } from 'class-transformer';
+import { StatusCodes } from 'http-status-codes';
 
 export class ReportController extends Controller {
     constructor() {
@@ -15,19 +16,21 @@ export class ReportController extends Controller {
         router.put('report/:id', this.updateReportStatus);
     }
     async getAllReports(req: Request, res: Response) {
-        return res.status(200).send(await ReportService.getAllReports());
+        return res
+            .status(StatusCodes.OK)
+            .send(await ReportService.getAllReports());
     }
     async createReport(req: Request, res: Response) {
         const body = plainToInstance(ReportDto, req.body as ReportDto);
         body.reason = req.body.reason;
         const errors = await validate(body);
         if (errors.length) {
-            return res.status(400).json(errors);
+            return res.status(StatusCodes.BAD_REQUEST).json(errors);
         }
 
         const created = await ReportService.createReport(body);
 
-        return res.status(201).send(instanceToPlain(created));
+        return res.status(StatusCodes.CREATED).send(instanceToPlain(created));
     }
     async updateReportStatus(req: Request, res: Response) {
         const body = plainToInstance(
@@ -37,12 +40,12 @@ export class ReportController extends Controller {
 
         const errors = await validate(body);
         if (errors.length) {
-            return res.status(400).json(errors);
+            return res.status(StatusCodes.BAD_REQUEST).json(errors);
         }
         const id = req.params.id;
 
         const updated = await ReportService.updateReportStatus(id, body);
 
-        return res.status(200).send(instanceToPlain(updated));
+        return res.status(StatusCodes.OK).send(instanceToPlain(updated));
     }
 }
