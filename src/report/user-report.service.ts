@@ -2,19 +2,32 @@ import { getRepository } from 'typeorm';
 import { UserReport, ReportDto, UpdateStatusDto } from '.';
 
 export const ReportService = new (class {
-    getAllReports() {
+    async getAllReports() {
         const reportsRepo = getRepository(UserReport);
 
-        return reportsRepo.find();
+        const reports = await reportsRepo.find();
+
+        if (!reports.length) {
+            return null;
+        }
+        return reports;
     }
-    createReport(report: ReportDto) {
+    async createReport(report: ReportDto) {
         const reportsRepo = getRepository(UserReport);
 
         return reportsRepo.save(report);
     }
-    updateReportStatus(reportID: string, status: UpdateStatusDto) {
-        const reportsRepo = getRepository(UserReport);
+    async updateReportStatus(reportID: string, statusData: UpdateStatusDto) {
+        const reportRepo = getRepository(UserReport);
 
-        return reportsRepo.update(reportID, status);
+        const report = await reportRepo.findOne(reportID);
+
+        if (!report) {
+            return null;
+        }
+
+        report.status = statusData.status || report.status;
+
+        return reportRepo.save(report);
     }
 })();
