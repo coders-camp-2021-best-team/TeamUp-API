@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { validate } from 'class-validator';
 import { ReportDto, UpdateStatusDto, ReportService } from '.';
 import { Controller } from '../common/controller.class';
-import { plainToInstance } from 'class-transformer';
+import { instanceToPlain, plainToInstance } from 'class-transformer';
 
 export class ReportController extends Controller {
     constructor() {
@@ -15,7 +15,7 @@ export class ReportController extends Controller {
         router.put('report/:id', this.updateReportStatus);
     }
     async getAllReports(req: Request, res: Response) {
-        res.send(await ReportService.getAllReports());
+        return res.status(200).send(await ReportService.getAllReports());
     }
     async createReport(req: Request, res: Response) {
         const body = plainToInstance(ReportDto, req.body as ReportDto);
@@ -27,7 +27,7 @@ export class ReportController extends Controller {
 
         const created = await ReportService.createReport(body);
 
-        res.send(created);
+        return res.status(201).send(instanceToPlain(created));
     }
     async updateReportStatus(req: Request, res: Response) {
         const body = plainToInstance(
@@ -43,6 +43,6 @@ export class ReportController extends Controller {
 
         const updated = await ReportService.updateReportStatus(id, body);
 
-        res.send(updated);
+        return res.status(200).send(instanceToPlain(updated));
     }
 }
