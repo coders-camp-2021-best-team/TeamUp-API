@@ -8,6 +8,8 @@ services:
             - 80:80
         volumes:
             - ./nginx.conf:/etc/nginx/nginx.conf
+        env_file:
+            - .docker.env
         networks:
             - nginx
             - api
@@ -46,7 +48,7 @@ services:
         volumes:
             - redis-data:/data
         env_file:
-            - .env
+            - .docker.env
         networks:
             - redis
 
@@ -54,7 +56,7 @@ services:
         container_name: redis-commander
         image: rediscommander/redis-commander:latest
         env_file:
-            - .env
+            - .docker.env
         networks:
             - redis
         depends_on:
@@ -66,7 +68,7 @@ services:
         volumes:
             - mariadb-data:/var/lib/mysql
         env_file:
-            - .env
+            - .docker.env
         networks:
             - mariadb
 
@@ -74,7 +76,7 @@ services:
         container_name: phpmyadmin
         image: phpmyadmin/phpmyadmin:latest
         env_file:
-            - .env
+            - .docker.env
         environment:
             - PMA_ABSOLUTE_URI=/dev/phpmyadmin/
         networks:
@@ -92,7 +94,7 @@ services:
         volumes:
             - minio-data:/data
         env_file:
-            - .env
+            - .docker.env
         networks:
             - minio
         healthcheck:

@@ -4,13 +4,19 @@ import { WinstonAdaptor } from 'typeorm-logger-adaptor/logger/winston';
 import logger from './logger';
 
 import { API, funnyHeaderMiddleware } from './common';
-import { HelloWorldController } from './hello-world';
-import { MemeService } from './memes/meme.service';
-import { MemeController } from './memes/meme.controller';
+import { ReportController } from './report';
+import { AuthController } from './auth';
+import { UserController } from './user';
+import { MemeController } from './memes';
 
 const server = new API({
     middlewares: [funnyHeaderMiddleware],
-    controllers: [new HelloWorldController(), new MemeController()]
+    controllers: [
+        new UserController(),
+        new AuthController(),
+        new ReportController(),
+        new MemeController()
+    ]
 });
 
 getConnectionOptions()

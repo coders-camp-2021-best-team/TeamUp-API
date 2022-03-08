@@ -12,6 +12,9 @@ export interface EnvVariables {
     NODE_ENV: 'production' | 'development';
     LOGGING_LEVEL: string;
     PORT: number;
+    SESSION_SECRET: string;
+    REDIS_URL?: string;
+    REDIS_TLS_URL?: string;
 }
 
 const envSchema = Joi.object<EnvVariables>({
@@ -27,7 +30,10 @@ const envSchema = Joi.object<EnvVariables>({
             .valid(...Object.keys(LoggingLevels))
             .default('info')
     }),
-    PORT: Joi.number().port().default(3000)
+    PORT: Joi.number().port().default(3000),
+    SESSION_SECRET: Joi.string().required().min(16),
+    REDIS_URL: Joi.string().optional().uri(),
+    REDIS_TLS_URL: Joi.string().optional().uri()
 }).unknown();
 
 const validated = envSchema.validate(process.env);
