@@ -1,1 +1,2 @@
-export * from './create-game.dto';
+export * from './add-game.dto';
+export * from './add-level.dto';
