@@ -7,13 +7,15 @@ import { API, funnyHeaderMiddleware } from './common';
 import { ReportController } from './report';
 import { AuthController } from './auth';
 import { UserController } from './user';
+import { GameController } from './game';
 
 const server = new API({
     middlewares: [funnyHeaderMiddleware],
     controllers: [
         new UserController(),
         new AuthController(),
-        new ReportController()
+        new ReportController(),
+        new GameController()
     ]
 });
 
