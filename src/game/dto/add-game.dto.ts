@@ -1,6 +1,6 @@
 import { Length, IsString } from 'class-validator';
 
-export class CreateGameDto {
+export class AddGameDto {
     @IsString()
     @Length(1, 256)
     name: string;
