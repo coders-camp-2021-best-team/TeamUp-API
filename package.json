@@ -19,6 +19,7 @@
         "url": "https://github.com/coders-camp-2021-best-team/TeamUp-API.git"
     },
     "dependencies": {
+        "@types/nodemailer": "^6.4.4",
         "bcryptjs": "^2.4.3",
         "class-transformer": "^0.5.1",
         "class-validator": "^0.13.2",
@@ -28,6 +29,7 @@
         "http-status-codes": "^2.2.0",
         "joi": "^17.6.0",
         "mysql": "^2.18.1",
+        "nodemailer": "^6.7.2",
         "redis": "^4.0.4",
         "reflect-metadata": "^0.1.13",
         "rimraf": "^3.0.2",

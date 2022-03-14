@@ -1,6 +1,7 @@
 import { compareSync, hashSync } from 'bcryptjs';
 import { User } from '../user';
 import { LoginDto, RegisterDto } from './dto';
+import { EmailService } from '../email/email.service';
 
 export const AuthService = new (class {
     async login(data: LoginDto) {
@@ -28,7 +29,13 @@ export const AuthService = new (class {
                 passwordHash: this.hashPassword(data.password)
             });
 
-            return await user.save();
+            const userSave = await user.save();
+
+            if (userSave) {
+                EmailService.registrationEmail(data.email, data.username);
+            }
+
+            return userSave;
         } catch {
             return null;
         }
