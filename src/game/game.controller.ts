@@ -74,15 +74,30 @@ export class GameController extends Controller {
     }
 
     async addExperienceLevel(req: Request, res: Response) {
-        const body = plainToInstance(AddLevelDto, req.body as AddLevelDto);
-        const errors = await validate(body);
-        if (errors.length) {
-            return res.status(StatusCodes.BAD_REQUEST).json(errors);
+        const id = req.params.id;
+
+        try {
+            const game = await GameService.getGame(id);
+
+            if (!game) {
+                return res.status(StatusCodes.NOT_FOUND).send('Game not found');
+            }
+
+            const body = plainToInstance(AddLevelDto, req.body as AddLevelDto);
+            const errors = await validate(body);
+            if (errors.length) {
+                return res.status(StatusCodes.BAD_REQUEST).json(errors);
+            }
+
+            const added = await GameService.addExperienceLevel(body);
+
+            return res.status(StatusCodes.CREATED).send(instanceToPlain(added));
+        } catch (error) {
+            console.error(error);
+            return res
+                .status(StatusCodes.INTERNAL_SERVER_ERROR)
+                .send(ReasonPhrases.INTERNAL_SERVER_ERROR);
         }
-
-        const added = await GameService.addExperienceLevel(body);
-
-        return res.status(StatusCodes.CREATED).send(instanceToPlain(added));
     }
 
     async removeExperienceLevel(req: Request, res: Response) {
