@@ -6,10 +6,15 @@ import logger from './logger';
 import { API, funnyHeaderMiddleware } from './common';
 import { AuthController } from './auth';
 import { UserController } from './user';
+import { FeedController } from './feed/feed.controller';
 
 const server = new API({
     middlewares: [funnyHeaderMiddleware],
-    controllers: [new UserController(), new AuthController()]
+    controllers: [
+        new UserController(),
+        new AuthController(),
+        new FeedController()
+    ]
 });
 
 getConnectionOptions()
