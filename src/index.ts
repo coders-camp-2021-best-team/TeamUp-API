@@ -3,14 +3,14 @@ import { WinstonAdaptor } from 'typeorm-logger-adaptor/logger/winston';
 
 import logger from './logger';
 
-import { API, funnyHeaderMiddleware } from './common';
+import { API, funnyHeaderMiddleware, gameMiddleware } from './common';
 import { ReportController } from './report';
 import { AuthController } from './auth';
 import { UserController } from './user';
 import { GameController } from './game';
 
 const server = new API({
-    middlewares: [funnyHeaderMiddleware],
+    middlewares: [funnyHeaderMiddleware, gameMiddleware],
     controllers: [
         new UserController(),
         new AuthController(),

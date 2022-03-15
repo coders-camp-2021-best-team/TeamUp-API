@@ -4,6 +4,7 @@ import { validate } from 'class-validator';
 import { Controller } from '../common';
 import { GameService, AddGameDto, AddLevelDto } from '.';
 import { StatusCodes, ReasonPhrases } from 'http-status-codes';
+import { gameMiddleware } from '../common';
 
 export class GameController extends Controller {
     constructor() {
@@ -15,8 +16,12 @@ export class GameController extends Controller {
         router.post('/', this.addGame);
         router.get('/:id', this.getGame);
         router.delete('/:id', this.removeGame);
-        router.post('/:id/experience', this.addExperienceLevel);
-        router.delete('/:id/experience/:id', this.removeExperienceLevel);
+        router.post('/:id/experience', gameMiddleware, this.addExperienceLevel);
+        router.delete(
+            '/:id/experience/:lvl_id',
+            gameMiddleware,
+            this.removeExperienceLevel
+        );
     }
 
     async getAllGames(req: Request, res: Response) {
@@ -74,34 +79,19 @@ export class GameController extends Controller {
     }
 
     async addExperienceLevel(req: Request, res: Response) {
-        const id = req.params.id;
-
-        try {
-            const game = await GameService.getGame(id);
-
-            if (!game) {
-                return res.status(StatusCodes.NOT_FOUND).send('Game not found');
-            }
-
-            const body = plainToInstance(AddLevelDto, req.body as AddLevelDto);
-            const errors = await validate(body);
-            if (errors.length) {
-                return res.status(StatusCodes.BAD_REQUEST).json(errors);
-            }
-
-            const added = await GameService.addExperienceLevel(body);
-
-            return res.status(StatusCodes.CREATED).send(instanceToPlain(added));
-        } catch (error) {
-            console.error(error);
-            return res
-                .status(StatusCodes.INTERNAL_SERVER_ERROR)
-                .send(ReasonPhrases.INTERNAL_SERVER_ERROR);
+        const body = plainToInstance(AddLevelDto, req.body as AddLevelDto);
+        const errors = await validate(body);
+        if (errors.length) {
+            return res.status(StatusCodes.BAD_REQUEST).json(errors);
         }
+
+        const added = await GameService.addExperienceLevel(body);
+
+        return res.status(StatusCodes.CREATED).send(instanceToPlain(added));
     }
 
     async removeExperienceLevel(req: Request, res: Response) {
-        const id = req.params.id;
+        const id = req.params.lvl_id;
 
         try {
             const removed = await GameService.removeExperienceLevel(id);
