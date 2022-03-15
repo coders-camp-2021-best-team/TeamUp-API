@@ -1,4 +1,6 @@
 import { User, UpdateUserDto } from '.';
+import { EmailService } from '../email/email.service';
+import { UserStatus } from './entities';
 
 export const UserService = new (class {
     async getUser(userId: string) {
@@ -25,5 +27,26 @@ export const UserService = new (class {
         user.biogram = userData.biogram || user.biogram;
 
         return user.save();
+    }
+
+    async activateUser(userId: string) {
+        const user = await User.findOne(userId);
+
+        if (!user) {
+            return null;
+        }
+
+        user.status = UserStatus.ACTIVE;
+
+        return user.save();
+    }
+
+    async requestPasswordReset(userMail: string) {
+        const user = await User.findOne({ where: { email: userMail } });
+        if (!user) {
+            return null;
+        }
+
+        EmailService.resetPasswordEmail(user.email, user.username, user.id);
     }
 })();

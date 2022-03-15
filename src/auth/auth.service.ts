@@ -1,5 +1,5 @@
 import { compareSync, hashSync } from 'bcryptjs';
-import { User } from '../user';
+import { User, UserStatus } from '../user';
 import { LoginDto, RegisterDto } from './dto';
 import { EmailService } from '../email/email.service';
 
@@ -26,7 +26,8 @@ export const AuthService = new (class {
                 first_name: data.first_name,
                 last_name: data.last_name,
                 birthdate: data.birthdate,
-                passwordHash: this.hashPassword(data.password)
+                passwordHash: this.hashPassword(data.password),
+                status: UserStatus.BLOCKED
             });
 
             const userSave = await user.save();

@@ -26,7 +26,7 @@ export const EmailService = new (class {
         );
     }
 
-    async resetPasswordEmail(to: string, username: string) {
+    async resetPasswordEmail(to: string, username: string, userId: string) {
         await this.sendEmail(
             to,
             'Reset password in TeamUp',
@@ -41,7 +41,7 @@ export const EmailService = new (class {
 <body>
 <h1>Hello ${username}</h1>
 <p>Here is your reset password link:</p>
-<p><a href="#">Reset password</a></p>
+<p><a href="www.waszastrona.pl/reset-password/${userId}">Reset password</a></p>
 <p>Regards,<br>TeamUp Team</p>
 </body>
 </html>`
