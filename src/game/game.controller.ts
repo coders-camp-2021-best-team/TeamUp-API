@@ -30,9 +30,7 @@ export class GameController extends Controller {
             const game = await GameService.getGame(id);
 
             if (!game) {
-                return res
-                    .status(StatusCodes.NOT_FOUND)
-                    .send(ReasonPhrases.NOT_FOUND);
+                return res.status(StatusCodes.NOT_FOUND).send('Game not found');
             }
             return res.json(instanceToPlain(game));
         } catch (error) {
@@ -62,13 +60,11 @@ export class GameController extends Controller {
             const removed = await GameService.removeGame(id);
 
             if (!removed) {
-                return res
-                    .status(StatusCodes.NOT_FOUND)
-                    .send(ReasonPhrases.NOT_FOUND);
+                return res.status(StatusCodes.NOT_FOUND).send('Game not found');
             }
             return res
                 .status(StatusCodes.NO_CONTENT)
-                .json(instanceToPlain(removed));
+                .send('Game has been removed');
         } catch (error) {
             console.error(error);
             return res
@@ -98,11 +94,11 @@ export class GameController extends Controller {
             if (!removed) {
                 return res
                     .status(StatusCodes.NOT_FOUND)
-                    .send(ReasonPhrases.NOT_FOUND);
+                    .send('Experience level not found');
             }
             return res
                 .status(StatusCodes.NO_CONTENT)
-                .json(instanceToPlain(removed));
+                .send('Experience level has been removed');
         } catch (error) {
             console.error(error);
             return res
