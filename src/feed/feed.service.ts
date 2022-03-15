@@ -1,4 +1,4 @@
-import { User, UserSkill } from '../user';
+import { UserSkill } from '../user';
 import { Game } from '../game/index';
 import { RecomendedDTo } from './dto/recomended.dto';
 
