@@ -8,6 +8,7 @@ import { ReportController } from './report';
 import { AuthController } from './auth';
 import { UserController } from './user';
 import { GameController } from './game';
+import { FeedController } from './feed/feed.controller';
 
 const server = new API({
     middlewares: [funnyHeaderMiddleware, gameMiddleware],
@@ -15,7 +16,8 @@ const server = new API({
         new UserController(),
         new AuthController(),
         new ReportController(),
-        new GameController()
+        new GameController(),
+        new FeedController()
     ]
 });
 
