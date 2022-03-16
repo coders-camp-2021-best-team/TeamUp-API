@@ -47,7 +47,7 @@ export const UserService = new (class {
             return null;
         }
 
-        EmailService.resetPasswordEmail(user.email, user.username, user.id);
+        EmailService.resetPasswordEmail(user.email, user.username); // add user.id
     }
 
     // reset password - service
