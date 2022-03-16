@@ -22,13 +22,7 @@ export class SwipeController extends Controller {
             return res.status(StatusCodes.BAD_REQUEST).json(errors);
         }
 
-        const { status, submittedBy, target } = body;
-
-        const created = await SwipeService.changeUser(
-            target,
-            submittedBy,
-            status
-        );
+        const created = await SwipeService.changeUser(body);
 
         return res.status(StatusCodes.CREATED).send(instanceToPlain(created));
     }
