@@ -49,4 +49,17 @@ export const UserService = new (class {
 
         EmailService.resetPasswordEmail(user.email, user.username, user.id);
     }
+
+    // reset password - service
+
+    async resetPassword(userMail: string, userPassword: string) {
+        const user = await User.findOne({
+            where: { email: userMail, passwordHash: userPassword }
+        });
+        if (!user) {
+            return null;
+        }
+
+        EmailService.resetPasswordEmail(user.email, user.passwordHash, user.id);
+    }
 })();

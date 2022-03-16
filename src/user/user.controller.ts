@@ -88,4 +88,23 @@ export class UserController extends Controller {
             });
         }
     }
+
+    // reset password - controller
+
+    async resetPassword(req: Request, res: Response) {
+        const email = req.params.email;
+        const password = req.params.passwordHash;
+
+        try {
+            await UserService.resetPassword(email, password);
+
+            res.status(200).json({
+                msg: 'If the user with the given e-mail exists, we have sent a link to change the password'
+            });
+        } catch {
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+                message: 'server error'
+            });
+        }
+    }
 }

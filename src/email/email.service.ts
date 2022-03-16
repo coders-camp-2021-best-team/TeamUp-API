@@ -4,25 +4,25 @@ import env from '../config';
 const { SMPT_USERNAME, SMPT_PASSWORD } = env;
 
 export const EmailService = new (class {
-    async registrationEmail(to: string, username: string) {
+    async registrationEmail(to: string, username: string, userId: string) {
         await this.sendEmail(
             to,
             'Registration email in TeamUp',
             `<!DOCTYPE html>
-            <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registration email in TeamUp</title>
-</head>
-<body>
-    <h1>Hello ${username}</h1>
-    <p>Welcome in our application. Please click below confirmation link.</p>
-    <p><a href="#">Confirmation link</a></p>
-    <p>Regards,<br>TeamUp Team</p>
-</body>
-</html>`
+                <html lang="en">
+                    <head>
+                        <meta charset="UTF-8">
+                        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <title>Registration email in TeamUp</title>
+                    </head>
+                    <body>
+                        <h1>Hello ${username}</h1>
+                        <p>Welcome in our application. Please click below confirmation link.</p>
+                        <p><a href="www.waszastrona.pl/activate/${userId}">Confirmation link</a></p>
+                        <p>Regards,<br>TeamUp Team</p>
+                    </body>
+                </html>`
         );
     }
 
@@ -31,20 +31,20 @@ export const EmailService = new (class {
             to,
             'Reset password in TeamUp',
             `<!DOCTYPE html>
-        <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reset password in TeamUp</title>
-</head>
-<body>
-<h1>Hello ${username}</h1>
-<p>Here is your reset password link:</p>
-<p><a href="www.waszastrona.pl/reset-password/${userId}">Reset password</a></p>
-<p>Regards,<br>TeamUp Team</p>
-</body>
-</html>`
+                <html lang="en">
+                    <head>
+                        <meta charset="UTF-8">
+                        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <title>Reset password in TeamUp</title>
+                    </head>
+                    <body>
+                        <h1>Hello ${username}</h1>
+                        <p>Here is your reset password link:</p>
+                        <p><a href="www.waszastrona.pl/reset-password/${userId}">Reset password</a></p>
+                        <p>Regards,<br>TeamUp Team</p>
+                    </body>
+                </html>`
         );
     }
 
