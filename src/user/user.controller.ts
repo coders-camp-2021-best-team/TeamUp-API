@@ -18,6 +18,7 @@ export class UserController extends Controller {
             '/request-password-reset/:email',
             this.requestPasswordReset
         );
+        router.patch('/password-reset/:id', this.resetPassword);
     }
 
     async getUser(req: Request, res: Response) {
@@ -27,12 +28,14 @@ export class UserController extends Controller {
             const user = await UserService.getUser(id);
 
             if (!user) {
-                return res.status(404).send('Not Found');
+                return res.status(StatusCodes.NOT_FOUND).send('Not Found');
             }
-            return res.status(200).json(instanceToPlain(user));
+            return res.status(StatusCodes.OK).json(instanceToPlain(user));
         } catch (error) {
             console.error(error);
-            return res.status(500).send('Server error');
+            return res
+                .status(StatusCodes.INTERNAL_SERVER_ERROR)
+                .send('Server error');
         }
     }
 
@@ -40,7 +43,7 @@ export class UserController extends Controller {
         const body = plainToInstance(UpdateUserDto, req.body as UpdateUserDto);
         const errors = await validate(body);
         if (errors.length > 0) {
-            return res.status(400).json(errors);
+            return res.status(StatusCodes.BAD_REQUEST).json(errors);
         }
 
         const id = req.params.id;
@@ -53,22 +56,22 @@ export class UserController extends Controller {
     async activateUser(req: Request, res: Response) {
         const id = req.params.id;
         try {
-            const isActivated = await UserService.activateUser(id); /// truthy or falsy
+            const isActivated = await UserService.activateUser(id);
 
             if (isActivated) {
                 res.status(StatusCodes.OK).json({
-                    message: 'success',
+                    message: 'User activated',
                     isActivated
                 });
             } else {
                 res.status(StatusCodes.BAD_REQUEST).json({
-                    message: 'bad request',
+                    message: 'User not found',
                     isActivated
                 });
             }
         } catch {
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-                message: 'server error'
+                message: 'Server error'
             });
         }
     }
@@ -79,32 +82,35 @@ export class UserController extends Controller {
         try {
             await UserService.requestPasswordReset(email);
 
-            res.status(200).json({
+            res.status(StatusCodes.OK).json({
                 msg: 'If the user with the given e-mail exists, we have sent a link to change the password'
             });
         } catch {
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-                message: 'server error'
+                message: 'Server error'
             });
         }
     }
 
-    // reset password - controller
+    async resetPassword(req: Request, res: Response) {
+        const id = req.params.id;
+        const password = req.body.password;
 
-    // async resetPassword(req: Request, res: Response) {
-    //     const email = req.params.email;
-    //     const password = req.params.passwordHash;
-
-    //     try {
-    //         await UserService.resetPassword(email, password);
-
-    //         res.status(200).json({
-    //             msg: 'If the user with the given e-mail exists, we have sent a link to change the password'
-    //         });
-    //     } catch {
-    //         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-    //             message: 'server error'
-    //         });
-    //     }
-    // }
+        try {
+            const user = await UserService.resetPassword(id, password);
+            if (user) {
+                res.status(StatusCodes.OK).json({
+                    msg: 'Password changed'
+                });
+            } else {
+                res.status(StatusCodes.BAD_REQUEST).json({
+                    msg: 'User not found'
+                });
+            }
+        } catch {
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+                message: 'Server error'
+            });
+        }
+    }
 }

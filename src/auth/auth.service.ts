@@ -33,7 +33,11 @@ export const AuthService = new (class {
             const userSave = await user.save();
 
             if (userSave) {
-                EmailService.registrationEmail(data.email, data.username);
+                EmailService.registrationEmail(
+                    data.email,
+                    data.username,
+                    userSave.id
+                );
             }
 
             return userSave;

@@ -1,3 +1,4 @@
+import { hashSync } from 'bcryptjs';
 import { User, UpdateUserDto } from '.';
 import { EmailService } from '../email/email.service';
 import { UserStatus } from './entities';
@@ -43,23 +44,25 @@ export const UserService = new (class {
 
     async requestPasswordReset(userMail: string) {
         const user = await User.findOne({ where: { email: userMail } });
+
         if (!user) {
             return null;
         }
 
-        EmailService.resetPasswordEmail(user.email, user.username); // add user.id
+        EmailService.resetPasswordEmail(user.email, user.username, user.id);
     }
 
-    // reset password - service
+    async resetPassword(userId: string, userPassword: string) {
+        const user = await User.findOne({
+            where: { id: userId }
+        });
 
-    // async resetPassword(userMail: string, userPassword: string) {
-    //     const user = await User.findOne({
-    //         where: { email: userMail, passwordHash: userPassword }
-    //     });
-    //     if (!user) {
-    //         return null;
-    //     }
+        if (!user) {
+            return null;
+        }
 
-    //     EmailService.resetPasswordEmail(user.email, user.passwordHash, user.id);
-    // }
+        user.passwordHash = hashSync(userPassword);
+
+        return user.save();
+    }
 })();
