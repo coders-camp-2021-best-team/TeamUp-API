@@ -1,33 +1,76 @@
+import { UserSwipeType } from '../swipe';
 import { User, UserSkill } from '../user';
-
-const shuffleArray = <T>(array: T[]) => {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    }
-};
 
 export const FeedService = new (class {
     async getRecommended(userID?: string) {
         const user = await User.findOne(userID, {
-            relations: ['skills', 'skills.game', 'skills.game.skilled_users']
+            relations: [
+                'skills',
+                'skills.game',
+                'blockedUsers',
+                'blockedBy',
+                'swipedUsers',
+                'swipedBy'
+            ]
         });
 
         if (!user) {
             return null;
         }
 
-        let similar_users: UserSkill[] = [];
+        const people_that_blocked_me = user.blockedBy.map(
+            (b) => b.blockedBy.id
+        );
+        const people_that_i_blocked = user.blockedUsers.map((b) => b.target.id);
+        const people_that_disliked_me = user.swipedBy
+            .filter((s) => s.status == UserSwipeType.DISLIKE)
+            .map((s) => s.submittedBy.id);
+        const people_that_i_disliked = user.swipedUsers
+            .filter((s) => s.status == UserSwipeType.DISLIKE)
+            .map((s) => s.target.id);
+        const games_that_i_like = user.skills.map((s) => s.game.name);
 
-        for (const skill of user.skills) {
-            similar_users.push(...skill.game.skilled_users);
+        const similar_users_obj: { [key: string]: User } = {};
+
+        for (const game of games_that_i_like) {
+            const skills = await UserSkill.find({
+                where: { game: { name: game } },
+                loadRelationIds: {
+                    relations: ['user'],
+                    disableMixedMap: true
+                }
+            });
+
+            for (const skill of skills) {
+                const uid = skill.user?.id || '';
+                delete skill.user;
+
+                if (people_that_blocked_me.includes(uid)) continue;
+                if (people_that_i_blocked.includes(uid)) continue;
+                if (people_that_disliked_me.includes(uid)) continue;
+                if (people_that_i_disliked.includes(uid)) continue;
+
+                if (uid == user.id) continue;
+
+                if (!similar_users_obj[uid]) {
+                    const u = await User.findOne(uid);
+                    if (!u) continue;
+
+                    similar_users_obj[uid] = u;
+                    similar_users_obj[uid].common_skills = [];
+                }
+                similar_users_obj[uid].common_skills?.push(skill);
+            }
         }
 
-        similar_users = similar_users.filter((u) => u.user.id !== userID);
+        const similar_users = Object.values(similar_users_obj);
 
-        shuffleArray(similar_users);
+        similar_users.sort(
+            (a, b) =>
+                (b.common_skills?.length || 0) - (a.common_skills?.length || 0)
+        );
 
-        // limit array to max 100 users
+        // limit array to max 50 users
         similar_users.length = Math.min(similar_users.length, 50);
 
         return similar_users;
