@@ -1,8 +1,7 @@
 import { Game } from '../game';
 import { Like } from 'typeorm';
-
 export const SearchService = new (class {
-    async getResults(search?: string) {
+    async getResults(search: string) {
         if (!search) {
             const results = await Game.find();
 
@@ -11,10 +10,9 @@ export const SearchService = new (class {
             }
             return results;
         }
-        const regexSearch = new RegExp(escapeRegex(search), 'gi');
 
         const results = await Game.find({
-            name: Like(`%${regexSearch}%`)
+            name: Like(`%${search}%`)
         });
 
         if (!results.length) {
@@ -23,7 +21,3 @@ export const SearchService = new (class {
         return results;
     }
 })();
-
-export function escapeRegex(text: string) {
-    return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
-}

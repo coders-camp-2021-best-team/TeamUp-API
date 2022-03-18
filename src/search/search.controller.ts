@@ -15,19 +15,13 @@ export class SearchController extends Controller {
     async getResults(req: Request, res: Response) {
         const search = req.query.q;
 
-        try {
-            const results = await SearchService.getResults(
-                search as string | undefined
-            );
+        const results = await SearchService.getResults(search as string);
 
-            if (!results || !results.length) {
-                return res.status(StatusCodes.NOT_FOUND).send('No matches');
-            }
-        } catch (error) {
-            console.error(error);
+        if (!results) {
             return res
-                .status(StatusCodes.INTERNAL_SERVER_ERROR)
-                .send(ReasonPhrases.INTERNAL_SERVER_ERROR);
+                .status(StatusCodes.NOT_FOUND)
+                .send(ReasonPhrases.NOT_FOUND);
         }
+        res.send(results);
     }
 }
