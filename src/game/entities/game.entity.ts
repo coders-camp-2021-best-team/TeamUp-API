@@ -1,6 +1,5 @@
 import { BaseEntity, Entity, OneToMany, PrimaryColumn } from 'typeorm';
 import { ExperienceLevel } from '.';
-import { UserSkill } from '../../user';
 
 @Entity('games')
 export class Game extends BaseEntity {
@@ -9,7 +8,4 @@ export class Game extends BaseEntity {
 
     @OneToMany(() => ExperienceLevel, (el) => el.game)
     levels: ExperienceLevel[];
-
-    @OneToMany(() => UserSkill, (s) => s.game)
-    skilled_users: UserSkill[];
 }

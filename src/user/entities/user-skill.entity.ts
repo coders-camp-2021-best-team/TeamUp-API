@@ -13,12 +13,10 @@ export class UserSkill extends BaseEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @ManyToOne(() => User, (u) => u.skills, {
-        eager: true
-    })
-    user: User;
+    @ManyToOne(() => User, (u) => u.skills)
+    user?: User;
 
-    @ManyToOne(() => Game, (g) => g.skilled_users, {
+    @ManyToOne(() => Game, {
         eager: true
     })
     @JoinColumn()
