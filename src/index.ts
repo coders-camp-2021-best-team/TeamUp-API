@@ -20,8 +20,8 @@ const server = new API({
 getConnectionOptions()
     .then((connectionOptions) => {
         return createConnection({
-            ...connectionOptions,
-            logger: new WinstonAdaptor(logger, 'all')
+            logger: new WinstonAdaptor(logger, 'all'),
+            ...connectionOptions
         });
     })
     .then(() => server.initialize());
