@@ -35,6 +35,12 @@ export const GameService = new (class {
         return game.remove();
     }
 
+    async getExperienceLevels() {
+        const levels = await ExperienceLevel.find();
+
+        return levels;
+    }
+
     async addExperienceLevel(data: AddLevelDto) {
         const level = new ExperienceLevel();
 

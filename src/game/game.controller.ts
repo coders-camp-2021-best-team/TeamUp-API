@@ -15,6 +15,7 @@ export class GameController extends Controller {
         router.post('/', this.addGame);
         router.get('/:id', this.getGame);
         router.delete('/:id', this.removeGame);
+        router.get('/:id/level', this.getExperienceLevels);
         router.post('/:id/level', this.addExperienceLevel);
         router.delete('/:id/level/:lvl_id', this.removeExperienceLevel);
     }
@@ -59,6 +60,19 @@ export class GameController extends Controller {
                 .send(ReasonPhrases.NOT_FOUND);
         }
         return res.send();
+    }
+
+    async getExperienceLevels(req: Request, res: Response) {
+        const game_id = req.params.id;
+
+        const game = await GameService.getGame(game_id);
+
+        if (!game) {
+            return res
+                .status(StatusCodes.NOT_FOUND)
+                .send(ReasonPhrases.NOT_FOUND);
+        }
+        return res.send(await GameService.getExperienceLevels());
     }
 
     async addExperienceLevel(req: Request, res: Response) {
