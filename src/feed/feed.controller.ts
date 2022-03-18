@@ -1,10 +1,8 @@
-import { instanceToPlain, plainToInstance } from 'class-transformer';
-import { validate } from 'class-validator';
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { Controller } from '../common';
-import { RecomendedDTo } from './dto/recomended.dto';
-import { FeedService } from './feed.service';
+import { instanceToPlain } from 'class-transformer';
+import { AuthMiddleware, Controller } from '../common';
+import { FeedService } from '.';
 
 export class FeedController extends Controller {
     constructor() {
@@ -12,17 +10,15 @@ export class FeedController extends Controller {
 
         const router = this.getRouter();
 
-        router.get('/recomended', this.recomended);
+        router.use(AuthMiddleware);
+        router.get('/recommended', this.getRecommended);
     }
-    async recomended(req: Request, res: Response) {
-        const body = plainToInstance(RecomendedDTo, req.body as RecomendedDTo);
-        const errors = await validate(body);
-        if (errors.length) {
-            return res.status(StatusCodes.BAD_REQUEST).json(errors);
-        }
-        const users = await FeedService.recomended(body);
+
+    async getRecommended(req: Request, res: Response) {
+        const users = await FeedService.getRecommended(req.session.userID);
+
         if (!users) {
-            return res.status(StatusCodes.NOT_FOUND).send();
+            return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send();
         }
 
         return res.json(instanceToPlain(users));

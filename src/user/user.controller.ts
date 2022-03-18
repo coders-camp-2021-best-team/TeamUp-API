@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { instanceToPlain, plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
-import { Controller } from '../common';
+import { AuthMiddleware, Controller } from '../common';
 import { UserService, UpdateUserDto } from '.';
 
 export class UserController extends Controller {
@@ -10,6 +10,7 @@ export class UserController extends Controller {
 
         const router = this.getRouter();
 
+        router.use(AuthMiddleware);
         router.get('/:id', this.getUser);
         router.put('/:id', this.updateUser);
     }
@@ -25,13 +26,12 @@ export class UserController extends Controller {
             }
             return res.status(200).json(instanceToPlain(user));
         } catch (error) {
-            console.error(error);
             return res.status(500).send('Server error');
         }
     }
 
     async updateUser(req: Request, res: Response) {
-        const body = plainToInstance(UpdateUserDto, req.body as UpdateUserDto);
+        const body = plainToInstance(UpdateUserDto, req.body);
         const errors = await validate(body);
         if (errors.length > 0) {
             return res.status(400).json(errors);
