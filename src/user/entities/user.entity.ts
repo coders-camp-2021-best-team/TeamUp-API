@@ -12,11 +12,17 @@ import { UserBlock } from '../../block';
 import { Meme } from '../../memes';
 import { UserReport } from '../../report';
 import { UserSwipe } from '../../swipe';
+import { Token } from '../../email';
 import { UserAvatar, UserPhoto, UserSkill } from '.';
 
 export enum UserStatus {
     BLOCKED = 'BLOCKED',
     ACTIVE = 'ACTIVE'
+}
+
+export enum UserRegisterStatus {
+    UNVERIFIED = 'UNVERIFIED',
+    VERIFIED = 'VERIFIED'
 }
 
 @Entity('users')
@@ -49,6 +55,12 @@ export class User extends BaseEntity {
     @Column('enum', { enum: UserStatus, default: UserStatus.ACTIVE })
     status: UserStatus;
 
+    @Column('enum', {
+        enum: UserRegisterStatus,
+        default: UserRegisterStatus.UNVERIFIED
+    })
+    registerStatus: UserRegisterStatus;
+
     @OneToOne(() => UserAvatar, (a) => a.user, {
         eager: true
     })
@@ -80,4 +92,7 @@ export class User extends BaseEntity {
 
     @OneToMany(() => Meme, (m) => m.author)
     postedMemes: Meme[];
+
+    @OneToMany(() => Token, (t) => t.user)
+    tokens: Token[];
 }

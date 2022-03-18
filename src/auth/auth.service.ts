@@ -1,7 +1,8 @@
 import { compareSync, hashSync } from 'bcryptjs';
-import { User, UserStatus } from '../user';
+import { randomBytes } from 'crypto';
+import { User, UserRegisterStatus } from '../user';
 import { LoginDto, RegisterDto } from './dto';
-import { EmailService } from '../email/email.service';
+import { EmailService, Token, TokenType } from '../email';
 
 export const AuthService = new (class {
     async login(data: LoginDto) {
@@ -27,16 +28,22 @@ export const AuthService = new (class {
                 last_name: data.last_name,
                 birthdate: data.birthdate,
                 passwordHash: this.hashPassword(data.password),
-                status: UserStatus.BLOCKED
+                registerStatus: UserRegisterStatus.UNVERIFIED
             });
 
             const userSave = await user.save();
+
+            const verify_token = new Token();
+            verify_token.token = randomBytes(64).toString('hex');
+            verify_token.token_type = TokenType.VERIFY_EMAIL;
+            verify_token.user = userSave;
+            await verify_token.save();
 
             if (userSave) {
                 EmailService.registrationEmail(
                     data.email,
                     data.username,
-                    userSave.id
+                    verify_token.token
                 );
             }
 

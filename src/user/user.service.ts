@@ -1,7 +1,8 @@
 import { hashSync } from 'bcryptjs';
+import { randomBytes } from 'crypto';
 import { User, UpdateUserDto } from '.';
-import { EmailService } from '../email/email.service';
-import { UserStatus } from './entities';
+import { EmailService, Token, TokenType } from '../email';
+import { UserRegisterStatus } from './entities';
 
 export const UserService = new (class {
     async getUser(userId: string) {
@@ -30,14 +31,20 @@ export const UserService = new (class {
         return user.save();
     }
 
-    async activateUser(userId: string) {
-        const user = await User.findOne(userId);
+    async activateUser(id: string) {
+        const token = await Token.findOne(id, {
+            relations: ['user']
+        });
 
-        if (!user) {
+        if (!token) {
             return null;
         }
 
-        user.status = UserStatus.ACTIVE;
+        const user = token.user;
+
+        await token.remove();
+
+        user.registerStatus = UserRegisterStatus.VERIFIED;
 
         return user.save();
     }
@@ -49,17 +56,31 @@ export const UserService = new (class {
             return null;
         }
 
-        EmailService.resetPasswordEmail(user.email, user.username, user.id);
+        const reset_token = new Token();
+        reset_token.token = randomBytes(64).toString('hex');
+        reset_token.token_type = TokenType.PASSWORD_RESET;
+        reset_token.user = user;
+        await reset_token.save();
+
+        EmailService.resetPasswordEmail(
+            user.email,
+            user.username,
+            reset_token.token
+        );
     }
 
-    async resetPassword(userId: string, userPassword: string) {
-        const user = await User.findOne({
-            where: { id: userId }
+    async resetPassword(id: string, userPassword: string) {
+        const token = await Token.findOne(id, {
+            relations: ['user']
         });
 
-        if (!user) {
+        if (!token) {
             return null;
         }
+
+        const user = token.user;
+
+        await token.remove();
 
         user.passwordHash = hashSync(userPassword);
 

@@ -2,15 +2,15 @@ import { UserSwipe, UserSwipeType } from './entities';
 import { UserService } from '../user';
 
 export const SwipeService = new (class {
-    async changeUser(
-        target: string,
-        submittedBy: string,
+    async createSwipe(
+        swipedByID: string,
+        targetID: string,
         status: UserSwipeType
     ) {
         const swipe = new UserSwipe();
 
-        const targetUser = await UserService.getUser(target);
-        const submittedByUser = await UserService.getUser(submittedBy);
+        const submittedByUser = await UserService.getUser(swipedByID);
+        const targetUser = await UserService.getUser(targetID);
 
         if (!targetUser || !submittedByUser) {
             return null;

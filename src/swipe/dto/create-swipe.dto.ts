@@ -1,13 +1,7 @@
-import { IsString } from 'class-validator';
-import { UserSwipeType } from '../entities';
+import { IsEnum } from 'class-validator';
+import { UserSwipeType } from '../../swipe';
 
-export class SwipeUserDto {
-    @IsString()
-    target: string;
-
-    @IsString()
-    submittedBy: string;
-
-    @IsString()
+export class CreateSwipeDto {
+    @IsEnum(UserSwipeType)
     status: UserSwipeType;
 }
