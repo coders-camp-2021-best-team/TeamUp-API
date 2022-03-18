@@ -1,18 +1,9 @@
-import {
-    BaseEntity,
-    Column,
-    Entity,
-    OneToMany,
-    PrimaryGeneratedColumn
-} from 'typeorm';
+import { BaseEntity, Entity, OneToMany, PrimaryColumn } from 'typeorm';
 import { ExperienceLevel } from '.';
 
 @Entity('games')
 export class Game extends BaseEntity {
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
-
-    @Column({ unique: true })
+    @PrimaryColumn()
     name: string;
 
     @OneToMany(() => ExperienceLevel, (el) => el.game)

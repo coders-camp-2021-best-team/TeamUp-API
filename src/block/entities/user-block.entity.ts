@@ -12,10 +12,10 @@ export class UserBlock extends BaseEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @ManyToOne(() => User)
+    @ManyToOne(() => User, { eager: true })
     blockedBy: User;
 
-    @ManyToOne(() => User)
+    @ManyToOne(() => User, { eager: true })
     target: User;
 
     @CreateDateColumn({ type: 'timestamp' })
