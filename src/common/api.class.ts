@@ -2,7 +2,7 @@ import express from 'express';
 import 'express-async-errors';
 import session from 'express-session';
 import ConnectRedis from 'connect-redis';
-import { createClient } from 'redis';
+import Redis from 'ioredis';
 import { getConnectionOptions, createConnection } from 'typeorm';
 import { WinstonAdaptor } from 'typeorm-logger-adaptor/logger/winston';
 import { Middleware, Controller } from '.';
@@ -43,12 +43,7 @@ export class API {
     }
 
     private initSession() {
-        const redisClient = createClient({
-            url: REDIS_URL || REDIS_TLS_URL,
-            legacyMode: true
-        });
-
-        redisClient.connect();
+        const redisClient = new Redis(REDIS_TLS_URL || REDIS_URL);
 
         this.app.use(
             session({
