@@ -3,6 +3,7 @@ import { instanceToPlain, plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { AuthMiddleware, Controller } from '../common';
 import { UserService, UpdateUserDto } from '.';
+import { StatusCodes } from 'http-status-codes';
 
 export class UserController extends Controller {
     constructor() {
@@ -18,16 +19,13 @@ export class UserController extends Controller {
     async getUser(req: Request, res: Response) {
         const id = req.params.id;
 
-        try {
-            const user = await UserService.getUser(id);
+        const user = await UserService.getUser(id);
 
-            if (!user) {
-                return res.status(404).send('Not Found');
-            }
-            return res.status(200).json(instanceToPlain(user));
-        } catch (error) {
-            return res.status(500).send('Server error');
+        if (!user) {
+            return res.status(StatusCodes.NOT_FOUND).send();
         }
+
+        return res.send(instanceToPlain(user));
     }
 
     async updateUser(req: Request, res: Response) {
@@ -39,8 +37,16 @@ export class UserController extends Controller {
 
         const id = req.params.id;
 
-        const created = await UserService.updateUser(id, body);
+        if (id !== req.session.userID) {
+            return res.status(StatusCodes.FORBIDDEN).send();
+        }
 
-        res.send(instanceToPlain(created));
+        const updated = await UserService.updateUser(id, body);
+
+        if (!updated) {
+            return res.status(StatusCodes.NOT_FOUND).send();
+        }
+
+        return res.send(instanceToPlain(updated));
     }
 }
