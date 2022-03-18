@@ -5,9 +5,6 @@ export const SearchService = new (class {
         if (!search) {
             const results = await Game.find();
 
-            if (!results.length) {
-                return null;
-            }
             return results;
         }
 
