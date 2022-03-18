@@ -14,13 +14,17 @@ export class UserSkill extends BaseEntity {
     id: string;
 
     @ManyToOne(() => User, (u) => u.skills)
-    user: User;
+    user?: User;
 
-    @ManyToOne(() => Game)
+    @ManyToOne(() => Game, {
+        eager: true
+    })
     @JoinColumn()
     game: Game;
 
-    @ManyToOne(() => ExperienceLevel)
+    @ManyToOne(() => ExperienceLevel, {
+        eager: true
+    })
     @JoinColumn()
     level: ExperienceLevel;
 }

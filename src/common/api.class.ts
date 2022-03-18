@@ -1,7 +1,10 @@
 import express from 'express';
+import 'express-async-errors';
 import session from 'express-session';
 import ConnectRedis from 'connect-redis';
 import Redis from 'ioredis';
+import { getConnectionOptions, createConnection } from 'typeorm';
+import { WinstonAdaptor } from 'typeorm-logger-adaptor/logger/winston';
 import { Middleware, Controller } from '.';
 
 import logger from '../logger';
@@ -12,6 +15,7 @@ const RedisStore = ConnectRedis(session);
 
 declare module 'express-session' {
     interface SessionData {
+        loggedIn: boolean;
         userID: string;
     }
 }
@@ -27,6 +31,15 @@ export class API {
     }) {
         this.middlewares = options.middlewares;
         this.controllers = options.controllers;
+    }
+
+    private async initDatabase() {
+        const options = await getConnectionOptions();
+
+        await createConnection({
+            ...options,
+            logger: new WinstonAdaptor(logger, 'all')
+        });
     }
 
     private initSession() {
@@ -68,7 +81,8 @@ export class API {
         });
     }
 
-    public initialize() {
+    public async initialize() {
+        await this.initDatabase();
         this.initSession();
         this.initMiddlewares();
         this.initControllers();
