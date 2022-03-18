@@ -26,19 +26,12 @@ export class GameController extends Controller {
     async getGame(req: Request, res: Response) {
         const id = req.params.id;
 
-        try {
-            const game = await GameService.getGame(id);
+        const game = await GameService.getGame(id);
 
-            if (!game) {
-                return res.status(StatusCodes.NOT_FOUND).send('Game not found');
-            }
-            return res.json(instanceToPlain(game));
-        } catch (error) {
-            console.error(error);
-            return res
-                .status(StatusCodes.INTERNAL_SERVER_ERROR)
-                .send(ReasonPhrases.INTERNAL_SERVER_ERROR);
+        if (!game) {
+            return res.status(StatusCodes.NOT_FOUND).send('Game not found');
         }
+        return res.json(instanceToPlain(game));
     }
 
     async addGame(req: Request, res: Response) {
@@ -56,76 +49,53 @@ export class GameController extends Controller {
     async removeGame(req: Request, res: Response) {
         const id = req.params.id;
 
-        try {
-            const removed = await GameService.removeGame(id);
+        const removed = await GameService.removeGame(id);
 
-            if (!removed) {
-                return res.status(StatusCodes.NOT_FOUND).send('Game not found');
-            }
-            return res
-                .status(StatusCodes.NO_CONTENT)
-                .send('Game has been removed');
-        } catch (error) {
-            console.error(error);
-            return res
-                .status(StatusCodes.INTERNAL_SERVER_ERROR)
-                .send(ReasonPhrases.INTERNAL_SERVER_ERROR);
+        if (!removed) {
+            return res.status(StatusCodes.NOT_FOUND).send('Game not found');
         }
+        return res.status(StatusCodes.NO_CONTENT).send('Game has been removed');
     }
 
     async addExperienceLevel(req: Request, res: Response) {
         const game_id = req.params.id;
 
-        try {
-            const game = await GameService.getGame(game_id);
+        const game = await GameService.getGame(game_id);
 
-            if (!game) {
-                return res.status(StatusCodes.NOT_FOUND).send('Game not found');
-            }
-
-            const body = plainToInstance(AddLevelDto, req.body as AddLevelDto);
-            const errors = await validate(body);
-            if (errors.length) {
-                return res.status(StatusCodes.BAD_REQUEST).json(errors);
-            }
-
-            const added = await GameService.addExperienceLevel(body);
-
-            return res.status(StatusCodes.CREATED).send(instanceToPlain(added));
-        } catch (error) {
-            console.error(error);
-            return res
-                .status(StatusCodes.INTERNAL_SERVER_ERROR)
-                .send(ReasonPhrases.INTERNAL_SERVER_ERROR);
+        if (!game) {
+            return res.status(StatusCodes.NOT_FOUND).send('Game not found');
         }
+
+        const body = plainToInstance(AddLevelDto, req.body as AddLevelDto);
+        const errors = await validate(body);
+        if (errors.length) {
+            return res.status(StatusCodes.BAD_REQUEST).json(errors);
+        }
+
+        const added = await GameService.addExperienceLevel(body);
+
+        return res.status(StatusCodes.CREATED).send(instanceToPlain(added));
     }
 
     async removeExperienceLevel(req: Request, res: Response) {
         const game_id = req.params.id;
         const lvl_id = req.params.lvl_id;
 
-        try {
-            const game = await GameService.getGame(game_id);
+        const game = await GameService.getGame(game_id);
 
-            if (!game) {
-                return res.status(StatusCodes.NOT_FOUND).send('Game not found');
-            }
-
-            const removed = await GameService.removeExperienceLevel(lvl_id);
-
-            if (!removed) {
-                return res
-                    .status(StatusCodes.NOT_FOUND)
-                    .send('Experience level not found');
-            }
-            return res
-                .status(StatusCodes.NO_CONTENT)
-                .send('Experience level has been removed');
-        } catch (error) {
-            console.error(error);
-            return res
-                .status(StatusCodes.INTERNAL_SERVER_ERROR)
-                .send(ReasonPhrases.INTERNAL_SERVER_ERROR);
+        if (!game) {
+            return res.status(StatusCodes.NOT_FOUND).send('Game not found');
         }
+
+        const removed = await GameService.removeExperienceLevel(lvl_id);
+
+        if (!removed) {
+            return res
+                .status(StatusCodes.NOT_FOUND)
+                .send('Experience level not found');
+        }
+        return res
+            .status(StatusCodes.NO_CONTENT)
+            .send('Experience level has been removed');
     }
 }
