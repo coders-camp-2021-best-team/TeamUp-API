@@ -15,8 +15,8 @@ export class GameController extends Controller {
         router.post('/', this.addGame);
         router.get('/:id', this.getGame);
         router.delete('/:id', this.removeGame);
-        router.post('/:id/experience', this.addExperienceLevel);
-        router.delete('/:id/experience/:lvl_id', this.removeExperienceLevel);
+        router.post('/:id/level', this.addExperienceLevel);
+        router.delete('/:id/level/:lvl_id', this.removeExperienceLevel);
     }
 
     async getAllGames(req: Request, res: Response) {
