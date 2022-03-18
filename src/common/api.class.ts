@@ -1,7 +1,7 @@
 import express from 'express';
 import session from 'express-session';
 import ConnectRedis from 'connect-redis';
-import { createClient } from 'redis';
+import Redis from 'ioredis';
 import { Middleware, Controller } from '.';
 
 import logger from '../logger';
@@ -30,12 +30,7 @@ export class API {
     }
 
     private initSession() {
-        const redisClient = createClient({
-            url: REDIS_URL || REDIS_TLS_URL,
-            legacyMode: true
-        });
-
-        redisClient.connect();
+        const redisClient = new Redis(REDIS_TLS_URL || REDIS_URL);
 
         this.app.use(
             session({
