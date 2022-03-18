@@ -4,9 +4,6 @@ export const GameService = new (class {
     async getAllGames() {
         const games = await Game.find();
 
-        if (!games.length) {
-            return null;
-        }
         return games;
     }
 

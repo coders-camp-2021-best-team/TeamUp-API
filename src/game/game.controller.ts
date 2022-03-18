@@ -58,7 +58,7 @@ export class GameController extends Controller {
                 .status(StatusCodes.NOT_FOUND)
                 .send(ReasonPhrases.NOT_FOUND);
         }
-        return res;
+        return res.send();
     }
 
     async addExperienceLevel(req: Request, res: Response) {
@@ -102,6 +102,6 @@ export class GameController extends Controller {
                 .status(StatusCodes.NOT_FOUND)
                 .send(ReasonPhrases.NOT_FOUND);
         }
-        return res;
+        return res.send();
     }
 }
