@@ -29,7 +29,9 @@ export class GameController extends Controller {
         const game = await GameService.getGame(id);
 
         if (!game) {
-            return res.status(StatusCodes.NOT_FOUND).send('Game not found');
+            return res
+                .status(StatusCodes.NOT_FOUND)
+                .send(ReasonPhrases.NOT_FOUND);
         }
         return res.json(instanceToPlain(game));
     }
@@ -52,9 +54,11 @@ export class GameController extends Controller {
         const removed = await GameService.removeGame(id);
 
         if (!removed) {
-            return res.status(StatusCodes.NOT_FOUND).send('Game not found');
+            return res
+                .status(StatusCodes.NOT_FOUND)
+                .send(ReasonPhrases.NOT_FOUND);
         }
-        return res.status(StatusCodes.NO_CONTENT).send('Game has been removed');
+        return res;
     }
 
     async addExperienceLevel(req: Request, res: Response) {
@@ -63,7 +67,9 @@ export class GameController extends Controller {
         const game = await GameService.getGame(game_id);
 
         if (!game) {
-            return res.status(StatusCodes.NOT_FOUND).send('Game not found');
+            return res
+                .status(StatusCodes.NOT_FOUND)
+                .send(ReasonPhrases.NOT_FOUND);
         }
 
         const body = plainToInstance(AddLevelDto, req.body as AddLevelDto);
@@ -84,7 +90,9 @@ export class GameController extends Controller {
         const game = await GameService.getGame(game_id);
 
         if (!game) {
-            return res.status(StatusCodes.NOT_FOUND).send('Game not found');
+            return res
+                .status(StatusCodes.NOT_FOUND)
+                .send(ReasonPhrases.NOT_FOUND);
         }
 
         const removed = await GameService.removeExperienceLevel(lvl_id);
@@ -92,10 +100,8 @@ export class GameController extends Controller {
         if (!removed) {
             return res
                 .status(StatusCodes.NOT_FOUND)
-                .send('Experience level not found');
+                .send(ReasonPhrases.NOT_FOUND);
         }
-        return res
-            .status(StatusCodes.NO_CONTENT)
-            .send('Experience level has been removed');
+        return res;
     }
 }
