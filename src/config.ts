@@ -19,6 +19,7 @@ export interface EnvVariables {
     SMTP_PORT: number;
     SMTP_USERNAME: string;
     SMTP_PASSWORD: string;
+    EMAIL_FROM: string;
     CLIENT_URL: string;
     API_URL: string;
 }
@@ -44,6 +45,7 @@ const envSchema = Joi.object<EnvVariables>({
     SMTP_PORT: Joi.number().required().port(),
     SMTP_USERNAME: Joi.string().required(),
     SMTP_PASSWORD: Joi.string().required(),
+    EMAIL_FROM: Joi.string().required(),
     CLIENT_URL: Joi.string().required().uri(),
     API_URL: Joi.string().required().uri()
 }).unknown();

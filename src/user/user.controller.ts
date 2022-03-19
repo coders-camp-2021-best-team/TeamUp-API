@@ -1,9 +1,14 @@
 import { Request, Response } from 'express';
+import { StatusCodes } from 'http-status-codes';
 import { instanceToPlain, plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { AuthMiddleware, Controller } from '../common';
-import { UserService, UpdateUserDto, PasswordResetDto } from '.';
-import { StatusCodes } from 'http-status-codes';
+import {
+    UserService,
+    UpdateUserDto,
+    PasswordResetRequestDto,
+    PasswordResetDto
+} from '.';
 
 export class UserController extends Controller {
     constructor() {
@@ -54,29 +59,17 @@ export class UserController extends Controller {
 
     async activateUser(req: Request, res: Response) {
         const id = req.params.id;
-        try {
-            const isActivated = await UserService.activateUser(id);
+        const user = await UserService.activateUser(id);
 
-            if (isActivated) {
-                res.status(StatusCodes.OK).json({
-                    message: 'User activated',
-                    isActivated
-                });
-            } else {
-                res.status(StatusCodes.BAD_REQUEST).json({
-                    message: 'User not found',
-                    isActivated
-                });
-            }
-        } catch {
-            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-                message: 'Server error'
-            });
+        if (!user) {
+            return res.status(StatusCodes.NOT_FOUND).send();
         }
+
+        return res.send();
     }
 
     async requestPasswordReset(req: Request, res: Response) {
-        const body = plainToInstance(PasswordResetDto, req.body);
+        const body = plainToInstance(PasswordResetRequestDto, req.body);
         const errors = await validate(body);
         if (errors.length) {
             return res.status(StatusCodes.BAD_REQUEST).json(errors);
@@ -86,30 +79,24 @@ export class UserController extends Controller {
 
         await UserService.requestPasswordReset(email);
 
-        res.status(StatusCodes.OK).json({
-            msg: 'If the user with the given e-mail exists, we have sent a link to change the password'
-        });
+        return res.send();
     }
 
     async resetPassword(req: Request, res: Response) {
-        const id = req.params.id;
-        const password = req.body.password;
-
-        try {
-            const user = await UserService.resetPassword(id, password);
-            if (user) {
-                res.status(StatusCodes.OK).json({
-                    msg: 'Password changed'
-                });
-            } else {
-                res.status(StatusCodes.BAD_REQUEST).json({
-                    msg: 'User not found'
-                });
-            }
-        } catch {
-            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-                message: 'Server error'
-            });
+        const body = plainToInstance(PasswordResetDto, req.body);
+        const errors = await validate(body);
+        if (errors.length) {
+            return res.status(StatusCodes.BAD_REQUEST).json(errors);
         }
+
+        const id = req.params.id;
+        const password = body.password;
+
+        const user = await UserService.resetPassword(id, password);
+        if (!user) {
+            return res.status(StatusCodes.NOT_FOUND).send();
+        }
+
+        return res.send();
     }
 }

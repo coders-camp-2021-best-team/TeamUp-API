@@ -1,6 +1,7 @@
 import { hashSync } from 'bcryptjs';
 import { randomBytes } from 'crypto';
 import { User, UpdateUserDto } from '.';
+import { AuthService } from '../auth';
 import { EmailService, Token, TokenType } from '../email';
 import { UserRegisterStatus } from './entities';
 
@@ -22,11 +23,23 @@ export const UserService = new (class {
             return null;
         }
 
+        if (
+            !AuthService.verifyPassword(
+                userData.current_password,
+                user.passwordHash
+            )
+        ) {
+            return null;
+        }
+
         user.email = userData.email || user.email;
         user.username = userData.username || user.username;
         user.first_name = userData.first_name || user.first_name;
         user.last_name = userData.last_name || user.last_name;
         user.biogram = userData.biogram || user.biogram;
+        user.passwordHash = userData.new_password
+            ? AuthService.hashPassword(userData.new_password)
+            : user.passwordHash;
 
         return user.save();
     }
@@ -82,7 +95,7 @@ export const UserService = new (class {
 
         await token.remove();
 
-        user.passwordHash = hashSync(userPassword);
+        user.passwordHash = AuthService.hashPassword(userPassword);
 
         return user.save();
     }

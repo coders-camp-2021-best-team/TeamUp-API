@@ -20,37 +20,35 @@ export const AuthService = new (class {
     }
 
     async register(data: RegisterDto) {
-        try {
-            const user = User.create({
-                email: data.email,
-                username: data.username,
-                first_name: data.first_name,
-                last_name: data.last_name,
-                birthdate: data.birthdate,
-                passwordHash: this.hashPassword(data.password),
-                registerStatus: UserRegisterStatus.UNVERIFIED
-            });
+        const user = User.create({
+            email: data.email,
+            username: data.username,
+            first_name: data.first_name,
+            last_name: data.last_name,
+            birthdate: data.birthdate,
+            passwordHash: this.hashPassword(data.password),
+            registerStatus: UserRegisterStatus.UNVERIFIED
+        });
 
-            const userSave = await user.save();
+        const userSave = await user.save();
 
-            const verify_token = new Token();
-            verify_token.token = randomBytes(64).toString('hex');
-            verify_token.token_type = TokenType.VERIFY_EMAIL;
-            verify_token.user = userSave;
-            await verify_token.save();
-
-            if (userSave) {
-                EmailService.registrationEmail(
-                    data.email,
-                    data.username,
-                    verify_token.token
-                );
-            }
-
-            return userSave;
-        } catch {
+        if (!userSave) {
             return null;
         }
+
+        const verify_token = new Token();
+        verify_token.token = randomBytes(64).toString('hex');
+        verify_token.token_type = TokenType.VERIFY_EMAIL;
+        verify_token.user = userSave;
+        await verify_token.save();
+
+        EmailService.registrationEmail(
+            data.email,
+            data.username,
+            verify_token.token
+        );
+
+        return userSave;
     }
 
     getUserByEmail(email: string) {
