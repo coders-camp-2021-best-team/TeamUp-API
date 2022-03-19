@@ -4,14 +4,14 @@ import { RegistrationEmailTemplate, ResetPasswordEmailTemplate } from '.';
 
 import logger from '../logger';
 import env from '../config';
-const { SMTP_USERNAME, SMTP_PASSWORD, FRONT_URL } = env;
+const { SMTP_USERNAME, SMTP_PASSWORD, API_URL } = env;
 
 export const EmailService = new (class {
     async registrationEmail(to: string, username: string, activateID: string) {
         let template = RegistrationEmailTemplate;
 
         template = template.replaceAll('%USERNAME%', username);
-        template = template.replaceAll('%FRONT_URL%', FRONT_URL);
+        template = template.replaceAll('%FRONT_URL%', API_URL);
         template = template.replaceAll('%ACTIVATE_ID%', activateID);
 
         logger.info(template);
@@ -22,7 +22,7 @@ export const EmailService = new (class {
         let template = ResetPasswordEmailTemplate;
 
         template = template.replaceAll('%USERNAME%', username);
-        template = template.replaceAll('%FRONT_URL%', FRONT_URL);
+        template = template.replaceAll('%FRONT_URL%', API_URL);
         template = template.replaceAll('%RESET_ID%', resetID);
 
         logger.info(template);

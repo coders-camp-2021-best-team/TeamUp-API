@@ -72,7 +72,7 @@ export class User extends BaseEntity {
     @OneToMany(() => UserSkill, (ug) => ug.user)
     skills: UserSkill[];
 
-    common_skills?: UserSkill[];
+    common_skills: UserSkill[];
 
     @OneToMany(() => UserBlock, (b) => b.blockedBy)
     blockedUsers: UserBlock[];
