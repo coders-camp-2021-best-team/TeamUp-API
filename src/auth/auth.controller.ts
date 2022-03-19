@@ -2,11 +2,9 @@ import { instanceToPlain, plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
-
-import { Controller } from '../common';
-
-import { AuthService } from './auth.service';
-import { LoginDto, RegisterDto } from './dto';
+import { AuthMiddleware, LoggedOutMiddleware, Controller } from '../common';
+import { AuthService, LoginDto, RegisterDto } from '.';
+import { UserStatus } from '../user';
 
 export class AuthController extends Controller {
     constructor() {
@@ -14,13 +12,13 @@ export class AuthController extends Controller {
 
         const router = this.getRouter();
 
-        router.post('/login', this.login);
-        router.post('/register', this.register);
-        router.post('/logout', this.logout);
+        router.post('/login', LoggedOutMiddleware, this.login);
+        router.post('/register', LoggedOutMiddleware, this.register);
+        router.post('/logout', AuthMiddleware, this.logout);
     }
 
     async login(req: Request, res: Response) {
-        const body = plainToInstance(LoginDto, req.body as LoginDto);
+        const body = plainToInstance(LoginDto, req.body);
         const errors = await validate(body);
         if (errors.length) {
             return res.status(StatusCodes.BAD_REQUEST).json(errors);
@@ -28,17 +26,18 @@ export class AuthController extends Controller {
 
         const user = await AuthService.login(body);
 
-        if (!user) {
+        if (!user || user.status !== UserStatus.ACTIVE) {
             return res.status(StatusCodes.UNAUTHORIZED).send();
         }
 
         req.session.userID = user.id;
+        req.session.loggedIn = true;
 
         return res.json(instanceToPlain(user));
     }
 
     async register(req: Request, res: Response) {
-        const body = plainToInstance(RegisterDto, req.body as RegisterDto);
+        const body = plainToInstance(RegisterDto, req.body);
         const errors = await validate(body);
         if (errors.length) {
             return res.status(StatusCodes.BAD_REQUEST).json(errors);
