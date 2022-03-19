@@ -79,6 +79,7 @@ services:
             - .docker.env
         environment:
             - PMA_ABSOLUTE_URI=/dev/phpmyadmin/
+            - UPLOAD_LIMIT=256M
         networks:
             - mariadb
         depends_on:

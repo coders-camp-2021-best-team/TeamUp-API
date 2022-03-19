@@ -7,7 +7,7 @@ export class UserPhoto extends BaseEntity {
     @ManyToOne(() => User, (u) => u.photos)
     user: User;
 
-    @OneToOne(() => Asset, { primary: true })
+    @OneToOne(() => Asset, { primary: true, eager: true })
     @JoinColumn()
     asset: Asset;
 }

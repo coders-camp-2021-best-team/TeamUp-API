@@ -17,10 +17,10 @@ export class UserSwipe extends BaseEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @ManyToOne(() => User)
+    @ManyToOne(() => User, { eager: true })
     submittedBy: User;
 
-    @ManyToOne(() => User)
+    @ManyToOne(() => User, { eager: true })
     target: User;
 
     @Column('enum', { enum: UserSwipeType })
