@@ -11,9 +11,8 @@ export class UserController extends Controller {
 
         const router = this.getRouter();
 
-        router.use(AuthMiddleware);
-        router.get('/:id', this.getUser);
-        router.put('/:id', this.updateUser);
+        router.get('/:id', AuthMiddleware, this.getUser);
+        router.put('/:id', AuthMiddleware, this.updateUser);
         router.get('/activate/:id', this.activateUser);
         router.post('/request-password-reset', this.requestPasswordReset);
         router.get('/password-reset/:id', this.resetPassword);

@@ -11,7 +11,7 @@ export const RegistrationEmailTemplate = `
         <h1>Hello %USERNAME%</h1>
         <p>Welcome in our application. Please click below confirmation link.</p>
         <p>
-            <a href="%FRONT_URL%/activate/%ACTIVATE_ID%"
+            <a href="%URL%"
                 >Confirmation link</a
             >
         </p>

@@ -11,7 +11,7 @@ export const ResetPasswordEmailTemplate = `
         <h1>Hello %USERNAME%</h1>
         <p>Here is your reset password link:</p>
         <p>
-            <a href="%FRONT_URL%/reset-password/%RESET_ID%">Reset password</a>
+            <a href="%URL%">Reset password</a>
         </p>
         <p>Regards,<br />TeamUp Team</p>
     </body>

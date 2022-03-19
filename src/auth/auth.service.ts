@@ -1,6 +1,6 @@
 import { compareSync, hashSync } from 'bcryptjs';
 import { randomBytes } from 'crypto';
-import { User, UserRegisterStatus } from '../user';
+import { User, UserRegisterStatus, UserStatus } from '../user';
 import { LoginDto, RegisterDto } from './dto';
 import { EmailService, Token, TokenType } from '../email';
 
@@ -55,7 +55,11 @@ export const AuthService = new (class {
 
     getUserByEmail(email: string) {
         return User.findOne({
-            where: { email }
+            where: {
+                email,
+                status: UserStatus.ACTIVE,
+                registerStatus: UserRegisterStatus.VERIFIED
+            }
         });
     }
 

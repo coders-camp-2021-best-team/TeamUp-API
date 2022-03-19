@@ -2,19 +2,34 @@ import nodemailer from 'nodemailer';
 
 import { RegistrationEmailTemplate, ResetPasswordEmailTemplate } from '.';
 
-import logger from '../logger';
 import env from '../config';
-const { SMTP_USERNAME, SMTP_PASSWORD, API_URL } = env;
+const { SMTP_HOST, SMTP_PORT, SMTP_USERNAME, SMTP_PASSWORD, API_URL } = env;
 
 export const EmailService = new (class {
+    transporter: nodemailer.Transporter;
+
+    constructor() {
+        this.transporter = nodemailer.createTransport({
+            host: SMTP_HOST,
+            port: SMTP_PORT,
+            secure: false,
+            auth: {
+                user: SMTP_USERNAME,
+                pass: SMTP_PASSWORD
+            }
+        });
+    }
+
     async registrationEmail(to: string, username: string, activateID: string) {
         let template = RegistrationEmailTemplate;
 
         template = template.replaceAll('%USERNAME%', username);
-        template = template.replaceAll('%FRONT_URL%', API_URL);
-        template = template.replaceAll('%ACTIVATE_ID%', activateID);
+        template = template.replaceAll(
+            '%URL%',
+            `${API_URL}/user/activate/${activateID}`
+        );
+        // TODO: in future we won't use API_URL, we need to make a pretty page that will not display json response from api
 
-        logger.info(template);
         await this.sendEmail(to, 'Registration email in TeamUp', template);
     }
 
@@ -22,36 +37,21 @@ export const EmailService = new (class {
         let template = ResetPasswordEmailTemplate;
 
         template = template.replaceAll('%USERNAME%', username);
-        template = template.replaceAll('%FRONT_URL%', API_URL);
-        template = template.replaceAll('%RESET_ID%', resetID);
+        template = template.replaceAll(
+            '%URL%',
+            `${API_URL}/user/reset-password/${resetID}`
+        );
+        // TODO: in future we won't use API_URL, we need to make a pretty page that will not display json response from api
 
-        logger.info(template);
         await this.sendEmail(to, 'Reset password in TeamUp', template);
     }
 
-    async sendEmail(to: string, subject: string, htmlBody: string) {
-        try {
-            const transporter = nodemailer.createTransport({
-                service: 'gmail',
-                host: 'smtp.gmail.com',
-                port: 587,
-                secure: false,
-                requireTLS: true,
-                auth: {
-                    user: SMTP_USERNAME,
-                    pass: SMTP_PASSWORD
-                },
-                logger: true
-            });
-
-            return await transporter.sendMail({
-                from: `no-reply <${SMTP_USERNAME}>`,
-                to,
-                subject,
-                html: htmlBody
-            });
-        } catch {
-            return null;
-        }
+    async sendEmail(to: string, subject: string, html: string) {
+        return this.transporter.sendMail({
+            from: `no-reply <${SMTP_USERNAME}>`,
+            to,
+            subject,
+            html
+        });
     }
 })();
