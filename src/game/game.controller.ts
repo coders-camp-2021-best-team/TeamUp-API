@@ -72,7 +72,15 @@ export class GameController extends Controller {
                 .status(StatusCodes.NOT_FOUND)
                 .send(ReasonPhrases.NOT_FOUND);
         }
-        return res.send(await GameService.getExperienceLevels());
+        const levels = await GameService.getExperienceLevels(game_id);
+
+        if (!levels) {
+            return res
+                .status(StatusCodes.NOT_FOUND)
+                .send(ReasonPhrases.NOT_FOUND);
+        }
+
+        return res.send(levels);
     }
 
     async addExperienceLevel(req: Request, res: Response) {
@@ -92,7 +100,7 @@ export class GameController extends Controller {
             return res.status(StatusCodes.BAD_REQUEST).json(errors);
         }
 
-        const added = await GameService.addExperienceLevel(body);
+        const added = await GameService.addExperienceLevel(game_id, body);
 
         return res.status(StatusCodes.CREATED).send(instanceToPlain(added));
     }
@@ -109,7 +117,10 @@ export class GameController extends Controller {
                 .send(ReasonPhrases.NOT_FOUND);
         }
 
-        const removed = await GameService.removeExperienceLevel(lvl_id);
+        const removed = await GameService.removeExperienceLevel(
+            game_id,
+            lvl_id
+        );
 
         if (!removed) {
             return res
