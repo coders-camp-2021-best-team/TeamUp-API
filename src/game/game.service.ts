@@ -35,11 +35,8 @@ export const GameService = new (class {
     }
 
     async getExperienceLevels(gameName: string) {
-        const levels = await Game.find({
-            relations: ['levels'],
-            where: {
-                name: gameName
-            }
+        const levels = await Game.findOne(gameName, {
+            relations: ['levels']
         });
 
         return levels;
