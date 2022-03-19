@@ -65,13 +65,6 @@ export class GameController extends Controller {
     async getExperienceLevels(req: Request, res: Response) {
         const game_id = req.params.id;
 
-        const game = await GameService.getGame(game_id);
-
-        if (!game) {
-            return res
-                .status(StatusCodes.NOT_FOUND)
-                .send(ReasonPhrases.NOT_FOUND);
-        }
         const levels = await GameService.getExperienceLevels(game_id);
 
         if (!levels) {
