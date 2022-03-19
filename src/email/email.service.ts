@@ -1,6 +1,11 @@
 import nodemailer from 'nodemailer';
 
-import { RegistrationEmailTemplate, ResetPasswordEmailTemplate } from '.';
+import {
+    RegistrationEmailTemplate,
+    RegistrationEmailSubject,
+    ResetPasswordEmailTemplate,
+    ResetPasswordEmailSubject
+} from '.';
 
 import env from '../config';
 const {
@@ -29,29 +34,29 @@ export const EmailService = new (class {
     }
 
     registrationEmail(to: string, username: string, activateID: string) {
-        let template = RegistrationEmailTemplate;
-
-        template = template.replaceAll('%USERNAME%', username);
-        template = template.replaceAll(
-            '%URL%',
-            `${API_URL}/user/activate/${activateID}`
-        );
         // TODO: in future we won't use API_URL, we need to make a pretty page that will not display json response from api
 
-        return this.sendEmail(to, 'Registration email in TeamUp', template);
+        return this.sendEmail(
+            to,
+            RegistrationEmailSubject,
+            RegistrationEmailTemplate(
+                username,
+                `${API_URL}/user/activate/${activateID}`
+            )
+        );
     }
 
     resetPasswordEmail(to: string, username: string, resetID: string) {
-        let template = ResetPasswordEmailTemplate;
-
-        template = template.replaceAll('%USERNAME%', username);
-        template = template.replaceAll(
-            '%URL%',
-            `${API_URL}/user/reset-password/${resetID}`
-        );
         // TODO: in future we won't use API_URL, we need to make a pretty page that will not display json response from api
 
-        return this.sendEmail(to, 'Reset password in TeamUp', template);
+        return this.sendEmail(
+            to,
+            ResetPasswordEmailSubject,
+            ResetPasswordEmailTemplate(
+                username,
+                `${API_URL}/user/reset-password/${resetID}`
+            )
+        );
     }
 
     async sendEmail(to: string, subject: string, html: string) {
