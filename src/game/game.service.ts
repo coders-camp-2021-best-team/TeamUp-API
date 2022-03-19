@@ -47,9 +47,15 @@ export const GameService = new (class {
     }
 
     async addExperienceLevel(gameId: string, data: AddLevelDto) {
+        const game = await Game.findOne(gameId);
+
+        if (!game) {
+            return null;
+        }
+
         const level = new ExperienceLevel();
 
-        level.game.id = gameId;
+        level.game.name = game.name;
 
         level.name = data.name;
 
@@ -59,11 +65,13 @@ export const GameService = new (class {
     async removeExperienceLevel(gameId: string, levelId: string) {
         const level = await ExperienceLevel.findOne(levelId);
 
-        if (!level) {
+        const game = await Game.findOne(gameId);
+
+        if (!level || !game) {
             return null;
         }
 
-        if (level.game.id != gameId) {
+        if (level.game.name != game.name) {
             return null;
         }
 
