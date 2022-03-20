@@ -10,6 +10,10 @@ import {
 } from 'class-validator';
 
 export class UpdateUserDto {
+    @IsString()
+    @Length(8)
+    current_password: string;
+
     @IsOptional()
     @IsEmail()
     email?: string;
@@ -39,4 +43,9 @@ export class UpdateUserDto {
     @IsString()
     @Length(0, 128)
     biogram?: string;
+
+    @IsOptional()
+    @IsString()
+    @Length(8)
+    new_password?: string;
 }

@@ -15,6 +15,13 @@ export interface EnvVariables {
     SESSION_SECRET: string;
     REDIS_URL?: string;
     REDIS_TLS_URL?: string;
+    SMTP_HOST: string;
+    SMTP_PORT: number;
+    SMTP_USERNAME: string;
+    SMTP_PASSWORD: string;
+    EMAIL_FROM: string;
+    CLIENT_URL: string;
+    API_URL: string;
 }
 
 const envSchema = Joi.object<EnvVariables>({
@@ -33,7 +40,14 @@ const envSchema = Joi.object<EnvVariables>({
     PORT: Joi.number().port().default(3000),
     SESSION_SECRET: Joi.string().required().min(16),
     REDIS_URL: Joi.string().optional().uri(),
-    REDIS_TLS_URL: Joi.string().optional().uri()
+    REDIS_TLS_URL: Joi.string().optional().uri(),
+    SMTP_HOST: Joi.string().required().hostname(),
+    SMTP_PORT: Joi.number().required().port(),
+    SMTP_USERNAME: Joi.string().required(),
+    SMTP_PASSWORD: Joi.string().required(),
+    EMAIL_FROM: Joi.string().required(),
+    CLIENT_URL: Joi.string().required().uri(),
+    API_URL: Joi.string().required().uri()
 }).unknown();
 
 const validated = envSchema.validate(process.env);

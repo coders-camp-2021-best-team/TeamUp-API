@@ -8,7 +8,7 @@ export class UserAvatar extends BaseEntity {
     @JoinColumn()
     user: User;
 
-    @OneToOne(() => Asset, { eager: true })
+    @OneToOne(() => Asset)
     @JoinColumn()
     asset: Asset;
 }
