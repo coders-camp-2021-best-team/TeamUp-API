@@ -3,6 +3,7 @@ import { ReportController } from './report';
 import { AuthController } from './auth';
 import { UserController } from './user';
 import { SwipeController } from './swipe/swipe.controller';
+import { SearchController } from './search';
 import { FeedController } from './feed/feed.controller';
 
 const server = new API({
@@ -12,7 +13,8 @@ const server = new API({
         new AuthController(),
         new ReportController(),
         new SwipeController(),
-        new FeedController()
+        new FeedController(),
+        new SearchController()
     ]
 });
 

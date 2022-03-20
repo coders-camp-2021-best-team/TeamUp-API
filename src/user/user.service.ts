@@ -1,4 +1,3 @@
-import { hashSync } from 'bcryptjs';
 import { randomBytes } from 'crypto';
 import { User, UpdateUserDto } from '.';
 import { AuthService } from '../auth';
