@@ -39,7 +39,11 @@ export const GameService = new (class {
             relations: ['levels']
         });
 
-        return game?.levels;
+        if (!game) {
+            return null;
+        }
+
+        return game.levels;
     }
 
     async addExperienceLevel(gameName: string, data: AddLevelDto) {
@@ -55,6 +59,7 @@ export const GameService = new (class {
 
         level.name = data.name;
 
+        level.save();
         game.levels.push(level);
 
         return game.save();
@@ -70,6 +75,10 @@ export const GameService = new (class {
             }
         });
 
-        return level;
+        if (!level) {
+            return null;
+        }
+
+        return level.remove();
     }
 })();
