@@ -1,6 +1,8 @@
 import { compareSync, hashSync } from 'bcryptjs';
-import { User } from '../user';
+import { randomBytes } from 'crypto';
+import { User, UserRegisterStatus, UserStatus } from '../user';
 import { LoginDto, RegisterDto } from './dto';
+import { EmailService, Token, TokenType } from '../email';
 
 export const AuthService = new (class {
     async login(data: LoginDto) {
@@ -18,25 +20,44 @@ export const AuthService = new (class {
     }
 
     async register(data: RegisterDto) {
-        try {
-            const user = User.create({
-                email: data.email,
-                username: data.username,
-                first_name: data.first_name,
-                last_name: data.last_name,
-                birthdate: data.birthdate,
-                passwordHash: this.hashPassword(data.password)
-            });
+        const user = User.create({
+            email: data.email,
+            username: data.username,
+            first_name: data.first_name,
+            last_name: data.last_name,
+            birthdate: data.birthdate,
+            passwordHash: this.hashPassword(data.password),
+            registerStatus: UserRegisterStatus.UNVERIFIED
+        });
 
-            return await user.save();
-        } catch {
+        const userSave = await user.save();
+
+        if (!userSave) {
             return null;
         }
+
+        const verify_token = new Token();
+        verify_token.token = randomBytes(64).toString('hex');
+        verify_token.token_type = TokenType.VERIFY_EMAIL;
+        verify_token.user = userSave;
+        await verify_token.save();
+
+        EmailService.registrationEmail(
+            data.email,
+            data.username,
+            verify_token.token
+        );
+
+        return userSave;
     }
 
     getUserByEmail(email: string) {
         return User.findOne({
-            where: { email }
+            where: {
+                email,
+                status: UserStatus.ACTIVE,
+                registerStatus: UserRegisterStatus.VERIFIED
+            }
         });
     }
 

@@ -37,8 +37,8 @@ export class API {
         const options = await getConnectionOptions();
 
         await createConnection({
-            ...options,
-            logger: new WinstonAdaptor(logger, 'all')
+            logger: new WinstonAdaptor(logger, 'all'),
+            ...options
         });
     }
 

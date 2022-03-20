@@ -1,9 +1,14 @@
 import { Request, Response } from 'express';
+import { StatusCodes } from 'http-status-codes';
 import { instanceToPlain, plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { AuthMiddleware, Controller } from '../common';
-import { UserService, UpdateUserDto } from '.';
-import { StatusCodes } from 'http-status-codes';
+import {
+    UserService,
+    UpdateUserDto,
+    PasswordResetRequestDto,
+    PasswordResetDto
+} from '.';
 
 export class UserController extends Controller {
     constructor() {
@@ -11,9 +16,11 @@ export class UserController extends Controller {
 
         const router = this.getRouter();
 
-        router.use(AuthMiddleware);
-        router.get('/:id', this.getUser);
-        router.put('/:id', this.updateUser);
+        router.get('/:id', AuthMiddleware, this.getUser);
+        router.put('/:id', AuthMiddleware, this.updateUser);
+        router.get('/activate/:id', this.activateUser);
+        router.post('/request-password-reset', this.requestPasswordReset);
+        router.get('/password-reset/:id', this.resetPassword);
     }
 
     async getUser(req: Request, res: Response) {
@@ -32,7 +39,7 @@ export class UserController extends Controller {
         const body = plainToInstance(UpdateUserDto, req.body);
         const errors = await validate(body);
         if (errors.length > 0) {
-            return res.status(400).json(errors);
+            return res.status(StatusCodes.BAD_REQUEST).json(errors);
         }
 
         const id = req.params.id;
@@ -48,5 +55,48 @@ export class UserController extends Controller {
         }
 
         return res.send(instanceToPlain(updated));
+    }
+
+    async activateUser(req: Request, res: Response) {
+        const id = req.params.id;
+        const user = await UserService.activateUser(id);
+
+        if (!user) {
+            return res.status(StatusCodes.NOT_FOUND).send();
+        }
+
+        return res.send();
+    }
+
+    async requestPasswordReset(req: Request, res: Response) {
+        const body = plainToInstance(PasswordResetRequestDto, req.body);
+        const errors = await validate(body);
+        if (errors.length) {
+            return res.status(StatusCodes.BAD_REQUEST).json(errors);
+        }
+
+        const email = body.email;
+
+        await UserService.requestPasswordReset(email);
+
+        return res.send();
+    }
+
+    async resetPassword(req: Request, res: Response) {
+        const body = plainToInstance(PasswordResetDto, req.body);
+        const errors = await validate(body);
+        if (errors.length) {
+            return res.status(StatusCodes.BAD_REQUEST).json(errors);
+        }
+
+        const id = req.params.id;
+        const password = body.password;
+
+        const user = await UserService.resetPassword(id, password);
+        if (!user) {
+            return res.status(StatusCodes.NOT_FOUND).send();
+        }
+
+        return res.send();
     }
 }
