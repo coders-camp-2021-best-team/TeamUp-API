@@ -12,9 +12,9 @@ export class Game extends BaseEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @Column()
+    @Column({ unique: true })
     name: string;
 
-    @OneToMany(() => ExperienceLevel, (el) => el.game)
+    @OneToMany(() => ExperienceLevel, (el) => el.game, { cascade: true })
     levels: ExperienceLevel[];
 }

@@ -55,9 +55,12 @@ export const GameService = new (class {
             return null;
         }
 
+        if (game.levels.some((l) => l.name === data.name)) {
+            return null;
+        }
+
         const level = new ExperienceLevel();
         level.name = data.name;
-        level.save();
 
         game.levels.push(level);
         return game.save();
