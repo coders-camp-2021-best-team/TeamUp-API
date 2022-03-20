@@ -1,11 +1,11 @@
 import { Game } from '../game';
 import { Like } from 'typeorm';
 export const SearchService = new (class {
-    async getResults(search: string, take = 5, skip = 1) {
+    async getResults(search: string, take = 20, skip = 0) {
         if (!search) {
             const results = await Game.find({
                 take: take,
-                skip: (skip - 1) * take
+                skip: skip
             });
 
             return results;
@@ -16,7 +16,7 @@ export const SearchService = new (class {
                 name: Like(`%${search}%`)
             },
             take: take,
-            skip: (skip - 1) * take
+            skip: skip
         });
 
         if (!results.length) {
