@@ -1,5 +1,6 @@
 import { API } from './common';
 import { AuthController } from './auth';
+import { GameController } from './game';
 import { FeedController } from './feed';
 import { ReportController } from './report';
 import { SearchController } from './search';
@@ -10,6 +11,7 @@ const server = new API({
     middlewares: [],
     controllers: [
         new AuthController(),
+        new GameController(),
         new FeedController(),
         new ReportController(),
         new SearchController(),

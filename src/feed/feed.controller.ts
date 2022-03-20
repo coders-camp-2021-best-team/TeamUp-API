@@ -9,8 +9,8 @@ export class FeedController extends Controller {
         super('/feed');
 
         const router = this.getRouter();
-
         router.use(AuthMiddleware);
+
         router.get('/recommended', this.getRecommended);
     }
 
