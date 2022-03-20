@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
-import { validate } from 'class-validator';
-import { Controller } from '../common/controller.class';
-import { instanceToPlain, plainToInstance } from 'class-transformer';
 import { StatusCodes } from 'http-status-codes';
+import { validate } from 'class-validator';
+import { instanceToPlain, plainToInstance } from 'class-transformer';
+import { Controller } from '../common';
 import { SwipeService, CreateSwipeDto } from '.';
 
 export class SwipeController extends Controller {

@@ -1,5 +1,5 @@
-import { Game } from '../game';
 import { Like } from 'typeorm';
+import { Game } from '../game';
 export const SearchService = new (class {
     async getResults(search: string, take = 20, skip = 0) {
         if (!search) {

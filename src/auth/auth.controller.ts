@@ -3,8 +3,8 @@ import { validate } from 'class-validator';
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { AuthMiddleware, LoggedOutMiddleware, Controller } from '../common';
-import { AuthService, LoginDto, RegisterDto } from '.';
 import { UserStatus } from '../user';
+import { AuthService, LoginDto, RegisterDto } from '.';
 
 export class AuthController extends Controller {
     constructor() {

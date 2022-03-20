@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import { SearchService } from './search.service';
-import { Controller } from '../common';
 import { StatusCodes, ReasonPhrases } from 'http-status-codes';
+import { Controller } from '../common';
+import { SearchService } from '.';
 
 export class SearchController extends Controller {
     constructor() {
