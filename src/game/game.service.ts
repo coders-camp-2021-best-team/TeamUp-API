@@ -7,8 +7,8 @@ export const GameService = new (class {
         return games;
     }
 
-    async getGame(gameName: string) {
-        const game = await Game.findOne(gameName);
+    async getGame(gameID: string) {
+        const game = await Game.findOne(gameID);
         if (!game) {
             return null;
         }
@@ -24,8 +24,8 @@ export const GameService = new (class {
         return game.save();
     }
 
-    async removeGame(gameName: string) {
-        const game = await Game.findOne(gameName);
+    async removeGame(gameID: string) {
+        const game = await Game.findOne(gameID);
 
         if (!game) {
             return null;
@@ -34,8 +34,8 @@ export const GameService = new (class {
         return game.remove();
     }
 
-    async getExperienceLevels(gameName: string) {
-        const game = await Game.findOne(gameName, {
+    async getExperienceLevels(gameID: string) {
+        const game = await Game.findOne(gameID, {
             relations: ['levels']
         });
 
@@ -46,8 +46,8 @@ export const GameService = new (class {
         return game.levels;
     }
 
-    async addExperienceLevel(gameName: string, data: AddLevelDto) {
-        const game = await Game.findOne(gameName, {
+    async addExperienceLevel(gameID: string, data: AddLevelDto) {
+        const game = await Game.findOne(gameID, {
             relations: ['levels']
         });
 
@@ -56,21 +56,19 @@ export const GameService = new (class {
         }
 
         const level = new ExperienceLevel();
-
         level.name = data.name;
-
         level.save();
-        game.levels.push(level);
 
+        game.levels.push(level);
         return game.save();
     }
 
-    async removeExperienceLevel(gameName: string, levelId: string) {
-        const level = await ExperienceLevel.findOne(levelId, {
+    async removeExperienceLevel(gameID: string, levelID: string) {
+        const level = await ExperienceLevel.findOne(levelID, {
             relations: ['game'],
             where: {
                 game: {
-                    name: gameName
+                    id: gameID
                 }
             }
         });

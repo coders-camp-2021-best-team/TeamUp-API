@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { StatusCodes, ReasonPhrases } from 'http-status-codes';
+import { StatusCodes } from 'http-status-codes';
 import { Controller } from '../common';
 import { SearchService } from '.';
 
@@ -25,9 +25,7 @@ export class SearchController extends Controller {
                 skip
             );
             if (!results) {
-                return res
-                    .status(StatusCodes.NOT_FOUND)
-                    .send(ReasonPhrases.NOT_FOUND);
+                return res.status(StatusCodes.NOT_FOUND).send();
             }
             res.send(results);
         }
@@ -35,9 +33,7 @@ export class SearchController extends Controller {
         const results = await SearchService.getResults(search as string);
 
         if (!results) {
-            return res
-                .status(StatusCodes.NOT_FOUND)
-                .send(ReasonPhrases.NOT_FOUND);
+            return res.status(StatusCodes.NOT_FOUND).send();
         }
         res.send(results);
     }
