@@ -1,15 +1,16 @@
 import { Request, Response } from 'express';
+import { StatusCodes } from 'http-status-codes';
 import { instanceToPlain, plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
-import { Controller } from '../common';
+import { AuthMiddleware, Controller } from '../common';
 import { GameService, AddGameDto, AddLevelDto } from '.';
-import { StatusCodes } from 'http-status-codes';
 
 export class GameController extends Controller {
     constructor() {
         super('/game');
 
         const router = this.getRouter();
+        router.use(AuthMiddleware);
 
         router.get('/', this.getAllGames);
         router.post('/', this.addGame);

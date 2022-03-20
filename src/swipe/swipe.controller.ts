@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { validate } from 'class-validator';
 import { instanceToPlain, plainToInstance } from 'class-transformer';
-import { Controller } from '../common';
+import { AuthMiddleware, Controller } from '../common';
 import { SwipeService, CreateSwipeDto } from '.';
 
 export class SwipeController extends Controller {
@@ -10,6 +10,7 @@ export class SwipeController extends Controller {
         super('/swipe');
 
         const router = this.getRouter();
+        router.use(AuthMiddleware);
 
         router.post('/:id', this.createSwipe);
     }

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { Controller } from '../common';
+import { AuthMiddleware, Controller } from '../common';
 import { SearchService } from '.';
 
 export class SearchController extends Controller {
@@ -8,6 +8,7 @@ export class SearchController extends Controller {
         super('/search');
 
         const router = this.getRouter();
+        router.use(AuthMiddleware);
 
         router.get('/', this.getResults);
     }
