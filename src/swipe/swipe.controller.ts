@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { validate } from 'class-validator';
 import { Controller } from '../common/controller.class';
-import { instanceToPlain, plainToInstance } from 'class-transformer';
+import { plainToInstance } from 'class-transformer';
 import { StatusCodes } from 'http-status-codes';
 import { SwipeService, CreateSwipeDto } from '.';
 
@@ -29,6 +29,8 @@ export class SwipeController extends Controller {
             body.status
         );
 
-        return res.status(StatusCodes.CREATED).send(instanceToPlain(created));
+        const temp = await SwipeService.swipeMatch(created);
+
+        return res.status(StatusCodes.CREATED).json(temp);
     }
 }
