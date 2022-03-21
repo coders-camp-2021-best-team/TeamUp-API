@@ -19,8 +19,12 @@ export class ChatController extends Controller {
             );
         });
 
-        socket.on('message', (data) => {
-            io.emit('message', data);
+        socket.on('bye', () => {
+            socket.disconnect(true);
+        });
+
+        socket.onAny((name, ...data) => {
+            socket.emit('message', { name, data });
         });
     }
 }
