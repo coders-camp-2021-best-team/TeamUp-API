@@ -24,7 +24,7 @@ export class ChatController extends Controller {
         });
 
         socket.onAny((name, ...data) => {
-            socket.emit('message', { name, data });
+            io.emit('message', { name, data });
         });
     }
 }
