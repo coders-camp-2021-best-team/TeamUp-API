@@ -6,11 +6,7 @@ import {
     PrimaryGeneratedColumn
 } from 'typeorm';
 import { User } from '../../user';
-
-export enum UserSwipeType {
-    LIKE = 'LIKE',
-    DISLIKE = 'DISLIKE'
-}
+import { UserSwipeType } from './user-swipe.enum';
 
 @Entity('user_swipes')
 export class UserSwipe extends BaseEntity {
