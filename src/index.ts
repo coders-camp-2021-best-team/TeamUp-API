@@ -1,5 +1,6 @@
 import { API } from './common';
 import { AuthController } from './auth';
+import { ChatController } from './chat';
 import { GameController } from './game';
 import { FeedController } from './feed';
 import { ReportController } from './report';
@@ -11,13 +12,15 @@ const server = new API({
     middlewares: [],
     controllers: [
         new AuthController(),
+        new ChatController(),
         new GameController(),
         new FeedController(),
         new ReportController(),
         new SearchController(),
         new SwipeController(),
         new UserController()
-    ]
+    ],
+    onWebsocketConnection: ChatController.onWebsocketConnection
 });
 
 server.initialize();
