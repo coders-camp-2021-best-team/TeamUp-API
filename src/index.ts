@@ -1,20 +1,22 @@
 import { API } from './common';
-import { ReportController } from './report';
 import { AuthController } from './auth';
-import { UserController } from './user';
-import { SwipeController } from './swipe/swipe.controller';
+import { GameController } from './game';
+import { FeedController } from './feed';
+import { ReportController } from './report';
 import { SearchController } from './search';
-import { FeedController } from './feed/feed.controller';
+import { SwipeController } from './swipe';
+import { UserController } from './user';
 
 const server = new API({
     middlewares: [],
     controllers: [
-        new UserController(),
         new AuthController(),
-        new ReportController(),
-        new SwipeController(),
+        new GameController(),
         new FeedController(),
-        new SearchController()
+        new ReportController(),
+        new SearchController(),
+        new SwipeController(),
+        new UserController()
     ]
 });
 

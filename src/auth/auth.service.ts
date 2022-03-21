@@ -1,8 +1,8 @@
 import { compareSync, hashSync } from 'bcryptjs';
 import { randomBytes } from 'crypto';
 import { User, UserRegisterStatus, UserStatus } from '../user';
-import { LoginDto, RegisterDto } from './dto';
 import { EmailService, Token, TokenType } from '../email';
+import { LoginDto, RegisterDto } from '.';
 
 export const AuthService = new (class {
     async login(data: LoginDto) {

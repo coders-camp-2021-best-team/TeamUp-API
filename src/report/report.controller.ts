@@ -15,8 +15,8 @@ export class ReportController extends Controller {
         super('/report');
 
         const router = this.getRouter();
-
         router.use(AuthMiddleware);
+
         router.get('/', this.getReports);
         router.post('/:id', this.createReport);
         router.put('/:id', this.updateReport);

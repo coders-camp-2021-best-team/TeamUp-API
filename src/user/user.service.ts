@@ -1,8 +1,7 @@
 import { randomBytes } from 'crypto';
-import { User, UpdateUserDto } from '.';
 import { AuthService } from '../auth';
 import { EmailService, Token, TokenType } from '../email';
-import { UserRegisterStatus } from './entities';
+import { User, UserRegisterStatus, UpdateUserDto } from '.';
 
 export const UserService = new (class {
     async getUser(userId: string) {

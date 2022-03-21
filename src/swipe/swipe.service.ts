@@ -1,5 +1,5 @@
-import { UserSwipe, UserSwipeType } from './entities';
 import { UserService } from '../user';
+import { UserSwipe, UserSwipeType } from '.';
 
 export const SwipeService = new (class {
     async createSwipe(

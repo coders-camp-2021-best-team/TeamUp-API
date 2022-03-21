@@ -12,9 +12,9 @@ export class ExperienceLevel extends BaseEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @Column()
-    name: string;
-
     @ManyToOne(() => Game, (g) => g.levels)
     game: Game;
+
+    @Column()
+    name: string;
 }
