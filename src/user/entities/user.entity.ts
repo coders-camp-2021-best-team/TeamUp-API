@@ -83,7 +83,7 @@ export class User extends BaseEntity {
     @OneToMany(() => UserReport, (r) => r.target)
     submittedReports: UserReport[];
 
-    @OneToMany(() => UserReport, (r) => r.submittedBy)
+    @OneToMany(() => UserReport, (r) => r.submittedBy, { cascade: true })
     receivedReports: UserReport[];
 
     @OneToMany(() => UserSwipe, (s) => s.target)

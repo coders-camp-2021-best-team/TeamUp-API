@@ -3,12 +3,14 @@ import 'express-async-errors';
 import session from 'express-session';
 import ConnectRedis from 'connect-redis';
 import Redis from 'ioredis';
+import { Socket, Server } from 'socket.io';
 import { getConnectionOptions, createConnection } from 'typeorm';
 import { WinstonAdaptor } from 'typeorm-logger-adaptor/logger/winston';
 import { Middleware, Controller } from '.';
 
 import logger from '../logger';
 import env from '../config';
+import { createServer } from 'http';
 const { PORT, SESSION_SECRET, REDIS_URL, REDIS_TLS_URL } = env;
 
 const RedisStore = ConnectRedis(session);
@@ -20,17 +22,26 @@ declare module 'express-session' {
     }
 }
 
+export type WebsocketConnectionHandler = (io: Server, socket: Socket) => void;
+
 export class API {
-    private app = express();
+    public readonly app = express();
+    public readonly http = createServer(this.app);
+    public readonly io = new Server(this.http);
+
+    private session_middleware: express.RequestHandler;
     private middlewares: Middleware[];
     private controllers: Controller[];
+    private onWebsocketConnection: WebsocketConnectionHandler;
 
     constructor(options: {
         middlewares: Middleware[];
         controllers: Controller[];
+        onWebsocketConnection: WebsocketConnectionHandler;
     }) {
         this.middlewares = options.middlewares;
         this.controllers = options.controllers;
+        this.onWebsocketConnection = options.onWebsocketConnection;
     }
 
     private async initDatabase() {
@@ -45,19 +56,19 @@ export class API {
     private initSession() {
         const redisClient = new Redis(REDIS_TLS_URL || REDIS_URL);
 
-        this.app.use(
-            session({
-                store: new RedisStore({
-                    client: redisClient
-                }),
-                saveUninitialized: false,
-                secret: SESSION_SECRET,
-                resave: false,
-                cookie: {
-                    httpOnly: true
-                }
-            })
-        );
+        this.session_middleware = session({
+            store: new RedisStore({
+                client: redisClient
+            }),
+            saveUninitialized: false,
+            secret: SESSION_SECRET,
+            resave: false,
+            cookie: {
+                httpOnly: true
+            }
+        });
+
+        this.app.use(this.session_middleware);
     }
 
     private initMiddlewares() {
@@ -81,13 +92,20 @@ export class API {
         });
     }
 
+    private initSocketIO() {
+        this.io.on('connection', (socket) =>
+            this.onWebsocketConnection(this.io, socket)
+        );
+    }
+
     public async initialize() {
         await this.initDatabase();
         this.initSession();
         this.initMiddlewares();
         this.initControllers();
+        this.initSocketIO();
 
-        this.app.listen(PORT, () => {
+        this.http.listen(PORT, () => {
             logger.info(`Server listening on port ${PORT}`);
         });
     }

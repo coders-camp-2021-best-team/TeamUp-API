@@ -7,12 +7,7 @@ import {
     PrimaryGeneratedColumn
 } from 'typeorm';
 import { User } from '../../user';
-
-export enum UserReportStatus {
-    PENDING = 'PENDING',
-    RESOLVED = 'RESOLVED',
-    REJECTED = 'REJECTED'
-}
+import { UserReportStatus } from './user-report-status.enum';
 
 @Entity('user_reports')
 export class UserReport extends BaseEntity {

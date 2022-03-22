@@ -29,7 +29,7 @@ export class ReportController extends Controller {
             return res.status(StatusCodes.BAD_REQUEST).json(errors);
         }
 
-        return res.send(await ReportService.getReports(query));
+        return res.send(instanceToPlain(await ReportService.getReports(query)));
     }
 
     async createReport(req: Request, res: Response) {
@@ -39,7 +39,22 @@ export class ReportController extends Controller {
             return res.status(StatusCodes.BAD_REQUEST).json(errors);
         }
 
-        const created = await ReportService.createReport(body);
+        const currentID = req.session.userID;
+        const targetID = req.params.id;
+
+        if (!currentID) {
+            return res.status(StatusCodes.UNAUTHORIZED).send();
+        }
+
+        const created = await ReportService.createReport(
+            currentID,
+            targetID,
+            body
+        );
+
+        if (!created) {
+            return res.status(StatusCodes.BAD_REQUEST).send();
+        }
 
         return res.status(StatusCodes.CREATED).send(instanceToPlain(created));
     }
