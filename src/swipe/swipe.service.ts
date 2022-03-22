@@ -17,7 +17,7 @@ export const SwipeService = new (class {
         }
 
         swipe.target = targetUser;
-        swipe.submittedBy = targetUser;
+        swipe.submittedBy = submittedByUser;
         swipe.status = status;
 
         return swipe.save();
