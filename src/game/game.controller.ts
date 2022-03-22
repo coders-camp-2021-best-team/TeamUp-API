@@ -16,24 +16,18 @@ export class GameController extends Controller {
         router.post('/', this.addGame);
         router.get('/:id', this.getGame);
         router.delete('/:id', this.removeGame);
-        router.get('/:id/level', this.getExperienceLevel);
+        router.get('/:id/level', this.getExperienceLevels);
         router.post('/:id/level', this.addExperienceLevel);
         router.delete('/:id/level/:lvl_id', this.removeExperienceLevel);
     }
 
     async getAllGames(req: Request, res: Response) {
-        const userID = req.session.id;
-        const game = await GameService.getUserGames(userID);
-
-        if (!game) {
-            return res.status(StatusCodes.NOT_FOUND).send();
-        }
+        return res.send(await GameService.getAllGames());
     }
 
     async getGame(req: Request, res: Response) {
-        const userID = req.session.id;
         const gameID = req.params.id;
-        const game = await GameService.getGame(userID, gameID);
+        const game = await GameService.getGame(gameID);
 
         if (!game) {
             return res.status(StatusCodes.NOT_FOUND).send();
@@ -42,14 +36,13 @@ export class GameController extends Controller {
     }
 
     async addGame(req: Request, res: Response) {
-        const userID = req.session.id;
         const body = plainToInstance(AddGameDto, req.body as AddGameDto);
         const errors = await validate(body);
         if (errors.length) {
             return res.status(StatusCodes.BAD_REQUEST).json(errors);
         }
 
-        const added = await GameService.addGame(userID, body);
+        const added = await GameService.addGame(body);
 
         if (!added) {
             return res.status(StatusCodes.CONFLICT).send();
@@ -58,10 +51,9 @@ export class GameController extends Controller {
     }
 
     async removeGame(req: Request, res: Response) {
-        const userID = req.session.id;
         const gameID = req.params.id;
 
-        const removed = await GameService.removeGame(userID, gameID);
+        const removed = await GameService.removeGame(gameID);
 
         if (!removed) {
             return res.status(StatusCodes.NOT_FOUND).send();
@@ -69,20 +61,18 @@ export class GameController extends Controller {
         return res.send();
     }
 
-    async getExperienceLevel(req: Request, res: Response) {
-        const userID = req.session.id;
+    async getExperienceLevels(req: Request, res: Response) {
         const gameID = req.params.id;
 
-        const level = await GameService.getExperienceLevel(userID, gameID);
+        const levels = await GameService.getExperienceLevels(gameID);
 
-        if (!level) {
+        if (!levels) {
             return res.status(StatusCodes.NOT_FOUND).send();
         }
-        return res.send(level);
+        return res.send(levels);
     }
 
     async addExperienceLevel(req: Request, res: Response) {
-        const userID = req.session.id;
         const body = plainToInstance(AddLevelDto, req.body as AddLevelDto);
         const errors = await validate(body);
         if (errors.length) {
@@ -90,11 +80,7 @@ export class GameController extends Controller {
         }
 
         const gameID = req.params.id;
-        const added = await GameService.addExperienceLevel(
-            userID,
-            gameID,
-            body
-        );
+        const added = await GameService.addExperienceLevel(gameID, body);
 
         if (!added) {
             return res.status(StatusCodes.BAD_REQUEST).send();
@@ -103,15 +89,10 @@ export class GameController extends Controller {
     }
 
     async removeExperienceLevel(req: Request, res: Response) {
-        const userID = req.session.id;
         const gameID = req.params.id;
         const lvlID = req.params.lvl_id;
 
-        const removed = await GameService.removeExperienceLevel(
-            userID,
-            gameID,
-            lvlID
-        );
+        const removed = await GameService.removeExperienceLevel(gameID, lvlID);
 
         if (!removed) {
             return res.status(StatusCodes.BAD_REQUEST).send();

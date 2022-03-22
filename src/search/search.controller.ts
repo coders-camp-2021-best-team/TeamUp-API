@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import { StatusCodes } from 'http-status-codes';
 import { AuthMiddleware, Controller } from '../common';
 import { SearchService } from '.';
 import { instanceToPlain } from 'class-transformer';
