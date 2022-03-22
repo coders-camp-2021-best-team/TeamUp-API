@@ -1,19 +1,12 @@
 import { Like } from 'typeorm';
-import { Game } from '../game';
+import { UserSkill } from '../user';
 export const SearchService = new (class {
     async getResults(search: string, take = 20, skip = 0) {
-        if (!search) {
-            const results = await Game.find({
-                take: take,
-                skip: skip
-            });
-
-            return results;
-        }
-
-        const results = await Game.find({
+        const results = await UserSkill.find({
             where: {
-                name: Like(`%${search}%`)
+                game: {
+                    name: Like(`%${search}%`)
+                }
             },
             take: take,
             skip: skip

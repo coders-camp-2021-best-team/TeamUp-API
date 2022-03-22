@@ -1,85 +1,148 @@
 import { Game, ExperienceLevel, AddGameDto, AddLevelDto } from '.';
-
+import { UserSkill, User } from '../user';
 export const GameService = new (class {
-    async getAllGames() {
-        const games = await Game.find();
-
-        return games;
-    }
-
-    async getGame(gameID: string) {
-        const game = await Game.findOne(gameID);
-        if (!game) {
+    async getUserGames(userID: string) {
+        const user = await User.findOne(userID, {
+            relations: ['skills']
+        });
+        if (!user) {
             return null;
         }
 
-        return game;
+        return user.skills;
     }
 
-    async addGame(data: AddGameDto) {
+    async getGame(userID: string, gameID: string) {
+        const skill = await UserSkill.findOne(gameID, {
+            relations: ['user'],
+            where: {
+                user: {
+                    id: userID
+                }
+            }
+        });
+        if (!skill) {
+            return null;
+        }
+
+        return skill.game;
+    }
+
+    async addGame(userID: string, data: AddGameDto) {
+        const user = await User.findOne(userID, {
+            relations: ['skills', 'skills.game']
+        });
+
+        if (!user) {
+            return null;
+        }
+
+        const skill = new UserSkill();
+        if (user.skills.some((s) => s.game.name === data.name)) {
+            return null;
+        }
         const game = new Game();
 
         game.name = data.name;
 
-        return game.save();
+        game.save();
+
+        skill.game = game;
+
+        skill.user = user;
+
+        return skill.save();
     }
 
-    async removeGame(gameID: string) {
-        const game = await Game.findOne(gameID);
-
-        if (!game) {
-            return null;
-        }
-
-        return game.remove();
-    }
-
-    async getExperienceLevels(gameID: string) {
-        const game = await Game.findOne(gameID, {
-            relations: ['levels']
+    async removeGame(userID: string, gameID: string) {
+        const skill = await UserSkill.findOne(gameID, {
+            relations: ['user'],
+            where: {
+                user: {
+                    id: userID
+                }
+            }
         });
 
-        if (!game) {
+        if (!skill) {
             return null;
         }
+        skill.game.remove();
 
-        return game.levels;
+        if (skill.level) {
+            skill.level.remove();
+        }
+
+        return skill.remove();
     }
 
-    async addExperienceLevel(gameID: string, data: AddLevelDto) {
-        const game = await Game.findOne(gameID, {
-            relations: ['levels']
+    async getExperienceLevel(userID: string, gameID: string) {
+        const skill = await UserSkill.findOne(gameID, {
+            relations: ['user'],
+            where: {
+                user: {
+                    id: userID
+                }
+            }
         });
 
-        if (!game) {
+        if (!skill) {
             return null;
         }
 
-        if (game.levels.some((l) => l.name === data.name)) {
+        return skill.level;
+    }
+
+    async addExperienceLevel(
+        userID: string,
+        gameID: string,
+        data: AddLevelDto
+    ) {
+        const skill = await UserSkill.findOne(gameID, {
+            relations: ['user'],
+            where: {
+                user: {
+                    id: userID
+                }
+            }
+        });
+        if (!skill) {
             return null;
         }
 
         const level = new ExperienceLevel();
         level.name = data.name;
 
-        game.levels.push(level);
-        return game.save();
+        if (skill.level) {
+            return null;
+        }
+
+        skill.level = level;
+        return skill.save();
     }
 
-    async removeExperienceLevel(gameID: string, levelID: string) {
-        const level = await ExperienceLevel.findOne(levelID, {
-            relations: ['game'],
+    async removeExperienceLevel(
+        userID: string,
+        gameID: string,
+        levelID: string
+    ) {
+        const skill = await UserSkill.findOne(gameID, {
+            relations: ['user'],
             where: {
-                game: {
-                    id: gameID
+                user: {
+                    id: userID
                 }
             }
         });
 
-        if (!level) {
+        if (!skill) {
             return null;
         }
 
-        return level.remove();
+        if (!skill.level || skill.level.id !== levelID) {
+            return null;
+        }
+
+        return skill.level.remove();
     }
 })();
