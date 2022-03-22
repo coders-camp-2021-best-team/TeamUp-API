@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { instanceToPlain, plainToInstance } from 'class-transformer';
-import { validate } from 'class-validator';
+import { validateSync } from 'class-validator';
 import { AuthMiddleware, Controller } from '../common';
 import {
     UserService,
@@ -21,6 +21,13 @@ export class UserController extends Controller {
         router.get('/activate/:id', this.activateUser);
         router.post('/request-password-reset', this.requestPasswordReset);
         router.get('/password-reset/:id', this.resetPassword);
+
+        router.put('/:id/skill/:levelID', AuthMiddleware, this.addUserSkill);
+        router.delete(
+            '/:id/skill/:skillID',
+            AuthMiddleware,
+            this.removeUserSkill
+        );
     }
 
     async getUser(req: Request, res: Response) {
@@ -37,7 +44,7 @@ export class UserController extends Controller {
 
     async updateUser(req: Request, res: Response) {
         const body = plainToInstance(UpdateUserDto, req.body);
-        const errors = await validate(body);
+        const errors = validateSync(body);
         if (errors.length > 0) {
             return res.status(StatusCodes.BAD_REQUEST).json(errors);
         }
@@ -70,7 +77,7 @@ export class UserController extends Controller {
 
     async requestPasswordReset(req: Request, res: Response) {
         const body = plainToInstance(PasswordResetRequestDto, req.body);
-        const errors = await validate(body);
+        const errors = validateSync(body);
         if (errors.length) {
             return res.status(StatusCodes.BAD_REQUEST).json(errors);
         }
@@ -84,7 +91,7 @@ export class UserController extends Controller {
 
     async resetPassword(req: Request, res: Response) {
         const body = plainToInstance(PasswordResetDto, req.body);
-        const errors = await validate(body);
+        const errors = validateSync(body);
         if (errors.length) {
             return res.status(StatusCodes.BAD_REQUEST).json(errors);
         }
@@ -98,5 +105,31 @@ export class UserController extends Controller {
         }
 
         return res.send();
+    }
+
+    async addUserSkill(req: Request, res: Response) {
+        const userID = req.params.id;
+        const levelID = req.params.levelID;
+
+        const skills = await UserService.addUserSkill(userID, levelID);
+
+        if (!skills) {
+            return res.status(StatusCodes.BAD_REQUEST).send();
+        }
+
+        return res.send(instanceToPlain(skills));
+    }
+
+    async removeUserSkill(req: Request, res: Response) {
+        const userID = req.params.id;
+        const skillID = req.params.skillID;
+
+        const removed = await UserService.removeUserSkill(userID, skillID);
+
+        if (!removed) {
+            return res.status(StatusCodes.NOT_FOUND).send();
+        }
+
+        res.send();
     }
 }
