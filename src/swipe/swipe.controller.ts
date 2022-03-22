@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import { StatusCodes } from 'http-status-codes';
 import { validate } from 'class-validator';
-import { instanceToPlain, plainToInstance } from 'class-transformer';
+import { plainToInstance } from 'class-transformer';
+import { StatusCodes } from 'http-status-codes';
 import { AuthMiddleware, Controller } from '../common';
 import { SwipeService, CreateSwipeDto } from '.';
 
@@ -30,6 +30,8 @@ export class SwipeController extends Controller {
             body.status
         );
 
-        return res.status(StatusCodes.CREATED).send(instanceToPlain(created));
+        const temp = await SwipeService.swipeMatch(created);
+
+        return res.status(StatusCodes.CREATED).json(temp);
     }
 }

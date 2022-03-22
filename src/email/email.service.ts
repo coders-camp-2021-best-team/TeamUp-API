@@ -24,7 +24,7 @@ export const EmailService = new (class {
         this.transporter = nodemailer.createTransport({
             host: SMTP_HOST,
             port: SMTP_PORT,
-            secure: true,
+            secure: process.env.NODE_ENV !== 'development',
             auth: {
                 user: SMTP_USERNAME,
                 pass: SMTP_PASSWORD
