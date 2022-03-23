@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { instanceToPlain, plainToInstance } from 'class-transformer';
-import { validate } from 'class-validator';
+import { validateSync } from 'class-validator';
 import { AuthMiddleware, Controller } from '../common';
 import { GameService, AddGameDto, AddLevelDto } from '.';
 
@@ -37,7 +37,7 @@ export class GameController extends Controller {
 
     async addGame(req: Request, res: Response) {
         const body = plainToInstance(AddGameDto, req.body as AddGameDto);
-        const errors = await validate(body);
+        const errors = validateSync(body);
         if (errors.length) {
             return res.status(StatusCodes.BAD_REQUEST).json(errors);
         }
@@ -74,7 +74,7 @@ export class GameController extends Controller {
 
     async addExperienceLevel(req: Request, res: Response) {
         const body = plainToInstance(AddLevelDto, req.body as AddLevelDto);
-        const errors = await validate(body);
+        const errors = validateSync(body);
         if (errors.length) {
             return res.status(StatusCodes.BAD_REQUEST).json(errors);
         }
