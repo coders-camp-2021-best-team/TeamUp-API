@@ -10,6 +10,7 @@ export const FeedService = new (class {
                 'skills.level.game',
                 'blockedUsers',
                 'blockedBy',
+                'blockedBy.blockedBy',
                 'swipedUsers',
                 'swipedBy'
             ]

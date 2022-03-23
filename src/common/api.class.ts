@@ -4,6 +4,7 @@ import 'express-async-errors';
 import session from 'express-session';
 import RateLimiter from 'express-rate-limit';
 import SlowDown from 'express-slow-down';
+import cors from 'cors';
 import ConnectRedis from 'connect-redis';
 import Redis from 'ioredis';
 import { Socket, Server } from 'socket.io';
@@ -14,7 +15,7 @@ import { Middleware, Controller } from '../common';
 
 import logger from '../logger';
 import env from '../config';
-const { PORT, SESSION_SECRET, REDIS_URL, REDIS_TLS_URL } = env;
+const { PORT, SESSION_SECRET, REDIS_URL, REDIS_TLS_URL, CLIENT_URL } = env;
 
 const RedisStore = ConnectRedis(session);
 
@@ -53,6 +54,14 @@ export class API {
         this.controllers = options.controllers;
         this.onWebsocketConnection = options.onWebsocketConnection;
         this.websocketMiddleware = options.websocketMiddleware;
+    }
+
+    private initCORS() {
+        this.app.use(
+            cors({
+                origin: CLIENT_URL
+            })
+        );
     }
 
     private async initDatabase() {
@@ -139,6 +148,7 @@ export class API {
         this.app.enable('trust proxy');
 
         await this.initDatabase();
+        this.initCORS();
         this.initSession();
         this.initRateLimiter();
         this.initMiddlewares();
