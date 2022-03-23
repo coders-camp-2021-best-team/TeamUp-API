@@ -1,6 +1,6 @@
 import S3 from 'aws-sdk/clients/s3';
 import { FindConditions, ILike } from 'typeorm';
-import { User } from '../user';
+import { User, UserRank } from '../user';
 import {
     QueryPostDto,
     Post,
@@ -58,9 +58,8 @@ export const PostService = new (class {
     }
 
     async updatePost(userID: string, postID: string, body: UpdatePostDto) {
-        const post = await Post.findOne({
+        const post = await Post.findOne(postID, {
             where: {
-                id: postID,
                 author: { id: userID }
             }
         });
@@ -80,11 +79,17 @@ export const PostService = new (class {
     }
 
     async removePost(userID: string, postID: string) {
-        const post = await Post.findOne({
-            where: {
-                id: postID,
-                author: { id: userID }
-            }
+        const user = await User.findOne(userID);
+
+        if (!user) return null;
+
+        const where =
+            user.rank !== UserRank.ADMIN
+                ? { author: { id: userID } }
+                : undefined;
+
+        const post = await Post.findOne(postID, {
+            where
         });
 
         if (!post) return null;

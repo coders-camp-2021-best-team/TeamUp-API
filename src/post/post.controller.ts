@@ -7,13 +7,17 @@ import {
     UpdatePostDto,
     CreatePostDto,
     PostCategoryController,
-    QueryPostDto
+    QueryPostDto,
+    PostVoteController
 } from '.';
 import { validateSync } from 'class-validator';
 
 export class PostController extends Controller {
     constructor() {
-        super('/post', [new PostCategoryController()]);
+        super('/post', [
+            new PostCategoryController(),
+            new PostVoteController()
+        ]);
 
         const router = this.getRouter();
         router.use(AuthMiddleware);

@@ -44,7 +44,7 @@ export class Post extends BaseEntity {
     @JoinTable({ name: 'post_attachments' })
     attachments: Asset[];
 
-    @OneToMany(() => PostVote, (v) => v.post)
+    @OneToMany(() => PostVote, (v) => v.post, { cascade: true })
     votes: PostVote[];
 
     @CreateDateColumn({ type: 'timestamp' })

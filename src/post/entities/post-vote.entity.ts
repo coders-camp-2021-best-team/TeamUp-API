@@ -21,7 +21,7 @@ export class PostVote extends BaseEntity {
     @ManyToOne(() => Post, (m) => m.votes, { onDelete: 'CASCADE' })
     post: Post;
 
-    @ManyToOne(() => User, { onDelete: 'SET NULL' })
+    @ManyToOne(() => User, { onDelete: 'SET NULL', eager: true })
     user: User;
 
     @Column('enum', { enum: PostVoteType })
