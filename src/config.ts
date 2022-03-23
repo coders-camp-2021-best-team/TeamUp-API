@@ -25,6 +25,7 @@ export interface EnvVariables {
     JWT_ALGORITHM: string;
     JWT_PUBLIC_KEY: string;
     JWT_PRIVATE_KEY: string;
+    JWT_INSECURE: boolean;
 }
 
 const envSchema = Joi.object<EnvVariables>({
@@ -56,7 +57,8 @@ const envSchema = Joi.object<EnvVariables>({
         .valid('RS256', 'RS384', 'RS512', 'ES256', 'ES384', 'ES512')
         .default('ES256'),
     JWT_PUBLIC_KEY: Joi.string().required(),
-    JWT_PRIVATE_KEY: Joi.string().required()
+    JWT_PRIVATE_KEY: Joi.string().required(),
+    JWT_INSECURE: Joi.boolean().default(false)
 }).unknown();
 
 const validated = envSchema.validate(process.env);
