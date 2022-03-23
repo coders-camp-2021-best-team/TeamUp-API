@@ -13,12 +13,14 @@ export class ChatRoom extends BaseEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @ManyToOne(() => User)
+    @ManyToOne(() => User, { eager: true, onDelete: 'SET NULL' })
     recipient1: User;
 
-    @ManyToOne(() => User)
+    @ManyToOne(() => User, { eager: true, onDelete: 'SET NULL' })
     recipient2: User;
 
-    @OneToMany(() => Message, (m) => m.chatroom)
+    @OneToMany(() => Message, (m) => m.chatroom, {
+        cascade: true
+    })
     messages: Message[];
 }

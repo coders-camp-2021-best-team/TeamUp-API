@@ -17,16 +17,16 @@ export class Meme extends BaseEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @ManyToOne(() => User)
+    @ManyToOne(() => User, { onDelete: 'SET NULL' })
     author: User;
 
     @Column()
     title: string;
 
-    @OneToOne(() => Asset)
+    @OneToOne(() => Asset, { onDelete: 'CASCADE' })
     @JoinColumn()
     image: Asset;
 
-    @OneToMany(() => MemeVote, (v) => v.meme)
+    @OneToMany(() => MemeVote, (v) => v.meme, { cascade: true })
     votes: MemeVote[];
 }

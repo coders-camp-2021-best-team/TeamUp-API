@@ -12,7 +12,19 @@ export class SwipeController extends Controller {
         const router = this.getRouter();
         router.use(AuthMiddleware);
 
+        router.get('/', this.getSwipes);
         router.post('/:id', this.createSwipe);
+        router.delete('/:id', this.removeSwipe);
+    }
+
+    async getSwipes(req: Request, res: Response) {
+        const swipes = await SwipeService.getSwipes(req.session.userID || '');
+
+        if (!swipes) {
+            return res.status(StatusCodes.UNAUTHORIZED).send();
+        }
+
+        res.send(instanceToPlain(swipes));
     }
 
     async createSwipe(req: Request, res: Response) {
@@ -30,8 +42,25 @@ export class SwipeController extends Controller {
             body.status
         );
 
-        const temp = await SwipeService.swipeMatch(created);
+        if (!created) {
+            return res.status(StatusCodes.BAD_REQUEST).send();
+        }
 
-        return res.status(StatusCodes.CREATED).json(instanceToPlain(temp));
+        return res.send(instanceToPlain(created));
+    }
+
+    async removeSwipe(req: Request, res: Response) {
+        const swipeID = req.params.id;
+
+        const removed = await SwipeService.removeSwipe(
+            req.session.userID || '',
+            swipeID
+        );
+
+        if (!removed) {
+            return res.status(StatusCodes.NOT_FOUND).send();
+        }
+
+        res.send();
     }
 }

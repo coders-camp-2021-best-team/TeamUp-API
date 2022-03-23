@@ -14,10 +14,10 @@ export class UserReport extends BaseEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @ManyToOne(() => User)
+    @ManyToOne(() => User, { onDelete: 'SET NULL' })
     submittedBy: User;
 
-    @ManyToOne(() => User)
+    @ManyToOne(() => User, { onDelete: 'CASCADE' })
     target: User;
 
     @CreateDateColumn({ type: 'timestamp' })

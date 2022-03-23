@@ -8,8 +8,7 @@ export const ChatService = new (class {
             where: [
                 { recipient1: { id: userID } },
                 { recipient2: { id: userID } }
-            ],
-            relations: ['recipient1', 'recipient2']
+            ]
         });
     }
 
@@ -20,9 +19,7 @@ export const ChatService = new (class {
     }
 
     getChatRoom(roomID: string) {
-        return ChatRoom.findOne(roomID, {
-            relations: ['recipient1', 'recipient2']
-        });
+        return ChatRoom.findOne(roomID);
     }
 
     async getUserRoomWithUser(currentUserID: string, targetUserID: string) {
@@ -49,6 +46,18 @@ export const ChatService = new (class {
             take: 50,
             skip
         });
+    }
+
+    async createChatRoom(userID: string, targetID: string) {
+        const user = await User.findOne(userID);
+        const target = await User.findOne(targetID);
+
+        if (!user || !target) return null;
+
+        const chatroom = new ChatRoom();
+        chatroom.recipient1 = user;
+        chatroom.recipient2 = target;
+        return chatroom.save();
     }
 
     async createMessage(userID: string, data: CreateMessageDto) {

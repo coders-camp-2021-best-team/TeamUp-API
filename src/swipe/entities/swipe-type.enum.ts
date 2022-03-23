@@ -1,4 +1,4 @@
-export enum UserSwipeType {
+export enum SwipeType {
     LIKE = 'LIKE',
     DISLIKE = 'DISLIKE'
 }

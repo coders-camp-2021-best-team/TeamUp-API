@@ -18,10 +18,10 @@ export class MemeVote extends BaseEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @ManyToOne(() => Meme, (m) => m.votes)
+    @ManyToOne(() => Meme, (m) => m.votes, { onDelete: 'CASCADE' })
     meme: Meme;
 
-    @ManyToOne(() => User)
+    @ManyToOne(() => User, { onDelete: 'SET NULL' })
     user: User;
 
     @Column('enum', { enum: MemeVoteType })

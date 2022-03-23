@@ -13,6 +13,7 @@ import { Meme } from '../../memes';
 import { UserReport } from '../../report';
 import { UserSwipe } from '../../swipe';
 import { Token } from '../../email';
+import { ChatRoom } from '../../chat';
 import { UserAvatar, UserPhoto, UserSkill } from '.';
 
 export enum UserStatus {
@@ -91,8 +92,6 @@ export class User extends BaseEntity {
     @OneToMany(() => UserSkill, (ug) => ug.user, { cascade: true })
     skills: UserSkill[];
 
-    common_skills: UserSkill[];
-
     @OneToMany(() => UserBlock, (b) => b.blockedBy, { cascade: true })
     blockedUsers: UserBlock[];
 
@@ -105,10 +104,10 @@ export class User extends BaseEntity {
     @OneToMany(() => UserReport, (r) => r.submittedBy, { cascade: true })
     receivedReports: UserReport[];
 
-    @OneToMany(() => UserSwipe, (s) => s.target)
+    @OneToMany(() => UserSwipe, (s) => s.submittedBy)
     swipedUsers: UserSwipe[];
 
-    @OneToMany(() => UserSwipe, (s) => s.submittedBy)
+    @OneToMany(() => UserSwipe, (s) => s.target)
     swipedBy: UserSwipe[];
 
     @OneToMany(() => Meme, (m) => m.author)
@@ -116,4 +115,10 @@ export class User extends BaseEntity {
 
     @OneToMany(() => Token, (t) => t.user)
     tokens: Token[];
+
+    @OneToMany(() => ChatRoom, (c) => c.recipient1)
+    chatroomsByMe: ChatRoom[];
+
+    @OneToMany(() => ChatRoom, (c) => c.recipient2)
+    chatroomsWithMe: ChatRoom[];
 }
