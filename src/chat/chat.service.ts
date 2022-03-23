@@ -8,8 +8,7 @@ export const ChatService = new (class {
             where: [
                 { recipient1: { id: userID } },
                 { recipient2: { id: userID } }
-            ],
-            relations: ['recipient1', 'recipient2']
+            ]
         });
     }
 
@@ -20,9 +19,7 @@ export const ChatService = new (class {
     }
 
     getChatRoom(roomID: string) {
-        return ChatRoom.findOne(roomID, {
-            relations: ['recipient1', 'recipient2']
-        });
+        return ChatRoom.findOne(roomID);
     }
 
     async getUserRoomWithUser(currentUserID: string, targetUserID: string) {
