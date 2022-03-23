@@ -40,6 +40,7 @@ export const FeedService = new (class {
                 'blockedBy.blockedBy',
                 'swipedUsers',
                 'swipedBy',
+                'swipedBy.submittedBy',
                 'chatroomsByMe',
                 'chatroomsWithMe'
             ]

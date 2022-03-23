@@ -48,6 +48,18 @@ export const ChatService = new (class {
         });
     }
 
+    async createChatRoom(userID: string, targetID: string) {
+        const user = await User.findOne(userID);
+        const target = await User.findOne(targetID);
+
+        if (!user || !target) return null;
+
+        const chatroom = new ChatRoom();
+        chatroom.recipient1 = user;
+        chatroom.recipient2 = target;
+        return chatroom.save();
+    }
+
     async createMessage(userID: string, data: CreateMessageDto) {
         const user = await User.findOne(userID);
         if (!user) return null;

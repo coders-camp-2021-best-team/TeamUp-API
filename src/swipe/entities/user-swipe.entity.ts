@@ -14,7 +14,7 @@ export class UserSwipe extends BaseEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @ManyToOne(() => User, { eager: true, onDelete: 'CASCADE' })
+    @ManyToOne(() => User, { onDelete: 'CASCADE' })
     submittedBy: User;
 
     @ManyToOne(() => User, { eager: true, onDelete: 'CASCADE' })

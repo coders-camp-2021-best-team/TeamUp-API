@@ -1,39 +1,37 @@
-import { UserService } from '../user';
 import { UserSwipe, SwipeType } from '.';
+import { Feed } from '../feed';
+import { User } from '../user';
 
 export const SwipeService = new (class {
-    async createSwipe(swipedByID: string, targetID: string, status: SwipeType) {
-        const swipe = new UserSwipe();
-
-        const submittedByUser = await UserService.getUser(swipedByID);
-        const targetUser = await UserService.getUser(targetID);
-
-        if (!targetUser || !submittedByUser) {
-            return null;
-        }
-
-        swipe.target = targetUser;
-        swipe.submittedBy = submittedByUser;
-        swipe.status = status;
-
-        return swipe.save();
+    getFeed(userID: string) {
+        return Feed.findOne(userID);
     }
 
-    async swipeMatch(swipe: UserSwipe | null) {
-        if (!swipe || swipe.status === SwipeType.DISLIKE) {
-            return;
-        }
-        const matchingSwipe = await UserSwipe.findOne({
-            where: {
-                target: swipe.submittedBy,
-                submittedBy: swipe.target,
-                status: SwipeType.LIKE
-            }
-        });
-        if (!matchingSwipe) {
-            return;
-        }
-        // PLACEHOLDER FOR CHAT MATCHING
-        return { msg: 'Match created' }; // adjust to front-end req
+    async getSwipes(userID: string) {
+        return (
+            await User.findOne(userID, {
+                relations: ['swipedUsers']
+            })
+        )?.swipedUsers;
+    }
+
+    async createSwipe(userID: string, targetID: string, status: SwipeType) {
+        const feed = await this.getFeed(userID);
+
+        if (!feed) return null;
+
+        const target_feeduser = feed.recommendedUsers.find(
+            (r) => r.user.id === targetID
+        );
+        if (!target_feeduser) return null;
+
+        target_feeduser.swiped = true;
+        target_feeduser.save();
+
+        const swipe = new UserSwipe();
+        swipe.submittedBy = feed.user;
+        swipe.target = target_feeduser.user;
+        swipe.status = status;
+        return swipe.save();
     }
 })();
