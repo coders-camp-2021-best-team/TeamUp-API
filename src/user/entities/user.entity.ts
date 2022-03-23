@@ -69,7 +69,7 @@ export class User extends BaseEntity {
     @OneToMany(() => UserPhoto, (p) => p.user)
     photos: UserPhoto[];
 
-    @OneToMany(() => UserSkill, (ug) => ug.user)
+    @OneToMany(() => UserSkill, (ug) => ug.user, { cascade: true })
     skills: UserSkill[];
 
     common_skills: UserSkill[];

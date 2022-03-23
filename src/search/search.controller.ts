@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import { StatusCodes } from 'http-status-codes';
 import { AuthMiddleware, Controller } from '../common';
 import { SearchService } from '.';
+import { instanceToPlain } from 'class-transformer';
 
 export class SearchController extends Controller {
     constructor() {
@@ -15,27 +15,15 @@ export class SearchController extends Controller {
 
     async getResults(req: Request, res: Response) {
         const search = req.query.q;
+        const skip = req.query.skip ? +req.query.skip : undefined;
+        const take = req.query.take ? +req.query.take : undefined;
 
-        if (req.query.skip && req.query.take) {
-            const skip = +req.query.skip;
-            const take = +req.query.take;
+        const results = await SearchService.getResults(
+            search as string,
+            take,
+            skip
+        );
 
-            const results = await SearchService.getResults(
-                search as string,
-                take,
-                skip
-            );
-            if (!results) {
-                return res.status(StatusCodes.NOT_FOUND).send();
-            }
-            res.send(results);
-        }
-
-        const results = await SearchService.getResults(search as string);
-
-        if (!results) {
-            return res.status(StatusCodes.NOT_FOUND).send();
-        }
-        res.send(results);
+        res.send(instanceToPlain(results));
     }
 }
