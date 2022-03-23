@@ -2,7 +2,7 @@ import {
     BaseEntity,
     Entity,
     OneToMany,
-    UpdateDateColumn,
+    CreateDateColumn,
     ManyToOne
 } from 'typeorm';
 import { User } from '../../user';
@@ -21,6 +21,6 @@ export class Feed extends BaseEntity {
     })
     recommendedUsers: FeedUser[];
 
-    @UpdateDateColumn({ type: 'timestamp' })
+    @CreateDateColumn({ type: 'timestamp' })
     createdOn: Date;
 }

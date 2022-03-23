@@ -3,7 +3,7 @@ import { User, UserSkill } from '../user';
 import { Feed, FeedUser } from './entities';
 
 export const FeedService = new (class {
-    async getFeed(userID?: string) {
+    async getFeed(userID: string) {
         const feed = await Feed.findOne(userID);
 
         if (feed) {
@@ -22,14 +22,14 @@ export const FeedService = new (class {
             await feed.remove();
         }
 
-        const new_feed = await this.createFeed();
+        const new_feed = await this.createFeed(userID);
         if (!new_feed) return null;
         if (!new_feed.recommendedUsers.length) return null;
 
         return new_feed.save();
     }
 
-    async createFeed(userID?: string) {
+    async createFeed(userID: string) {
         const user = await User.findOne(userID, {
             relations: [
                 'skills',
@@ -81,7 +81,6 @@ export const FeedService = new (class {
 
             for (const skill of skills) {
                 const uid = skill.user?.id || '';
-                delete skill.user;
 
                 if (people_that_blocked_me.includes(uid)) continue;
                 if (people_that_i_blocked.includes(uid)) continue;
@@ -90,7 +89,7 @@ export const FeedService = new (class {
                 if (people_i_started_chat_with.includes(uid)) continue;
                 if (people_started_chat_with_me.includes(uid)) continue;
 
-                if (uid == user.id) continue;
+                if (uid === user.id) continue;
 
                 if (!similar_users_obj[uid]) {
                     const u = await User.findOne(uid);
