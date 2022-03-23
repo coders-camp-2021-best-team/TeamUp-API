@@ -1,9 +1,14 @@
 import { UserReport, GetReportsDto, CreateReportDto, UpdateReportDto } from '.';
-import { User } from '../user';
+import { User, UserRank } from '../user';
 import { UserReportStatus } from './entities';
 
 export const ReportService = new (class {
-    async getReports(data: GetReportsDto) {
+    async getReports(userID: string, data: GetReportsDto) {
+        const user = await User.findOne(userID);
+        if (!user || user.rank !== UserRank.ADMIN) {
+            return null;
+        }
+
         const reports = await UserReport.find({
             where: {
                 status: data.status || UserReportStatus.PENDING
@@ -34,9 +39,13 @@ export const ReportService = new (class {
         return report.save();
     }
 
-    async updateReport(id: string, data: UpdateReportDto) {
-        const report = await UserReport.findOne(id);
+    async updateReport(userID: string, id: string, data: UpdateReportDto) {
+        const user = await User.findOne(userID);
+        if (!user || user.rank !== UserRank.ADMIN) {
+            return null;
+        }
 
+        const report = await UserReport.findOne(id);
         if (!report) {
             return null;
         }

@@ -8,7 +8,9 @@ export const GameService = new (class {
     }
 
     async getGame(gameID: string) {
-        const game = await Game.findOne(gameID);
+        const game = await Game.findOne(gameID, {
+            relations: ['levels']
+        });
         if (!game) {
             return null;
         }
@@ -32,18 +34,6 @@ export const GameService = new (class {
         }
 
         return game.remove();
-    }
-
-    async getExperienceLevels(gameID: string) {
-        const game = await Game.findOne(gameID, {
-            relations: ['levels']
-        });
-
-        if (!game) {
-            return null;
-        }
-
-        return game.levels;
     }
 
     async addExperienceLevel(gameID: string, data: AddLevelDto) {

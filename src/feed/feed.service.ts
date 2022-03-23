@@ -6,7 +6,8 @@ export const FeedService = new (class {
         const user = await User.findOne(userID, {
             relations: [
                 'skills',
-                'skills.game',
+                'skills.level',
+                'skills.level.game',
                 'blockedUsers',
                 'blockedBy',
                 'swipedUsers',
@@ -28,13 +29,14 @@ export const FeedService = new (class {
         const people_that_i_disliked = user.swipedUsers
             .filter((s) => s.status == UserSwipeType.DISLIKE)
             .map((s) => s.target.id);
-        const games_that_i_like = user.skills.map((s) => s.game.name);
+        const games_that_i_like = user.skills.map((s) => s.level.game.id);
 
         const similar_users_obj: { [key: string]: User } = {};
 
-        for (const game of games_that_i_like) {
+        for (const gameID of games_that_i_like) {
             const skills = await UserSkill.find({
-                where: { game: { name: game } },
+                where: { level: { game: { id: gameID } } },
+                relations: ['level', 'level.game'],
                 loadRelationIds: {
                     relations: ['user'],
                     disableMixedMap: true

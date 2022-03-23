@@ -58,7 +58,7 @@ export class UserController extends Controller {
         const updated = await UserService.updateUser(id, body);
 
         if (!updated) {
-            return res.status(StatusCodes.NOT_FOUND).send();
+            return res.status(StatusCodes.BAD_REQUEST).send();
         }
 
         return res.send(instanceToPlain(updated));
@@ -111,6 +111,10 @@ export class UserController extends Controller {
         const userID = req.params.id;
         const levelID = req.params.levelID;
 
+        if (!userID || userID !== req.session.userID) {
+            return res.status(StatusCodes.BAD_REQUEST).send();
+        }
+
         const skills = await UserService.addUserSkill(userID, levelID);
 
         if (!skills) {
@@ -123,6 +127,10 @@ export class UserController extends Controller {
     async removeUserSkill(req: Request, res: Response) {
         const userID = req.params.id;
         const skillID = req.params.skillID;
+
+        if (!userID || userID !== req.session.userID) {
+            return res.status(StatusCodes.BAD_REQUEST).send();
+        }
 
         const removed = await UserService.removeUserSkill(userID, skillID);
 

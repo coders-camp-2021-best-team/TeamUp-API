@@ -25,6 +25,11 @@ export enum UserRegisterStatus {
     VERIFIED = 'VERIFIED'
 }
 
+export enum UserRank {
+    ADMIN = 'ADMIN',
+    USER = 'USER'
+}
+
 export enum UserActivityStatus {
     ONLINE = 'ONLINE',
     OFFLINE = 'OFFLINE'
@@ -56,6 +61,9 @@ export class User extends BaseEntity {
 
     @Column('longtext', { default: '' })
     biogram: string;
+
+    @Column('enum', { enum: UserRank, default: UserRank.USER })
+    rank: UserRank;
 
     @Column('enum', { enum: UserStatus, default: UserStatus.ACTIVE })
     status: UserStatus;

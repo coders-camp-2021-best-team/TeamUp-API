@@ -1,11 +1,5 @@
-import {
-    BaseEntity,
-    Entity,
-    JoinColumn,
-    ManyToOne,
-    PrimaryGeneratedColumn
-} from 'typeorm';
-import { Game, ExperienceLevel } from '../../game';
+import { BaseEntity, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { ExperienceLevel } from '../../game';
 import { User } from '.';
 
 @Entity('user_skills')
@@ -16,15 +10,8 @@ export class UserSkill extends BaseEntity {
     @ManyToOne(() => User, (u) => u.skills)
     user?: User;
 
-    @ManyToOne(() => Game, {
-        eager: true
-    })
-    @JoinColumn()
-    game: Game;
-
     @ManyToOne(() => ExperienceLevel, {
         eager: true
     })
-    @JoinColumn()
     level: ExperienceLevel;
 }

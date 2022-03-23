@@ -8,7 +8,7 @@ import { UserSkill } from './entities';
 export const UserService = new (class {
     async getUser(userId: string) {
         const user = await User.findOne(userId, {
-            relations: ['skills']
+            relations: ['skills', 'skills.level', 'skills.level.game']
         });
 
         if (!user) {
@@ -110,18 +110,15 @@ export const UserService = new (class {
             return null;
         }
 
-        const user = await User.findOne(userID, {
-            relations: ['skills']
-        });
+        const user = await this.getUser(userID);
         if (!user) {
             return null;
         }
 
         const skill = new UserSkill();
-        skill.game = level.game;
         skill.level = level;
 
-        if (!user.skills.some((s) => s.level.id === level.id)) {
+        if (!user.skills.some((s) => s.level.game.id === level.game.id)) {
             user.skills.push(skill);
         } else {
             return null;

@@ -15,6 +15,8 @@ export class Game extends BaseEntity {
     @Column({ unique: true })
     name: string;
 
-    @OneToMany(() => ExperienceLevel, (el) => el.game, { cascade: true })
+    @OneToMany(() => ExperienceLevel, (el) => el.game, {
+        cascade: true
+    })
     levels: ExperienceLevel[];
 }
