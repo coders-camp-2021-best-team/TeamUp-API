@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { instanceToPlain, plainToInstance } from 'class-transformer';
-import { validate } from 'class-validator';
+import { validateSync } from 'class-validator';
 import { AuthMiddleware, Controller } from '../common';
 import {
     UserService,
@@ -37,7 +37,7 @@ export class UserController extends Controller {
 
     async updateUser(req: Request, res: Response) {
         const body = plainToInstance(UpdateUserDto, req.body);
-        const errors = await validate(body);
+        const errors = validateSync(body);
         if (errors.length > 0) {
             return res.status(StatusCodes.BAD_REQUEST).json(errors);
         }
@@ -70,7 +70,7 @@ export class UserController extends Controller {
 
     async requestPasswordReset(req: Request, res: Response) {
         const body = plainToInstance(PasswordResetRequestDto, req.body);
-        const errors = await validate(body);
+        const errors = validateSync(body);
         if (errors.length) {
             return res.status(StatusCodes.BAD_REQUEST).json(errors);
         }
@@ -84,7 +84,7 @@ export class UserController extends Controller {
 
     async resetPassword(req: Request, res: Response) {
         const body = plainToInstance(PasswordResetDto, req.body);
-        const errors = await validate(body);
+        const errors = validateSync(body);
         if (errors.length) {
             return res.status(StatusCodes.BAD_REQUEST).json(errors);
         }
