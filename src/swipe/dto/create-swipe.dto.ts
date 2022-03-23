@@ -1,7 +1,7 @@
 import { IsEnum } from 'class-validator';
-import { UserSwipeType } from '../../swipe/entities/user-swipe.enum';
+import { SwipeType } from '../entities/swipe-type.enum';
 
 export class CreateSwipeDto {
-    @IsEnum(UserSwipeType)
-    status: UserSwipeType;
+    @IsEnum(SwipeType)
+    status: SwipeType;
 }

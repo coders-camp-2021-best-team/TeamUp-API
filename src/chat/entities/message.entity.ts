@@ -17,10 +17,10 @@ export class Message extends BaseEntity {
     @CreateDateColumn({ type: 'timestamp' })
     createdOn: Date;
 
-    @ManyToOne(() => ChatRoom, (c) => c.messages)
+    @ManyToOne(() => ChatRoom, (c) => c.messages, { onDelete: 'CASCADE' })
     chatroom: ChatRoom;
 
-    @ManyToOne(() => User)
+    @ManyToOne(() => User, { onDelete: 'SET NULL' })
     author: User;
 
     @Column('longtext')

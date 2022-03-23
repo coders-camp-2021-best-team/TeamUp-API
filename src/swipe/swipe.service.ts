@@ -1,12 +1,8 @@
 import { UserService } from '../user';
-import { UserSwipe, UserSwipeType } from '.';
+import { UserSwipe, SwipeType } from '.';
 
 export const SwipeService = new (class {
-    async createSwipe(
-        swipedByID: string,
-        targetID: string,
-        status: UserSwipeType
-    ) {
+    async createSwipe(swipedByID: string, targetID: string, status: SwipeType) {
         const swipe = new UserSwipe();
 
         const submittedByUser = await UserService.getUser(swipedByID);
@@ -24,14 +20,14 @@ export const SwipeService = new (class {
     }
 
     async swipeMatch(swipe: UserSwipe | null) {
-        if (!swipe || swipe.status === UserSwipeType.DISLIKE) {
+        if (!swipe || swipe.status === SwipeType.DISLIKE) {
             return;
         }
         const matchingSwipe = await UserSwipe.findOne({
             where: {
                 target: swipe.submittedBy,
                 submittedBy: swipe.target,
-                status: UserSwipeType.LIKE
+                status: SwipeType.LIKE
             }
         });
         if (!matchingSwipe) {
