@@ -16,6 +16,8 @@ export const FeedService = new (class {
                     (fu) => fu.swiped === false
                 );
 
+                feed.recommendedUser = feed.recommendedUsers[0]?.user || null;
+
                 return feed;
             }
 
@@ -26,7 +28,10 @@ export const FeedService = new (class {
         if (!new_feed) return null;
         if (!new_feed.recommendedUsers.length) return null;
 
-        return new_feed.save();
+        await new_feed.save();
+
+        new_feed.recommendedUser = new_feed.recommendedUsers[0]?.user || null;
+        return new_feed;
     }
 
     async createFeed(userID: string) {
