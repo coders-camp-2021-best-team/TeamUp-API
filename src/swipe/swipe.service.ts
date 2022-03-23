@@ -17,9 +17,27 @@ export const SwipeService = new (class {
         }
 
         swipe.target = targetUser;
-        swipe.submittedBy = targetUser;
+        swipe.submittedBy = submittedByUser;
         swipe.status = status;
 
         return swipe.save();
+    }
+
+    async swipeMatch(swipe: UserSwipe | null) {
+        if (!swipe || swipe.status === UserSwipeType.DISLIKE) {
+            return;
+        }
+        const matchingSwipe = await UserSwipe.findOne({
+            where: {
+                target: swipe.submittedBy,
+                submittedBy: swipe.target,
+                status: UserSwipeType.LIKE
+            }
+        });
+        if (!matchingSwipe) {
+            return;
+        }
+        // PLACEHOLDER FOR CHAT MATCHING
+        return { msg: 'Match created' }; // adjust to front-end req
     }
 })();

@@ -30,6 +30,8 @@ export class SwipeController extends Controller {
             body.status
         );
 
-        return res.status(StatusCodes.CREATED).send(instanceToPlain(created));
+        const temp = await SwipeService.swipeMatch(created);
+
+        return res.status(StatusCodes.CREATED).json(instanceToPlain(temp));
     }
 }
