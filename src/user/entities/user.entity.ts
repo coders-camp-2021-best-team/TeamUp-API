@@ -30,6 +30,11 @@ export enum UserRank {
     USER = 'USER'
 }
 
+export enum UserActivityStatus {
+    ONLINE = 'ONLINE',
+    OFFLINE = 'OFFLINE'
+}
+
 @Entity('users')
 export class User extends BaseEntity {
     @PrimaryGeneratedColumn('uuid')
@@ -62,6 +67,12 @@ export class User extends BaseEntity {
 
     @Column('enum', { enum: UserStatus, default: UserStatus.ACTIVE })
     status: UserStatus;
+
+    @Column('enum', {
+        enum: UserActivityStatus,
+        default: UserActivityStatus.OFFLINE
+    })
+    activity_status: UserActivityStatus;
 
     @Column('enum', {
         enum: UserRegisterStatus,

@@ -20,7 +20,8 @@ const server = new API({
         new SwipeController(),
         new UserController()
     ],
-    onWebsocketConnection: ChatController.onWebsocketConnection
+    onWebsocketConnection: ChatController.onWebsocketConnection,
+    websocketMiddleware: ChatController.websocketAuthMiddleware
 });
 
 server.initialize();

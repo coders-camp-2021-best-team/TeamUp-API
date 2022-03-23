@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { validate } from 'class-validator';
+import { validateSync } from 'class-validator';
 import { instanceToPlain, plainToInstance } from 'class-transformer';
 import { StatusCodes } from 'http-status-codes';
 import { AuthMiddleware, Controller } from '../common';
@@ -24,7 +24,7 @@ export class ReportController extends Controller {
 
     async getReports(req: Request, res: Response) {
         const query = plainToInstance(GetReportsDto, req.query);
-        const errors = await validate(query);
+        const errors = validateSync(query);
         if (errors.length) {
             return res.status(StatusCodes.BAD_REQUEST).json(errors);
         }
@@ -42,7 +42,7 @@ export class ReportController extends Controller {
 
     async createReport(req: Request, res: Response) {
         const body = plainToInstance(CreateReportDto, req.body);
-        const errors = await validate(body);
+        const errors = validateSync(body);
         if (errors.length) {
             return res.status(StatusCodes.BAD_REQUEST).json(errors);
         }
@@ -69,7 +69,7 @@ export class ReportController extends Controller {
 
     async updateReport(req: Request, res: Response) {
         const body = plainToInstance(UpdateReportDto, req.body);
-        const errors = await validate(body);
+        const errors = validateSync(body);
         if (errors.length) {
             return res.status(StatusCodes.BAD_REQUEST).json(errors);
         }

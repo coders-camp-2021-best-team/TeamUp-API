@@ -1,8 +1,12 @@
 import { compareSync, hashSync } from 'bcryptjs';
+import jwt, { SignOptions } from 'jsonwebtoken';
 import { randomBytes } from 'crypto';
 import { User, UserRegisterStatus, UserStatus } from '../user';
 import { EmailService, Token, TokenType } from '../email';
 import { LoginDto, RegisterDto } from '.';
+
+import env from '../config';
+const { NODE_ENV, JWT_ALGORITHM, JWT_PRIVATE_KEY, JWT_PUBLIC_KEY } = env;
 
 export const AuthService = new (class {
     async login(data: LoginDto) {
@@ -51,6 +55,31 @@ export const AuthService = new (class {
         return userSave;
     }
 
+    getWebsocketJWT(userID: string) {
+        return jwt.sign({}, JWT_PRIVATE_KEY, {
+            subject: userID,
+            algorithm: JWT_ALGORITHM,
+            expiresIn: NODE_ENV !== 'development' ? 10 : 60
+        } as SignOptions);
+    }
+
+    verifyWebsocketJWT(token: string) {
+        try {
+            return jwt.verify(token, JWT_PUBLIC_KEY, {
+                algorithms: [
+                    'RS256',
+                    'RS384',
+                    'RS512',
+                    'ES256',
+                    'ES384',
+                    'ES512'
+                ]
+            });
+        } catch {
+            return null;
+        }
+    }
+
     getUserByEmail(email: string) {
         return User.findOne({
             where: {
@@ -69,3 +98,9 @@ export const AuthService = new (class {
         return compareSync(password, passwordHash);
     }
 })();
+
+export const verifyWebsocketJWT = (token: string) => {
+    return jwt.verify(token, JWT_PUBLIC_KEY, {
+        algorithms: ['RS256', 'RS384', 'RS512', 'ES256', 'ES384', 'ES512']
+    });
+};

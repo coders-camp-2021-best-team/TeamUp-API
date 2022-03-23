@@ -1,5 +1,5 @@
 import { instanceToPlain, plainToInstance } from 'class-transformer';
-import { validate } from 'class-validator';
+import { validateSync } from 'class-validator';
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { AuthMiddleware, LoggedOutMiddleware, Controller } from '../common';
@@ -15,11 +15,12 @@ export class AuthController extends Controller {
         router.post('/login', LoggedOutMiddleware, this.login);
         router.post('/register', LoggedOutMiddleware, this.register);
         router.post('/logout', AuthMiddleware, this.logout);
+        router.get('/websocket-jwt', AuthMiddleware, this.websocketJWT);
     }
 
     async login(req: Request, res: Response) {
         const body = plainToInstance(LoginDto, req.body);
-        const errors = await validate(body);
+        const errors = validateSync(body);
         if (errors.length) {
             return res.status(StatusCodes.BAD_REQUEST).json(errors);
         }
@@ -38,7 +39,7 @@ export class AuthController extends Controller {
 
     async register(req: Request, res: Response) {
         const body = plainToInstance(RegisterDto, req.body);
-        const errors = await validate(body);
+        const errors = validateSync(body);
         if (errors.length) {
             return res.status(StatusCodes.BAD_REQUEST).json(errors);
         }
@@ -56,5 +57,13 @@ export class AuthController extends Controller {
         req.session.destroy(() => {
             res.send();
         });
+    }
+
+    websocketJWT(req: Request, res: Response) {
+        if (!req.session.userID) {
+            return res.status(StatusCodes.UNAUTHORIZED).send();
+        }
+
+        return res.send(AuthService.getWebsocketJWT(req.session.userID));
     }
 }
