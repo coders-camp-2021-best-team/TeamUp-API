@@ -15,6 +15,10 @@ export interface EnvVariables {
     SESSION_SECRET: string;
     REDIS_URL?: string;
     REDIS_TLS_URL?: string;
+    AWS_ENDPOINT_URL?: string;
+    AWS_ACCESS_KEY_ID: string;
+    AWS_SECRET_ACCESS_KEY: string;
+    AWS_BUCKET_NAME: string;
 }
 
 const envSchema = Joi.object<EnvVariables>({
@@ -33,7 +37,11 @@ const envSchema = Joi.object<EnvVariables>({
     PORT: Joi.number().port().default(3000),
     SESSION_SECRET: Joi.string().required().min(16),
     REDIS_URL: Joi.string().optional().uri(),
-    REDIS_TLS_URL: Joi.string().optional().uri()
+    REDIS_TLS_URL: Joi.string().optional().uri(),
+    AWS_ENDPOINT_URL: Joi.string().uri(),
+    AWS_ACCESS_KEY_ID: Joi.string().required(),
+    AWS_SECRET_ACCESS_KEY: Joi.string().required(),
+    AWS_BUCKET_NAME: Joi.string().required()
 }).unknown();
 
 const validated = envSchema.validate(process.env);
