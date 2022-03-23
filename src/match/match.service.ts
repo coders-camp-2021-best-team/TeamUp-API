@@ -1,5 +1,6 @@
 import { ChatService } from '../chat';
-import { SwipeService } from '../swipe';
+import { SwipeService, SwipeType } from '../swipe';
+import { User } from '../user';
 
 export const MatchService = new (class {
     async getMatch(userID: string) {
@@ -15,13 +16,27 @@ export const MatchService = new (class {
                 (a, b) => b.common_skills - a.common_skills
             );
 
-            const match = feed.recommendedUsers[0];
+            const user = await User.findOne(feed.user.id, {
+                relations: ['swipedUsers']
+            });
+            if (!user) return null;
 
-            await ChatService.createChatRoom(userID, match.user.id);
+            for (const targetUser of feed.recommendedUsers) {
+                const swipe = user.swipedUsers.find(
+                    (s) => s.target.id === targetUser.user.id
+                );
+
+                if (swipe?.status === SwipeType.DISLIKE) continue;
+
+                await ChatService.createChatRoom(userID, targetUser.user.id);
+
+                await feed.remove();
+
+                return targetUser.user;
+            }
 
             await feed.remove();
-
-            return match;
+            return { error: 'No matches' };
         }
 
         return null;
