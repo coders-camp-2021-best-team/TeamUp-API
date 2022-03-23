@@ -12,7 +12,7 @@ export class UserBlock extends BaseEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @ManyToOne(() => User, { eager: true })
+    @ManyToOne(() => User)
     blockedBy: User;
 
     @ManyToOne(() => User, { eager: true })
