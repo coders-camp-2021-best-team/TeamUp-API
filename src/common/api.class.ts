@@ -2,6 +2,8 @@ import { createServer } from 'http';
 import express from 'express';
 import 'express-async-errors';
 import session from 'express-session';
+import RateLimiter from 'express-rate-limit';
+import SlowDown from 'express-slow-down';
 import cors from 'cors';
 import ConnectRedis from 'connect-redis';
 import Redis from 'ioredis';
@@ -32,9 +34,9 @@ export type WebsocketMiddleware = (
 ) => void;
 
 export class API {
-    public readonly app = express();
-    public readonly http = createServer(this.app);
-    public readonly io = new Server(this.http);
+    private app = express();
+    private http = createServer(this.app);
+    private io = new Server(this.http);
 
     private session_middleware: express.RequestHandler;
     private middlewares: Middleware[];
@@ -72,11 +74,11 @@ export class API {
     }
 
     private initSession() {
-        const redisClient = new Redis(REDIS_TLS_URL || REDIS_URL);
+        const redis_client = new Redis(REDIS_TLS_URL || REDIS_URL);
 
         this.session_middleware = session({
             store: new RedisStore({
-                client: redisClient
+                client: redis_client
             }),
             saveUninitialized: false,
             secret: SESSION_SECRET,
@@ -87,6 +89,30 @@ export class API {
         });
 
         this.app.use(this.session_middleware);
+    }
+
+    private initRateLimiter() {
+        // 600 req/min
+        const limit = 600;
+        const ms = 60 * 1000;
+        const speed_limit_on_usage = 0.8;
+
+        const rateLimiter = RateLimiter({
+            max: limit,
+            windowMs: ms,
+            standardHeaders: true,
+            legacyHeaders: false
+        });
+
+        const speedLimiter = SlowDown({
+            windowMs: ms,
+            delayAfter: speed_limit_on_usage * limit,
+            delayMs: 100,
+            headers: true
+        });
+
+        this.app.use(rateLimiter);
+        this.app.use(speedLimiter);
     }
 
     private initMiddlewares() {
@@ -119,9 +145,12 @@ export class API {
     }
 
     public async initialize() {
-        this.initCORS();
+        this.app.enable('trust proxy');
+
         await this.initDatabase();
+        this.initCORS();
         this.initSession();
+        this.initRateLimiter();
         this.initMiddlewares();
         this.initControllers();
         this.initSocketIO();
