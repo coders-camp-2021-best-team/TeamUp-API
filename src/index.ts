@@ -1,5 +1,6 @@
 import { API } from './common';
 import { AuthController } from './auth';
+import { BlockController } from './block';
 import { ChatController } from './chat';
 import { GameController } from './game';
 import { FeedController } from './feed';
@@ -12,6 +13,7 @@ const server = new API({
     middlewares: [],
     controllers: [
         new AuthController(),
+        new BlockController(),
         new ChatController(),
         new GameController(),
         new FeedController(),
