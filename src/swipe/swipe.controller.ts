@@ -14,6 +14,7 @@ export class SwipeController extends Controller {
 
         router.get('/', this.getSwipes);
         router.post('/:id', this.createSwipe);
+        router.delete('/:id', this.removeSwipe);
     }
 
     async getSwipes(req: Request, res: Response) {
@@ -46,5 +47,20 @@ export class SwipeController extends Controller {
         }
 
         return res.send(instanceToPlain(created));
+    }
+
+    async removeSwipe(req: Request, res: Response) {
+        const swipeID = req.params.id;
+
+        const removed = await SwipeService.removeSwipe(
+            req.session.userID || '',
+            swipeID
+        );
+
+        if (!removed) {
+            return res.status(StatusCodes.NOT_FOUND).send();
+        }
+
+        res.send();
     }
 }

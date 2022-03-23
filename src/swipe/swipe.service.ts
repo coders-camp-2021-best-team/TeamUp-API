@@ -34,4 +34,17 @@ export const SwipeService = new (class {
         swipe.status = status;
         return swipe.save();
     }
+
+    async removeSwipe(userID: string, swipeID: string) {
+        const swipe = await UserSwipe.findOne(swipeID, {
+            where: {
+                submittedBy: { id: userID }
+            },
+            relations: ['submittedBy']
+        });
+
+        if (!swipe) return null;
+
+        return swipe.remove();
+    }
 })();
