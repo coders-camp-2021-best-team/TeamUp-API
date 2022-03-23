@@ -118,7 +118,6 @@ export const UserService = new (class {
         }
 
         const skill = new UserSkill();
-        skill.game = level.game;
         skill.level = level;
 
         if (!user.skills.some((s) => s.level.id === level.id)) {

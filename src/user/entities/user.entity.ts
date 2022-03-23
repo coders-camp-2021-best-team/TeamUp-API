@@ -25,6 +25,11 @@ export enum UserRegisterStatus {
     VERIFIED = 'VERIFIED'
 }
 
+export enum UserRank {
+    ADMIN = 'ADMIN',
+    USER = 'USER'
+}
+
 @Entity('users')
 export class User extends BaseEntity {
     @PrimaryGeneratedColumn('uuid')
@@ -51,6 +56,9 @@ export class User extends BaseEntity {
 
     @Column('longtext', { default: '' })
     biogram: string;
+
+    @Column('enum', { enum: UserRank, default: UserRank.USER })
+    rank: UserRank;
 
     @Column('enum', { enum: UserStatus, default: UserStatus.ACTIVE })
     status: UserStatus;
