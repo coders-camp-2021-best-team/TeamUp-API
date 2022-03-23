@@ -17,8 +17,7 @@ export class Feed extends BaseEntity {
 
     @OneToMany(() => FeedUser, (fu) => fu.feed, {
         cascade: true,
-        eager: true,
-        onDelete: 'CASCADE'
+        eager: true
     })
     recommendedUsers: FeedUser[];
 
