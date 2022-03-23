@@ -15,7 +15,7 @@ export class UserBlock extends BaseEntity {
     @ManyToOne(() => User)
     blockedBy: User;
 
-    @ManyToOne(() => User)
+    @ManyToOne(() => User, { eager: true })
     target: User;
 
     @CreateDateColumn({ type: 'timestamp' })

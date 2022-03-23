@@ -1,12 +1,10 @@
 import { instanceToPlain, plainToInstance } from 'class-transformer';
-import { validate } from 'class-validator';
+import { validateSync } from 'class-validator';
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
-
-import { Controller } from '../common';
-
-import { AuthService } from './auth.service';
-import { LoginDto, RegisterDto } from './dto';
+import { AuthMiddleware, LoggedOutMiddleware, Controller } from '../common';
+import { UserStatus } from '../user';
+import { AuthService, LoginDto, RegisterDto } from '.';
 
 export class AuthController extends Controller {
     constructor() {
@@ -14,32 +12,34 @@ export class AuthController extends Controller {
 
         const router = this.getRouter();
 
-        router.post('/login', this.login);
-        router.post('/register', this.register);
-        router.post('/logout', this.logout);
+        router.post('/login', LoggedOutMiddleware, this.login);
+        router.post('/register', LoggedOutMiddleware, this.register);
+        router.post('/logout', AuthMiddleware, this.logout);
+        router.get('/websocket-jwt', AuthMiddleware, this.websocketJWT);
     }
 
     async login(req: Request, res: Response) {
-        const body = plainToInstance(LoginDto, req.body as LoginDto);
-        const errors = await validate(body);
+        const body = plainToInstance(LoginDto, req.body);
+        const errors = validateSync(body);
         if (errors.length) {
             return res.status(StatusCodes.BAD_REQUEST).json(errors);
         }
 
         const user = await AuthService.login(body);
 
-        if (!user) {
+        if (!user || user.status !== UserStatus.ACTIVE) {
             return res.status(StatusCodes.UNAUTHORIZED).send();
         }
 
         req.session.userID = user.id;
+        req.session.loggedIn = true;
 
         return res.json(instanceToPlain(user));
     }
 
     async register(req: Request, res: Response) {
-        const body = plainToInstance(RegisterDto, req.body as RegisterDto);
-        const errors = await validate(body);
+        const body = plainToInstance(RegisterDto, req.body);
+        const errors = validateSync(body);
         if (errors.length) {
             return res.status(StatusCodes.BAD_REQUEST).json(errors);
         }
@@ -57,5 +57,13 @@ export class AuthController extends Controller {
         req.session.destroy(() => {
             res.send();
         });
+    }
+
+    websocketJWT(req: Request, res: Response) {
+        if (!req.session.userID) {
+            return res.status(StatusCodes.UNAUTHORIZED).send();
+        }
+
+        return res.send(AuthService.getWebsocketJWT(req.session.userID));
     }
 }

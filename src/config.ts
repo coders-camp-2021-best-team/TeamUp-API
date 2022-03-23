@@ -15,6 +15,17 @@ export interface EnvVariables {
     SESSION_SECRET: string;
     REDIS_URL?: string;
     REDIS_TLS_URL?: string;
+    SMTP_HOST: string;
+    SMTP_PORT: number;
+    SMTP_USERNAME: string;
+    SMTP_PASSWORD: string;
+    EMAIL_FROM: string;
+    CLIENT_URL: string;
+    API_URL: string;
+    JWT_ALGORITHM: string;
+    JWT_PUBLIC_KEY: string;
+    JWT_PRIVATE_KEY: string;
+    JWT_INSECURE: boolean;
     AWS_ENDPOINT_URL?: string;
     AWS_ACCESS_KEY_ID: string;
     AWS_SECRET_ACCESS_KEY: string;
@@ -38,6 +49,20 @@ const envSchema = Joi.object<EnvVariables>({
     SESSION_SECRET: Joi.string().required().min(16),
     REDIS_URL: Joi.string().optional().uri(),
     REDIS_TLS_URL: Joi.string().optional().uri(),
+    SMTP_HOST: Joi.string().required().hostname(),
+    SMTP_PORT: Joi.number().required().port(),
+    SMTP_USERNAME: Joi.string().required(),
+    SMTP_PASSWORD: Joi.string().required(),
+    EMAIL_FROM: Joi.string().required(),
+    CLIENT_URL: Joi.string().required().uri(),
+    API_URL: Joi.string().required().uri(),
+    JWT_ALGORITHM: Joi.string()
+        .required()
+        .valid('RS256', 'RS384', 'RS512', 'ES256', 'ES384', 'ES512')
+        .default('ES256'),
+    JWT_PUBLIC_KEY: Joi.string().required(),
+    JWT_PRIVATE_KEY: Joi.string().required(),
+    JWT_INSECURE: Joi.boolean().default(false),
     AWS_ENDPOINT_URL: Joi.string().uri(),
     AWS_ACCESS_KEY_ID: Joi.string().required(),
     AWS_SECRET_ACCESS_KEY: Joi.string().required(),

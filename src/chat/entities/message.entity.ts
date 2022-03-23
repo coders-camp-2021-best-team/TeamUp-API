@@ -1,20 +1,24 @@
 import {
     BaseEntity,
     Column,
+    CreateDateColumn,
     Entity,
     ManyToOne,
     PrimaryGeneratedColumn
 } from 'typeorm';
 import { User } from '../../user';
-import { Chat } from '.';
+import { ChatRoom } from '.';
 
 @Entity('chat_messages')
 export class Message extends BaseEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @ManyToOne(() => Chat, (c) => c.messages)
-    chat: Chat;
+    @CreateDateColumn({ type: 'timestamp' })
+    createdOn: Date;
+
+    @ManyToOne(() => ChatRoom, (c) => c.messages)
+    chatroom: ChatRoom;
 
     @ManyToOne(() => User)
     author: User;
