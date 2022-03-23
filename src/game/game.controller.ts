@@ -3,6 +3,7 @@ import { StatusCodes } from 'http-status-codes';
 import { instanceToPlain, plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { AuthMiddleware, Controller } from '../common';
+import { AdminMiddleware } from '../common/middlewares/admin.middleware';
 import { GameService, AddGameDto, AddLevelDto } from '.';
 
 export class GameController extends Controller {
@@ -13,11 +14,15 @@ export class GameController extends Controller {
         router.use(AuthMiddleware);
 
         router.get('/', this.getAllGames);
-        router.post('/', this.addGame);
+        router.post('/', AdminMiddleware, this.addGame);
         router.get('/:id', this.getGame);
-        router.delete('/:id', this.removeGame);
-        router.post('/:id/level', this.addExperienceLevel);
-        router.delete('/:id/level/:lvl_id', this.removeExperienceLevel);
+        router.delete('/:id', AdminMiddleware, this.removeGame);
+        router.post('/:id/level', AdminMiddleware, this.addExperienceLevel);
+        router.delete(
+            '/:id/level/:lvl_id',
+            AdminMiddleware,
+            this.removeExperienceLevel
+        );
     }
 
     async getAllGames(req: Request, res: Response) {
