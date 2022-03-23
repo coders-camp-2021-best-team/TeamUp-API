@@ -4,7 +4,7 @@ import { User } from '.';
 
 @Entity('user_photos')
 export class UserPhoto extends BaseEntity {
-    @ManyToOne(() => User, (u) => u.photos)
+    @ManyToOne(() => User, (u) => u.photos, { onDelete: 'CASCADE' })
     user: User;
 
     @OneToOne(() => Asset, { primary: true, eager: true })

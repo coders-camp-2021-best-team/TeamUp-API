@@ -11,16 +11,16 @@ export class FeedController extends Controller {
         const router = this.getRouter();
         router.use(AuthMiddleware);
 
-        router.get('/recommended', this.getRecommended);
+        router.get('/', this.getFeed);
     }
 
-    async getRecommended(req: Request, res: Response) {
-        const users = await FeedService.getRecommended(req.session.userID);
+    async getFeed(req: Request, res: Response) {
+        const feed = await FeedService.getFeed(req.session.userID || '');
 
-        if (!users) {
-            return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send();
+        if (!feed) {
+            return res.status(StatusCodes.NO_CONTENT).send();
         }
 
-        return res.json(instanceToPlain(users));
+        return res.json(instanceToPlain(feed));
     }
 }

@@ -4,6 +4,7 @@ import { BlockController } from './block';
 import { ChatController } from './chat';
 import { GameController } from './game';
 import { PostController } from './post';
+import { MatchController } from './match';
 import { FeedController } from './feed';
 import { ReportController } from './report';
 import { SearchController } from './search';
@@ -18,6 +19,7 @@ const server = new API({
         new ChatController(),
         new PostController(),
         new GameController(),
+        new MatchController(),
         new FeedController(),
         new ReportController(),
         new SearchController(),

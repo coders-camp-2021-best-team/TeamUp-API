@@ -15,6 +15,6 @@ export class ExperienceLevel extends BaseEntity {
     @Column()
     name: string;
 
-    @ManyToOne(() => Game, (g) => g.levels)
+    @ManyToOne(() => Game, (g) => g.levels, { onDelete: 'CASCADE' })
     game: Game;
 }

@@ -1,2 +1,2 @@
-export * from './user-swipes.entity';
-export * from './user-swipe.enum';
+export * from './user-swipe.entity';
+export * from './swipe-type.enum';

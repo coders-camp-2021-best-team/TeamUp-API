@@ -4,7 +4,10 @@ import { User } from '.';
 
 @Entity('user_avatars')
 export class UserAvatar extends BaseEntity {
-    @OneToOne(() => User, (u) => u.avatar, { primary: true })
+    @OneToOne(() => User, (u) => u.avatar, {
+        primary: true,
+        onDelete: 'CASCADE'
+    })
     @JoinColumn()
     user: User;
 

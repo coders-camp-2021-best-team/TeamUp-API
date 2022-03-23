@@ -7,11 +7,12 @@ export class UserSkill extends BaseEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @ManyToOne(() => User, (u) => u.skills)
+    @ManyToOne(() => User, (u) => u.skills, { onDelete: 'CASCADE' })
     user?: User;
 
     @ManyToOne(() => ExperienceLevel, {
-        eager: true
+        eager: true,
+        onDelete: 'CASCADE'
     })
     level: ExperienceLevel;
 }
