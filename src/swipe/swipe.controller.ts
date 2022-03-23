@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { validate } from 'class-validator';
+import { validateSync } from 'class-validator';
 import { instanceToPlain, plainToInstance } from 'class-transformer';
 import { AuthMiddleware, Controller } from '../common';
 import { SwipeService, CreateSwipeDto } from '.';
@@ -17,7 +17,7 @@ export class SwipeController extends Controller {
 
     async createSwipe(req: Request, res: Response) {
         const body = plainToInstance(CreateSwipeDto, req.body);
-        const errors = await validate(body);
+        const errors = validateSync(body);
         if (errors.length) {
             return res.status(StatusCodes.BAD_REQUEST).json(errors);
         }
