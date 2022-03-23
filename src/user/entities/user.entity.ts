@@ -9,10 +9,10 @@ import {
 } from 'typeorm';
 
 import { UserBlock } from '../../block';
-import { Meme } from '../../memes';
 import { UserReport } from '../../report';
 import { UserSwipe } from '../../swipe';
 import { Token } from '../../email';
+import { Post } from '../../post';
 import { UserAvatar, UserPhoto, UserSkill } from '.';
 
 export enum UserStatus {
@@ -111,8 +111,8 @@ export class User extends BaseEntity {
     @OneToMany(() => UserSwipe, (s) => s.submittedBy)
     swipedBy: UserSwipe[];
 
-    @OneToMany(() => Meme, (m) => m.author)
-    postedMemes: Meme[];
+    @OneToMany(() => Post, (m) => m.author)
+    posts: Post[];
 
     @OneToMany(() => Token, (t) => t.user)
     tokens: Token[];

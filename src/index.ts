@@ -3,12 +3,12 @@ import { AuthController } from './auth';
 import { BlockController } from './block';
 import { ChatController } from './chat';
 import { GameController } from './game';
+import { PostController } from './post';
 import { FeedController } from './feed';
 import { ReportController } from './report';
 import { SearchController } from './search';
 import { SwipeController } from './swipe';
 import { UserController } from './user';
-import { MemeController } from './memes';
 
 const server = new API({
     middlewares: [],
@@ -16,13 +16,13 @@ const server = new API({
         new AuthController(),
         new BlockController(),
         new ChatController(),
+        new PostController(),
         new GameController(),
         new FeedController(),
         new ReportController(),
         new SearchController(),
         new SwipeController(),
-        new UserController(),
-        new MemeController()
+        new UserController()
     ],
     onWebsocketConnection: ChatController.onWebsocketConnection,
     websocketMiddleware: ChatController.websocketAuthMiddleware

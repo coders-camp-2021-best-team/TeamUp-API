@@ -1,7 +1,9 @@
 import { Request, Response } from 'express';
 import { AuthMiddleware, Controller } from '../common';
-import { SearchService } from '.';
-import { instanceToPlain } from 'class-transformer';
+import { instanceToPlain, plainToInstance } from 'class-transformer';
+import { SearchQueryDto, SearchService } from '.';
+import { validateSync } from 'class-validator';
+import { StatusCodes } from 'http-status-codes';
 
 export class SearchController extends Controller {
     constructor() {
@@ -14,15 +16,13 @@ export class SearchController extends Controller {
     }
 
     async getResults(req: Request, res: Response) {
-        const search = req.query.q;
-        const skip = req.query.skip ? +req.query.skip : undefined;
-        const take = req.query.take ? +req.query.take : undefined;
+        const query = plainToInstance(SearchQueryDto, req.query);
+        const errors = validateSync(query);
+        if (errors.length) {
+            return res.status(StatusCodes.BAD_REQUEST).json(errors);
+        }
 
-        const results = await SearchService.getResults(
-            search as string,
-            take,
-            skip
-        );
+        const results = await SearchService.getResults(query);
 
         res.send(instanceToPlain(results));
     }

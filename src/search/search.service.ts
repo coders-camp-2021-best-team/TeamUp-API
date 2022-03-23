@@ -1,23 +1,17 @@
-import { ILike } from 'typeorm';
+import { FindConditions, ILike } from 'typeorm';
 import { User } from '../user';
+import { SearchQueryDto } from '.';
 export const SearchService = new (class {
-    async getResults(search: string, take = 20, skip = 0) {
-        const results = await User.find({
-            where: [
-                {
-                    first_name: ILike(`%${search}%`)
-                },
-                {
-                    last_name: ILike(`%${search}%`)
-                },
-                {
-                    username: ILike(`%${search}%`)
-                }
-            ],
-            take,
-            skip
-        });
+    async getResults({ q, skip, take }: SearchQueryDto) {
+        const cond = ILike(`%${q}%`);
+        const where: FindConditions<User>[] | undefined = q
+            ? [{ first_name: cond }, { last_name: cond }, { username: cond }]
+            : undefined;
 
-        return results;
+        return User.find({
+            where,
+            skip,
+            take
+        });
     }
 })();
