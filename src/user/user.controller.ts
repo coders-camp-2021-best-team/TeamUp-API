@@ -6,8 +6,6 @@ import { AuthMiddleware, Controller } from '../common';
 import {
     UserService,
     UpdateUserDto,
-    PasswordResetRequestDto,
-    PasswordResetDto,
     UserPhotoController,
     UserAvatarController
 } from '.';
@@ -17,19 +15,12 @@ export class UserController extends Controller {
         super('/user', [new UserAvatarController(), new UserPhotoController()]);
 
         const router = this.getRouter();
+        router.use(AuthMiddleware);
 
-        router.get('/:id', AuthMiddleware, this.getUser);
-        router.put('/:id', AuthMiddleware, this.updateUser);
-        router.get('/activate/:id', this.activateUser);
-        router.post('/request-password-reset', this.requestPasswordReset);
-        router.get('/password-reset/:id', this.resetPassword);
-
-        router.put('/:id/skill/:levelID', AuthMiddleware, this.addUserSkill);
-        router.delete(
-            '/:id/skill/:skillID',
-            AuthMiddleware,
-            this.removeUserSkill
-        );
+        router.get('/:id', this.getUser);
+        router.put('/:id', this.updateUser);
+        router.put('/:id/skill/:levelID', this.addUserSkill);
+        router.delete('/:id/skill/:skillID', this.removeUserSkill);
     }
 
     async getUser(req: Request, res: Response) {
@@ -64,49 +55,6 @@ export class UserController extends Controller {
         }
 
         return res.send(instanceToPlain(updated));
-    }
-
-    async activateUser(req: Request, res: Response) {
-        const id = req.params.id;
-        const user = await UserService.activateUser(id);
-
-        if (!user) {
-            return res.status(StatusCodes.NOT_FOUND).send();
-        }
-
-        return res.send();
-    }
-
-    async requestPasswordReset(req: Request, res: Response) {
-        const body = plainToInstance(PasswordResetRequestDto, req.body);
-        const errors = validateSync(body);
-        if (errors.length) {
-            return res.status(StatusCodes.BAD_REQUEST).json(errors);
-        }
-
-        const email = body.email;
-
-        await UserService.requestPasswordReset(email);
-
-        return res.send();
-    }
-
-    async resetPassword(req: Request, res: Response) {
-        const body = plainToInstance(PasswordResetDto, req.body);
-        const errors = validateSync(body);
-        if (errors.length) {
-            return res.status(StatusCodes.BAD_REQUEST).json(errors);
-        }
-
-        const id = req.params.id;
-        const password = body.password;
-
-        const user = await UserService.resetPassword(id, password);
-        if (!user) {
-            return res.status(StatusCodes.NOT_FOUND).send();
-        }
-
-        return res.send();
     }
 
     async addUserSkill(req: Request, res: Response) {

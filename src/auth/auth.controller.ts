@@ -3,8 +3,14 @@ import { validateSync } from 'class-validator';
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { AuthMiddleware, LoggedOutMiddleware, Controller } from '../common';
-import { UserStatus } from '../user';
-import { AuthService, LoginDto, RegisterDto } from '.';
+import { UserService, UserStatus } from '../user';
+import {
+    AuthService,
+    LoginDto,
+    RegisterDto,
+    PasswordResetDto,
+    PasswordResetRequestDto
+} from '.';
 
 export class AuthController extends Controller {
     constructor() {
@@ -16,6 +22,18 @@ export class AuthController extends Controller {
         router.post('/register', LoggedOutMiddleware, this.register);
         router.post('/logout', AuthMiddleware, this.logout);
         router.get('/websocket-jwt', AuthMiddleware, this.websocketJWT);
+
+        router.get('/activate/:id', LoggedOutMiddleware, this.activateUser);
+        router.post(
+            '/request-password-reset',
+            LoggedOutMiddleware,
+            this.requestPasswordReset
+        );
+        router.get(
+            '/password-reset/:id',
+            LoggedOutMiddleware,
+            this.resetPassword
+        );
     }
 
     async login(req: Request, res: Response) {
@@ -65,5 +83,48 @@ export class AuthController extends Controller {
         }
 
         return res.send(AuthService.getWebsocketJWT(req.session.userID));
+    }
+
+    async activateUser(req: Request, res: Response) {
+        const id = req.params.id;
+        const user = await UserService.activateUser(id);
+
+        if (!user) {
+            return res.status(StatusCodes.NOT_FOUND).send();
+        }
+
+        return res.send();
+    }
+
+    async requestPasswordReset(req: Request, res: Response) {
+        const body = plainToInstance(PasswordResetRequestDto, req.body);
+        const errors = validateSync(body);
+        if (errors.length) {
+            return res.status(StatusCodes.BAD_REQUEST).json(errors);
+        }
+
+        const email = body.email;
+
+        await UserService.requestPasswordReset(email);
+
+        return res.send();
+    }
+
+    async resetPassword(req: Request, res: Response) {
+        const body = plainToInstance(PasswordResetDto, req.body);
+        const errors = validateSync(body);
+        if (errors.length) {
+            return res.status(StatusCodes.BAD_REQUEST).json(errors);
+        }
+
+        const id = req.params.id;
+        const password = body.password;
+
+        const user = await UserService.resetPassword(id, password);
+        if (!user) {
+            return res.status(StatusCodes.NOT_FOUND).send();
+        }
+
+        return res.send();
     }
 }
