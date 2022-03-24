@@ -82,6 +82,8 @@ export const UserService = new (class {
             user.username,
             reset_token.token
         );
+
+        return true;
     }
 
     async resetPassword(id: string, userPassword: string) {
