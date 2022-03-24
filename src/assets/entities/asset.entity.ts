@@ -6,5 +6,5 @@ export class Asset extends BaseEntity {
     id: string;
 
     @Column()
-    etag: string;
+    key: string;
 }

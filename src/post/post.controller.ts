@@ -8,7 +8,8 @@ import {
     CreatePostDto,
     PostCategoryController,
     QueryPostDto,
-    PostVoteController
+    PostVoteController,
+    PostAttachmentController
 } from '.';
 import { validateSync } from 'class-validator';
 
@@ -16,7 +17,8 @@ export class PostController extends Controller {
     constructor() {
         super('/post', [
             new PostCategoryController(),
-            new PostVoteController()
+            new PostVoteController(),
+            new PostAttachmentController()
         ]);
 
         const router = this.getRouter();

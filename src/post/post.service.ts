@@ -1,4 +1,3 @@
-import S3 from 'aws-sdk/clients/s3';
 import { FindConditions, ILike } from 'typeorm';
 import { User, UserRank } from '../user';
 import {
@@ -9,23 +8,7 @@ import {
     PostCategory
 } from '.';
 
-import env from '../config';
-const { AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_ENDPOINT_URL } = env;
-
 export const PostService = new (class {
-    private s3: S3;
-
-    constructor() {
-        this.s3 = new S3({
-            credentials: {
-                accessKeyId: AWS_ACCESS_KEY_ID,
-                secretAccessKey: AWS_SECRET_ACCESS_KEY
-            },
-            endpoint: AWS_ENDPOINT_URL,
-            s3ForcePathStyle: true
-        });
-    }
-
     async getPosts({ q, skip, take, sort }: QueryPostDto) {
         const cond = ILike(`%${q}%`);
         const where: FindConditions<Post>[] | undefined = q
@@ -74,6 +57,8 @@ export const PostService = new (class {
                   where: body.categories.map((id) => ({ id }))
               })
             : post.categories;
+
+        post.updatedOn = new Date();
 
         return post.save();
     }

@@ -23,8 +23,6 @@ export class UpdatePostDto {
     @IsArray()
     @ArrayMaxSize(5)
     @ArrayUnique()
-    @IsUUID('4', { each: true })
+    @IsUUID('all', { each: true })
     categories?: string[];
-
-    // TODO: attachments
 }

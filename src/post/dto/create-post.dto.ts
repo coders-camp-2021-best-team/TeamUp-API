@@ -21,6 +21,4 @@ export class CreatePostDto {
     @ArrayUnique()
     @IsUUID('all', { each: true })
     categories: string[];
-
-    // TODO: attachments
 }

@@ -38,8 +38,7 @@ export class Post extends BaseEntity {
 
     @ManyToMany(() => Asset, {
         onDelete: 'CASCADE',
-        cascade: true,
-        eager: true
+        cascade: true
     })
     @JoinTable({ name: 'post_attachments' })
     attachments: Asset[];

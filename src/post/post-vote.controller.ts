@@ -7,14 +7,14 @@ import { CreateVoteDto, PostVoteService } from '.';
 
 export class PostVoteController extends Controller {
     constructor() {
-        super('/:id/vote');
+        super('/');
 
         const router = this.getRouter();
         router.use(AuthMiddleware);
 
-        router.get('/', this.getVotes);
-        router.post('/', this.createVote);
-        router.delete('/', this.removeVote);
+        router.get('/:id/vote', this.getVotes);
+        router.post('/:id/vote', this.createVote);
+        router.delete('/:id/vote', this.removeVote);
     }
 
     async getVotes(req: Request, res: Response) {
