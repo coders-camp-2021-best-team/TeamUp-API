@@ -15,10 +15,10 @@ export class PostAttachmentController extends Controller {
         router.get('/:id/attachment', this.getAttachments);
         router.post(
             '/:id/attachment',
-            S3Service.upload.array('attachments', 10),
+            S3Service.upload.single('attachment'),
             this.createAttachment
         );
-        router.delete('/:id/attachment/:aid', this.removeAttachment);
+        router.delete('/:id/attachment/:key', this.removeAttachment);
     }
 
     async getAttachments(req: Request, res: Response) {
@@ -34,14 +34,14 @@ export class PostAttachmentController extends Controller {
     }
 
     async createAttachment(req: Request, res: Response) {
-        if (!req.files) {
+        if (!req.file) {
             return res.status(StatusCodes.BAD_REQUEST).send();
         }
 
         const attachment = await PostAttachmentService.createAttachment(
             req.session.userID || '',
             req.params.id,
-            req.files as Express.MulterS3.File[]
+            req.file as Express.MulterS3.File
         );
 
         if (!attachment) {
@@ -55,7 +55,7 @@ export class PostAttachmentController extends Controller {
         const removed = await PostAttachmentService.removeAttachment(
             req.session.userID || '',
             req.params.id,
-            req.params.aid
+            req.params.key
         );
 
         if (!removed) {

@@ -1,7 +1,6 @@
 import { User } from '../user';
-import { Post } from '.';
 import { S3Service } from '../s3';
-import { Asset } from '../assets';
+import { PostAttachment, Post } from '.';
 
 export const PostAttachmentService = new (class {
     async getAttachments(postID: string) {
@@ -16,7 +15,7 @@ export const PostAttachmentService = new (class {
     async createAttachment(
         userID: string,
         postID: string,
-        files: Express.MulterS3.File[]
+        file: Express.MulterS3.File
     ) {
         const post = await Post.findOne(postID, {
             where: {
@@ -26,26 +25,20 @@ export const PostAttachmentService = new (class {
         });
         if (!post) return null;
 
-        post.attachments.push(
-            ...files.map((file) => {
-                const a = new Asset();
-                a.key = file.key;
-                return a;
-            })
-        );
+        const att = new PostAttachment();
+        att.key = file.key;
+        post.attachments.push(att);
 
         if (post.attachments.length > 10) return null;
 
         post.updatedOn = new Date();
 
-        return post.save();
+        await post.save();
+
+        return att;
     }
 
-    async removeAttachment(
-        userID: string,
-        postID: string,
-        attachmentID: string
-    ) {
+    async removeAttachment(userID: string, postID: string, key: string) {
         const user = await User.findOne(userID);
         if (!user) return null;
 
@@ -54,7 +47,7 @@ export const PostAttachmentService = new (class {
         });
         if (!post) return null;
 
-        const att = post.attachments.find((a) => a.id === attachmentID);
+        const att = post.attachments.find((a) => a.key === key);
         if (!att) return null;
 
         await S3Service.deleteFile(att.key);

@@ -14,7 +14,7 @@ import { UserSwipe } from '../../swipe';
 import { Token } from '../../email';
 import { Post } from '../../post';
 import { ChatRoom } from '../../chat';
-import { UserAvatar, UserPhoto, UserSkill } from '.';
+import { UserPhoto, UserSkill } from '.';
 
 export enum UserStatus {
     BLOCKED = 'BLOCKED',
@@ -81,12 +81,10 @@ export class User extends BaseEntity {
     })
     registerStatus: UserRegisterStatus;
 
-    @OneToOne(() => UserAvatar, (a) => a.user, {
-        eager: true
-    })
-    avatar: UserAvatar;
+    @Column({ nullable: true, default: null })
+    avatar?: string;
 
-    @OneToMany(() => UserPhoto, (p) => p.user)
+    @OneToMany(() => UserPhoto, (p) => p.user, { cascade: true })
     photos: UserPhoto[];
 
     @OneToMany(() => UserSkill, (ug) => ug.user, { cascade: true })

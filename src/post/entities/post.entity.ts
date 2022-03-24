@@ -10,10 +10,10 @@ import {
     PrimaryGeneratedColumn,
     UpdateDateColumn
 } from 'typeorm';
-import { Asset } from '../../assets';
 import { User } from '../../user';
 import { PostVote } from '.';
 import { PostCategory } from './post-category.entity';
+import { PostAttachment } from './post-attachment.entity';
 
 @Entity('posts')
 export class Post extends BaseEntity {
@@ -36,12 +36,10 @@ export class Post extends BaseEntity {
     @Column('text')
     body: string;
 
-    @ManyToMany(() => Asset, {
-        onDelete: 'CASCADE',
+    @OneToMany(() => PostAttachment, (a) => a.post, {
         cascade: true
     })
-    @JoinTable({ name: 'post_attachments' })
-    attachments: Asset[];
+    attachments: PostAttachment[];
 
     @OneToMany(() => PostVote, (v) => v.post, { cascade: true })
     votes: PostVote[];
