@@ -1,5 +1,10 @@
 import { IsEnum } from 'class-validator';
-import { UserActivityStatus } from '../../user';
+
+// FIXME: circular dependency from '../../user'
+enum UserActivityStatus {
+    ONLINE = 'ONLINE',
+    OFFLINE = 'OFFLINE'
+}
 
 export class UserStatusDto {
     @IsEnum(UserActivityStatus)
