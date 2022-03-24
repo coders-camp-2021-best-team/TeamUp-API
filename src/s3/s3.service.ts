@@ -35,10 +35,12 @@ export const S3Service = new (class {
                 files: 10
             },
             fileFilter: (req, file, cb) => {
-                const ext = extname(file.originalname);
-
-                if (!['.png', '.jpg', '.jpeg', '.gif'].includes(ext)) {
-                    return cb(new Error('Unsupported file extension'));
+                if (
+                    !['image/png', 'image/jpeg', 'image/gif'].includes(
+                        file.mimetype
+                    )
+                ) {
+                    return cb(new Error('Unsupported MIME type'));
                 }
                 cb(null, true);
             }
