@@ -3,6 +3,7 @@ import { AuthController } from './auth';
 import { BlockController } from './block';
 import { ChatController } from './chat';
 import { GameController } from './game';
+import { PostController } from './post';
 import { MatchController } from './match';
 import { FeedController } from './feed';
 import { ReportController } from './report';
@@ -16,6 +17,7 @@ const server = new API({
         new AuthController(),
         new BlockController(),
         new ChatController(),
+        new PostController(),
         new GameController(),
         new MatchController(),
         new FeedController(),

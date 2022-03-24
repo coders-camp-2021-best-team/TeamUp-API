@@ -7,12 +7,14 @@ import {
     UserService,
     UpdateUserDto,
     PasswordResetRequestDto,
-    PasswordResetDto
+    PasswordResetDto,
+    UserPhotoController,
+    UserAvatarController
 } from '.';
 
 export class UserController extends Controller {
     constructor() {
-        super('/user');
+        super('/user', [new UserAvatarController(), new UserPhotoController()]);
 
         const router = this.getRouter();
 

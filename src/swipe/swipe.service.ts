@@ -8,11 +8,12 @@ export const SwipeService = new (class {
     }
 
     async getSwipes(userID: string) {
-        return (
-            await User.findOne(userID, {
-                relations: ['swipedUsers']
-            })
-        )?.swipedUsers;
+        const user = await User.findOne(userID, {
+            relations: ['swipedUsers']
+        });
+        if (!user) return null;
+
+        return user.swipedUsers;
     }
 
     async createSwipe(userID: string, targetID: string, status: SwipeType) {

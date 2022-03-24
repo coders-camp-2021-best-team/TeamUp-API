@@ -26,6 +26,10 @@ export interface EnvVariables {
     JWT_PUBLIC_KEY: string;
     JWT_PRIVATE_KEY: string;
     JWT_INSECURE: boolean;
+    AWS_ENDPOINT_URL?: string;
+    AWS_ACCESS_KEY_ID: string;
+    AWS_SECRET_ACCESS_KEY: string;
+    AWS_BUCKET_NAME: string;
 }
 
 const envSchema = Joi.object<EnvVariables>({
@@ -58,7 +62,11 @@ const envSchema = Joi.object<EnvVariables>({
         .default('ES256'),
     JWT_PUBLIC_KEY: Joi.string().required(),
     JWT_PRIVATE_KEY: Joi.string().required(),
-    JWT_INSECURE: Joi.boolean().default(false)
+    JWT_INSECURE: Joi.boolean().default(false),
+    AWS_ENDPOINT_URL: Joi.string().uri(),
+    AWS_ACCESS_KEY_ID: Joi.string().required(),
+    AWS_SECRET_ACCESS_KEY: Joi.string().required(),
+    AWS_BUCKET_NAME: Joi.string().required()
 }).unknown();
 
 const validated = envSchema.validate(process.env);

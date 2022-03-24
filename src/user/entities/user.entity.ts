@@ -9,12 +9,12 @@ import {
 } from 'typeorm';
 
 import { UserBlock } from '../../block';
-import { Meme } from '../../memes';
 import { UserReport } from '../../report';
 import { UserSwipe } from '../../swipe';
 import { Token } from '../../email';
+import { Post } from '../../post';
 import { ChatRoom } from '../../chat';
-import { UserAvatar, UserPhoto, UserSkill } from '.';
+import { UserPhoto, UserSkill } from '.';
 
 export enum UserStatus {
     BLOCKED = 'BLOCKED',
@@ -81,12 +81,10 @@ export class User extends BaseEntity {
     })
     registerStatus: UserRegisterStatus;
 
-    @OneToOne(() => UserAvatar, (a) => a.user, {
-        eager: true
-    })
-    avatar: UserAvatar;
+    @Column({ nullable: true, default: null })
+    avatar?: string;
 
-    @OneToMany(() => UserPhoto, (p) => p.user)
+    @OneToMany(() => UserPhoto, (p) => p.user, { cascade: true })
     photos: UserPhoto[];
 
     @OneToMany(() => UserSkill, (ug) => ug.user, { cascade: true })
@@ -110,8 +108,8 @@ export class User extends BaseEntity {
     @OneToMany(() => UserSwipe, (s) => s.target)
     swipedBy: UserSwipe[];
 
-    @OneToMany(() => Meme, (m) => m.author)
-    postedMemes: Meme[];
+    @OneToMany(() => Post, (m) => m.author)
+    posts: Post[];
 
     @OneToMany(() => Token, (t) => t.user)
     tokens: Token[];
