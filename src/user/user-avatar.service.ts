@@ -6,6 +6,10 @@ export const UserAvatarService = new (class {
         const user = await User.findOne(userID);
         if (!user) return null;
 
+        if (user.avatar) {
+            await S3Service.deleteFile(user.avatar);
+        }
+
         user.avatar = file.key;
 
         return user.save();
