@@ -1,0 +1,16 @@
+{
+    "recommendations": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "eamodio.gitlens",
+        "mhutchie.git-graph",
+        "ms-azuretools.vscode-docker",
+        "mtxr.sqltools",
+        "mtxr.sqltools-driver-pg",
+        "mtxr.sqltools-driver-mysql",
+        "mtxr.sqltools-driver-sqlite",
+        "aaron-bond.better-comments",
+        "ms-vsliveshare.vsliveshare",
+        "quicktype.quicktype"
+    ]
+}
