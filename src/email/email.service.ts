@@ -11,6 +11,7 @@ import env from '../config';
 const {
     SMTP_HOST,
     SMTP_PORT,
+    SMTP_SECURE,
     SMTP_USERNAME,
     SMTP_PASSWORD,
     EMAIL_FROM,
@@ -24,7 +25,7 @@ export const EmailService = new (class {
         this.transporter = nodemailer.createTransport({
             host: SMTP_HOST,
             port: SMTP_PORT,
-            secure: process.env.NODE_ENV !== 'development',
+            secure: SMTP_SECURE,
             auth: {
                 user: SMTP_USERNAME,
                 pass: SMTP_PASSWORD
@@ -41,7 +42,7 @@ export const EmailService = new (class {
             RegistrationEmailSubject,
             RegistrationEmailTemplate(
                 username,
-                `${API_URL}/user/activate/${activateID}`
+                `${API_URL}/auth/activate/${activateID}`
             )
         );
     }
@@ -54,7 +55,7 @@ export const EmailService = new (class {
             ResetPasswordEmailSubject,
             ResetPasswordEmailTemplate(
                 username,
-                `${API_URL}/user/reset-password/${resetID}`
+                `${API_URL}/auth/password-reset/${resetID}`
             )
         );
     }
