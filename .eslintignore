@@ -1,0 +1,10 @@
+node_modules/
+build/
+
+.yarn/
+
+logs/
+*.log
+
+*.env
+!*.example
