@@ -12,7 +12,8 @@
         "test": "jest",
         "test:watch": "jest --watch",
         "format": "prettier --ignore-unknown --ignore-path .eslintignore --write .",
-        "lint": "eslint src/"
+        "lint": "eslint src/",
+        "clean": "rimraf build/ node_modules/ && yarn cache clean"
     },
     "repository": {
         "type": "git",
