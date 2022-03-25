@@ -1,20 +1,21 @@
-import { createServer } from 'http';
-import express from 'express';
 import 'express-async-errors';
-import session from 'express-session';
-import RateLimiter from 'express-rate-limit';
-import SlowDown from 'express-slow-down';
-import cors from 'cors';
-import ConnectRedis from 'connect-redis';
-import Redis from 'ioredis';
-import { Socket, Server } from 'socket.io';
-import { ExtendedError } from 'socket.io/dist/namespace';
-import { getConnectionOptions, createConnection } from 'typeorm';
-import { WinstonAdaptor } from 'typeorm-logger-adaptor/logger/winston';
-import { Middleware, Controller } from '../common';
 
-import logger from '../logger';
+import ConnectRedis from 'connect-redis';
+import cors from 'cors';
+import express from 'express';
+import RateLimiter from 'express-rate-limit';
+import session from 'express-session';
+import SlowDown from 'express-slow-down';
+import { createServer } from 'http';
+import Redis from 'ioredis';
+import { Server, Socket } from 'socket.io';
+import { ExtendedError } from 'socket.io/dist/namespace';
+import { createConnection, getConnectionOptions } from 'typeorm';
+import { WinstonAdaptor } from 'typeorm-logger-adaptor/logger/winston';
+
+import { Controller, Middleware } from '../common';
 import env from '../config';
+import logger from '../logger';
 const { PORT, SESSION_SECRET, REDIS_URL, REDIS_TLS_URL, CLIENT_URL } = env;
 
 const RedisStore = ConnectRedis(session);

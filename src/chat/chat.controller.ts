@@ -3,21 +3,21 @@ import { validateSync } from 'class-validator';
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { Server, Socket } from 'socket.io';
+
+import { AuthService } from '../auth';
 // import { JwtPayload } from 'jsonwebtoken';
 import { AuthMiddleware, Controller, WebsocketMiddleware } from '../common';
-import { AuthService } from '../auth';
+import env from '../config';
+import logger from '../logger';
 import { User } from '../user';
 import {
     ChatService,
-    JoinChatRoomDto,
     CreateMessageDto,
+    JoinChatRoomDto,
     MessageStatusDto,
-    UserSubscribeDto,
-    UserStatusDto
+    UserStatusDto,
+    UserSubscribeDto
 } from '.';
-import logger from '../logger';
-
-import env from '../config';
 const { NODE_ENV, JWT_INSECURE } = env;
 
 declare module 'socket.io/dist/socket' {

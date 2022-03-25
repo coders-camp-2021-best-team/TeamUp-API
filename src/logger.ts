@@ -1,5 +1,4 @@
-import { createLogger, format, transports } from 'winston';
-import winston from 'winston/lib/winston/config';
+import winston, { createLogger, format, transports } from 'winston';
 
 import env, { LoggingLevels } from './config';
 const { NODE_ENV, LOGGING_LEVEL } = env;
@@ -21,7 +20,7 @@ const console_format =
 
 const json_format = format.combine(format.timestamp(), format.json());
 
-export const logger = createLogger({
+const logger = createLogger({
     level: LOGGING_LEVEL,
     levels: LoggingLevels,
     transports: [

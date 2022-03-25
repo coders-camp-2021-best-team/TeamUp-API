@@ -1,4 +1,5 @@
 import { Router } from 'express';
+
 import logger from '../logger';
 
 export abstract class Controller {

@@ -1,6 +1,7 @@
 import { instanceToPlain } from 'class-transformer';
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
+
 import { AuthMiddleware, Controller } from '../common';
 import { MatchService } from './match.service';
 

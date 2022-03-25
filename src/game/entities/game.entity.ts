@@ -5,6 +5,7 @@ import {
     OneToMany,
     PrimaryGeneratedColumn
 } from 'typeorm';
+
 import { ExperienceLevel } from '.';
 
 @Entity('games')

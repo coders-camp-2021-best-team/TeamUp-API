@@ -5,6 +5,7 @@ import {
     ManyToMany,
     PrimaryGeneratedColumn
 } from 'typeorm';
+
 import { Post } from './post.entity';
 
 @Entity('post_categories')

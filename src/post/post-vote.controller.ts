@@ -2,6 +2,7 @@ import { instanceToPlain, plainToInstance } from 'class-transformer';
 import { validateSync } from 'class-validator';
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
+
 import { AuthMiddleware, Controller } from '../common';
 import { CreateVoteDto, PostVoteService } from '.';
 

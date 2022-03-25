@@ -1,13 +1,12 @@
 import nodemailer from 'nodemailer';
 
-import {
-    RegistrationEmailTemplate,
-    RegistrationEmailSubject,
-    ResetPasswordEmailTemplate,
-    ResetPasswordEmailSubject
-} from '.';
-
 import env from '../config';
+import {
+    RegistrationEmailSubject,
+    RegistrationEmailTemplate,
+    ResetPasswordEmailSubject,
+    ResetPasswordEmailTemplate
+} from '.';
 const {
     SMTP_HOST,
     SMTP_PORT,

@@ -1,18 +1,18 @@
 import { Exclude } from 'class-transformer';
 import {
+    BaseEntity,
     Column,
     Entity,
     OneToMany,
-    PrimaryGeneratedColumn,
-    BaseEntity
+    PrimaryGeneratedColumn
 } from 'typeorm';
 
 import { UserBlock } from '../../block';
-import { UserReport } from '../../report';
-import { UserSwipe } from '../../swipe';
+import { ChatRoom } from '../../chat';
 import { Token } from '../../email';
 import { Post } from '../../post';
-import { ChatRoom } from '../../chat';
+import { UserReport } from '../../report';
+import { UserSwipe } from '../../swipe';
 import { UserPhoto, UserSkill } from '.';
 
 export enum UserStatus {

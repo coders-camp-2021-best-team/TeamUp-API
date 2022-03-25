@@ -1,9 +1,9 @@
 import { Type } from 'class-transformer';
 import {
     IsDate,
-    IsOptional,
     IsEmail,
     IsNotEmpty,
+    IsOptional,
     IsString,
     Length,
     MaxDate

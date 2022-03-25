@@ -1,5 +1,5 @@
-import { CreateMessageDto, ChatRoom, Message, MessageStatusDto } from '.';
 import { User } from '../user';
+import { ChatRoom, CreateMessageDto, Message, MessageStatusDto } from '.';
 import { UserStatusDto } from './dto';
 
 export const ChatService = new (class {

@@ -2,14 +2,15 @@ import { instanceToPlain, plainToInstance } from 'class-transformer';
 import { validateSync } from 'class-validator';
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { AuthMiddleware, LoggedOutMiddleware, Controller } from '../common';
+
+import { AuthMiddleware, Controller, LoggedOutMiddleware } from '../common';
 import { UserService, UserStatus } from '../user';
 import {
     AuthService,
     LoginDto,
-    RegisterDto,
     PasswordResetDto,
-    PasswordResetRequestDto
+    PasswordResetRequestDto,
+    RegisterDto
 } from '.';
 
 export class AuthController extends Controller {

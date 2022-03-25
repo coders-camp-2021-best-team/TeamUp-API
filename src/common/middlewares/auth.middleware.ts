@@ -1,4 +1,5 @@
 import { StatusCodes } from 'http-status-codes';
+
 import { Middleware } from '.';
 
 export const AuthMiddleware: Middleware = (req, res, next) => {

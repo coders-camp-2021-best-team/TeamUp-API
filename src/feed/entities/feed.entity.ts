@@ -1,13 +1,14 @@
+import { Exclude } from 'class-transformer';
 import {
     BaseEntity,
-    Entity,
-    OneToMany,
     CreateDateColumn,
-    ManyToOne
+    Entity,
+    ManyToOne,
+    OneToMany
 } from 'typeorm';
+
 import { User } from '../../user';
 import { FeedUser } from '.';
-import { Exclude } from 'class-transformer';
 
 @Entity('feeds')
 export class Feed extends BaseEntity {

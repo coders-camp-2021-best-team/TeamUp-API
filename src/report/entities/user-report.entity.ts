@@ -6,6 +6,7 @@ import {
     ManyToOne,
     PrimaryGeneratedColumn
 } from 'typeorm';
+
 import { User } from '../../user';
 import { UserReportStatus } from './user-report-status.enum';
 

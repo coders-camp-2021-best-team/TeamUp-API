@@ -1,4 +1,5 @@
-import { BaseEntity, PrimaryColumn, Column, ManyToOne, Entity } from 'typeorm';
+import { BaseEntity, Column, Entity, ManyToOne, PrimaryColumn } from 'typeorm';
+
 import { User } from '../../user';
 
 export enum TokenType {

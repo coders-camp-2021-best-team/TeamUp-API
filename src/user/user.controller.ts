@@ -1,13 +1,14 @@
-import { Request, Response } from 'express';
-import { StatusCodes } from 'http-status-codes';
 import { instanceToPlain, plainToInstance } from 'class-transformer';
 import { validateSync } from 'class-validator';
+import { Request, Response } from 'express';
+import { StatusCodes } from 'http-status-codes';
+
 import { AuthMiddleware, Controller } from '../common';
 import {
-    UserService,
     UpdateUserDto,
+    UserAvatarController,
     UserPhotoController,
-    UserAvatarController
+    UserService
 } from '.';
 
 export class UserController extends Controller {

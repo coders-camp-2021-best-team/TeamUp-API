@@ -1,11 +1,11 @@
-import { API } from './common';
 import { AuthController } from './auth';
 import { BlockController } from './block';
 import { ChatController } from './chat';
-import { GameController } from './game';
-import { PostController } from './post';
-import { MatchController } from './match';
+import { API } from './common';
 import { FeedController } from './feed';
+import { GameController } from './game';
+import { MatchController } from './match';
+import { PostController } from './post';
 import { ReportController } from './report';
 import { SearchController } from './search';
 import { SwipeController } from './swipe';
@@ -17,10 +17,10 @@ const server = new API({
         new AuthController(),
         new BlockController(),
         new ChatController(),
-        new PostController(),
+        new FeedController(),
         new GameController(),
         new MatchController(),
-        new FeedController(),
+        new PostController(),
         new ReportController(),
         new SearchController(),
         new SwipeController(),

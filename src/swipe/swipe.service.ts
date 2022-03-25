@@ -1,6 +1,6 @@
-import { UserSwipe, SwipeType } from '.';
 import { Feed } from '../feed';
 import { User } from '../user';
+import { SwipeType, UserSwipe } from '.';
 
 export const SwipeService = new (class {
     getFeed(userID: string) {

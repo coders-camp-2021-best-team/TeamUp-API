@@ -1,11 +1,11 @@
 import { compareSync, hashSync } from 'bcryptjs';
-import jwt, { SignOptions } from 'jsonwebtoken';
 import { randomBytes } from 'crypto';
-import { User, UserRegisterStatus, UserStatus } from '../user';
-import { EmailService, Token, TokenType } from '../email';
-import { LoginDto, RegisterDto } from '.';
+import jwt, { SignOptions } from 'jsonwebtoken';
 
 import env from '../config';
+import { EmailService, Token, TokenType } from '../email';
+import { User, UserRegisterStatus, UserStatus } from '../user';
+import { LoginDto, RegisterDto } from '.';
 const { NODE_ENV, JWT_ALGORITHM, JWT_PRIVATE_KEY, JWT_PUBLIC_KEY } = env;
 
 export const AuthService = new (class {

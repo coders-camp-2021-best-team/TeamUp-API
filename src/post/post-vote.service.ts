@@ -1,5 +1,5 @@
 import { User } from '../user';
-import { Post, PostVoteType, CreateVoteDto, PostVote } from '.';
+import { CreateVoteDto, Post, PostVote, PostVoteType } from '.';
 
 export const PostVoteService = new (class {
     async getVotes(userID: string, postID: string) {

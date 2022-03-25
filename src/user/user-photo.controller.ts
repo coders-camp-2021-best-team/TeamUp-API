@@ -1,9 +1,10 @@
 import { instanceToPlain } from 'class-transformer';
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
+
 import { AuthMiddleware, Controller } from '../common';
-import { UserPhotoService } from '.';
 import { S3Service } from '../s3';
+import { UserPhotoService } from '.';
 
 export class UserPhotoController extends Controller {
     constructor() {

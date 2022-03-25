@@ -10,10 +10,11 @@ import {
     PrimaryGeneratedColumn,
     UpdateDateColumn
 } from 'typeorm';
+
 import { User } from '../../user';
 import { PostVote } from '.';
-import { PostCategory } from './post-category.entity';
 import { PostAttachment } from './post-attachment.entity';
+import { PostCategory } from './post-category.entity';
 
 @Entity('posts')
 export class Post extends BaseEntity {

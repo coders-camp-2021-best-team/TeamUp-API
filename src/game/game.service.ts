@@ -1,4 +1,4 @@
-import { Game, ExperienceLevel, AddGameDto, AddLevelDto } from '.';
+import { AddGameDto, AddLevelDto, ExperienceLevel, Game } from '.';
 
 export const GameService = new (class {
     async getAllGames() {

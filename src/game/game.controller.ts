@@ -1,10 +1,11 @@
-import { Request, Response } from 'express';
-import { StatusCodes } from 'http-status-codes';
 import { instanceToPlain, plainToInstance } from 'class-transformer';
 import { validateSync } from 'class-validator';
+import { Request, Response } from 'express';
+import { StatusCodes } from 'http-status-codes';
+
 import { AuthMiddleware, Controller } from '../common';
 import { AdminMiddleware } from '../common/middlewares/admin.middleware';
-import { GameService, AddGameDto, AddLevelDto } from '.';
+import { AddGameDto, AddLevelDto, GameService } from '.';
 
 export class GameController extends Controller {
     constructor() {

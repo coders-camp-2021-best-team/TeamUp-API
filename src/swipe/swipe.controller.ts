@@ -1,9 +1,10 @@
+import { instanceToPlain, plainToInstance } from 'class-transformer';
+import { validateSync } from 'class-validator';
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { validateSync } from 'class-validator';
-import { instanceToPlain, plainToInstance } from 'class-transformer';
+
 import { AuthMiddleware, Controller } from '../common';
-import { SwipeService, CreateSwipeDto } from '.';
+import { CreateSwipeDto, SwipeService } from '.';
 
 export class SwipeController extends Controller {
     constructor() {

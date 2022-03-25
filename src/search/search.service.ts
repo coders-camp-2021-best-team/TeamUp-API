@@ -1,4 +1,5 @@
 import { FindConditions, ILike } from 'typeorm';
+
 import { User } from '../user';
 import { SearchQueryDto } from '.';
 export const SearchService = new (class {

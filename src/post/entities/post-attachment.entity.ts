@@ -1,4 +1,5 @@
 import { BaseEntity, Entity, ManyToOne, PrimaryColumn } from 'typeorm';
+
 import { Post } from './post.entity';
 
 @Entity('post_attachments')

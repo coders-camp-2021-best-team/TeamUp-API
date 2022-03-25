@@ -1,5 +1,6 @@
 import { StatusCodes } from 'http-status-codes';
-import { UserService, UserRank } from '../../user';
+
+import { UserRank, UserService } from '../../user';
 import { Middleware } from '.';
 
 export const AdminMiddleware: Middleware = (req, res, next) => {

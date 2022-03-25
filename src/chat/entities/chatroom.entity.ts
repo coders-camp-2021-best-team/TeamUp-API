@@ -5,6 +5,7 @@ import {
     OneToMany,
     PrimaryGeneratedColumn
 } from 'typeorm';
+
 import { User } from '../../user';
 import { Message } from '.';
 

@@ -1,17 +1,18 @@
 import { instanceToPlain, plainToInstance } from 'class-transformer';
+import { validateSync } from 'class-validator';
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
+
 import { AuthMiddleware, Controller } from '../common';
 import {
-    PostService,
-    UpdatePostDto,
     CreatePostDto,
+    PostAttachmentController,
     PostCategoryController,
-    QueryPostDto,
+    PostService,
     PostVoteController,
-    PostAttachmentController
+    QueryPostDto,
+    UpdatePostDto
 } from '.';
-import { validateSync } from 'class-validator';
 
 export class PostController extends Controller {
     constructor() {

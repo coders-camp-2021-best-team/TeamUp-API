@@ -1,4 +1,5 @@
 import { BaseEntity, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+
 import { ExperienceLevel } from '../../game';
 import { User } from '.';
 

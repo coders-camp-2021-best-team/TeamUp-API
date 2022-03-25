@@ -1,6 +1,6 @@
-import { User } from '../user';
 import { S3Service } from '../s3';
-import { PostAttachment, Post } from '.';
+import { User } from '../user';
+import { Post, PostAttachment } from '.';
 
 export const PostAttachmentService = new (class {
     async getAttachments(postID: string) {

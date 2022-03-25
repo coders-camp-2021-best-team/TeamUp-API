@@ -5,6 +5,7 @@ import {
     ManyToOne,
     PrimaryGeneratedColumn
 } from 'typeorm';
+
 import { User } from '../../user';
 import { Feed } from './feed.entity';
 

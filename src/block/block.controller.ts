@@ -1,7 +1,8 @@
-import { Request, Response } from 'express';
-import { AuthMiddleware, Controller } from '../common';
-import { StatusCodes } from 'http-status-codes';
 import { instanceToPlain } from 'class-transformer';
+import { Request, Response } from 'express';
+import { StatusCodes } from 'http-status-codes';
+
+import { AuthMiddleware, Controller } from '../common';
 import { BlockService } from '.';
 
 export class BlockController extends Controller {

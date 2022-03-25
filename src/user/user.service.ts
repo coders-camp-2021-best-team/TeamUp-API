@@ -1,8 +1,9 @@
 import { randomBytes } from 'crypto';
+
 import { AuthService } from '../auth';
 import { EmailService, Token, TokenType } from '../email';
-import { User, UserRegisterStatus, UpdateUserDto } from '.';
 import { ExperienceLevel } from '../game';
+import { UpdateUserDto, User, UserRegisterStatus } from '.';
 import { UserSkill } from './entities';
 
 export const UserService = new (class {

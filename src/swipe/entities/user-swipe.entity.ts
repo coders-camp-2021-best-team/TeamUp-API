@@ -6,6 +6,7 @@ import {
     PrimaryGeneratedColumn,
     UpdateDateColumn
 } from 'typeorm';
+
 import { User } from '../../user';
 import { SwipeType } from './swipe-type.enum';
 

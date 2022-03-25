@@ -5,6 +5,7 @@ import {
     ManyToOne,
     PrimaryGeneratedColumn
 } from 'typeorm';
+
 import { Game } from '.';
 
 @Entity('game_experience_levels')

@@ -1,5 +1,5 @@
-import { UserReport, GetReportsDto, CreateReportDto, UpdateReportDto } from '.';
 import { User, UserRank } from '../user';
+import { CreateReportDto, GetReportsDto, UpdateReportDto, UserReport } from '.';
 import { UserReportStatus } from './entities';
 
 export const ReportService = new (class {
