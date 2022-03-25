@@ -1,7 +1,6 @@
 import S3 from 'aws-sdk/clients/s3';
 import Multer from 'multer';
 import MulterS3 from 'multer-s3';
-import { extname } from 'path';
 
 import env from '../config';
 const {
