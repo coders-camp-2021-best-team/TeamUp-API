@@ -1,9 +1,8 @@
-import { instanceToPlain, plainToInstance } from 'class-transformer';
-import { validateSync } from 'class-validator';
+import { instanceToPlain } from 'class-transformer';
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 
-import { AuthMiddleware, Controller } from '../common';
+import { AuthMiddleware, Controller, validate } from '../common';
 import { AdminMiddleware } from '../common/middlewares/admin.middleware';
 import { AddGameDto, AddLevelDto, GameService } from '.';
 
@@ -33,52 +32,29 @@ export class GameController extends Controller {
     async getGame(req: Request, res: Response) {
         const gameID = req.params.id;
         const game = await GameService.getGame(gameID);
-
-        if (!game) {
-            return res.status(StatusCodes.NOT_FOUND).send();
-        }
         return res.json(instanceToPlain(game));
     }
 
     async addGame(req: Request, res: Response) {
-        const body = plainToInstance(AddGameDto, req.body as AddGameDto);
-        const errors = validateSync(body);
-        if (errors.length) {
-            return res.status(StatusCodes.BAD_REQUEST).json(errors);
-        }
+        const body = validate(AddGameDto, req.body);
 
         const added = await GameService.addGame(body);
 
-        if (!added) {
-            return res.status(StatusCodes.CONFLICT).send();
-        }
         return res.status(StatusCodes.CREATED).send(instanceToPlain(added));
     }
 
     async removeGame(req: Request, res: Response) {
         const gameID = req.params.id;
-
-        const removed = await GameService.removeGame(gameID);
-
-        if (!removed) {
-            return res.status(StatusCodes.NOT_FOUND).send();
-        }
+        await GameService.removeGame(gameID);
         return res.send();
     }
 
     async addExperienceLevel(req: Request, res: Response) {
-        const body = plainToInstance(AddLevelDto, req.body as AddLevelDto);
-        const errors = validateSync(body);
-        if (errors.length) {
-            return res.status(StatusCodes.BAD_REQUEST).json(errors);
-        }
+        const body = validate(AddLevelDto, req.body);
 
         const gameID = req.params.id;
         const added = await GameService.addExperienceLevel(gameID, body);
 
-        if (!added) {
-            return res.status(StatusCodes.BAD_REQUEST).send();
-        }
         return res.status(StatusCodes.CREATED).send(instanceToPlain(added));
     }
 
@@ -86,11 +62,8 @@ export class GameController extends Controller {
         const gameID = req.params.id;
         const lvlID = req.params.lvl_id;
 
-        const removed = await GameService.removeExperienceLevel(gameID, lvlID);
+        await GameService.removeExperienceLevel(gameID, lvlID);
 
-        if (!removed) {
-            return res.status(StatusCodes.BAD_REQUEST).send();
-        }
         return res.send();
     }
 }

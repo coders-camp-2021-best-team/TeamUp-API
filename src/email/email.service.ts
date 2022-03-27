@@ -1,5 +1,6 @@
 import nodemailer from 'nodemailer';
 
+import { InternalServerErrorException } from '../common';
 import env from '../config';
 import {
     RegistrationEmailSubject,
@@ -8,6 +9,7 @@ import {
     ResetPasswordEmailTemplate
 } from '.';
 const {
+    EMAIL_ENABLE,
     SMTP_HOST,
     SMTP_PORT,
     SMTP_SECURE,
@@ -60,11 +62,17 @@ export const EmailService = new (class {
     }
 
     async sendEmail(to: string, subject: string, html: string) {
-        return this.transporter.sendMail({
-            to,
-            from: EMAIL_FROM,
-            subject,
-            html
-        });
+        if (!EMAIL_ENABLE) return;
+
+        try {
+            await this.transporter.sendMail({
+                to,
+                from: EMAIL_FROM,
+                subject,
+                html
+            });
+        } catch {
+            throw new InternalServerErrorException();
+        }
     }
 })();

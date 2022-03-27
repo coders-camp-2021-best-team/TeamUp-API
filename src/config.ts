@@ -19,6 +19,7 @@ export interface EnvVariables {
     REDIS_URL?: string;
     REDIS_TLS_URL?: string;
 
+    EMAIL_ENABLE: boolean;
     SMTP_HOST: string;
     SMTP_PORT: number;
     SMTP_SECURE: boolean;
@@ -61,6 +62,7 @@ const envSchema = Joi.object<EnvVariables>({
     REDIS_URL: Joi.string().optional().uri(),
     REDIS_TLS_URL: Joi.string().optional().uri(),
 
+    EMAIL_ENABLE: Joi.bool().default(true),
     SMTP_HOST: Joi.string().required().hostname(),
     SMTP_PORT: Joi.number().required().port(),
     SMTP_SECURE: Joi.bool().default(true),

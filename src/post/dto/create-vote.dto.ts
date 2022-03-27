@@ -1,10 +1,6 @@
 import { IsEnum } from 'class-validator';
 
-// FIXME: circular dependency
-enum PostVoteType {
-    UPVOTE = 'UPVOTE',
-    DOWNVOTE = 'DOWNVOTE'
-}
+import { PostVoteType } from '../entities/post-vote-type.enum';
 
 export class CreateVoteDto {
     @IsEnum(PostVoteType)

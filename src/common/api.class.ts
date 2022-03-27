@@ -2,11 +2,12 @@ import 'express-async-errors';
 
 import ConnectRedis from 'connect-redis';
 import cors from 'cors';
-import express from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import RateLimiter from 'express-rate-limit';
 import session from 'express-session';
 import SlowDown from 'express-slow-down';
 import { createServer } from 'http';
+import { StatusCodes } from 'http-status-codes';
 import Redis from 'ioredis';
 import passport from 'passport';
 import { Server } from 'socket.io';
@@ -16,6 +17,7 @@ import { WinstonAdaptor } from 'typeorm-logger-adaptor/logger/winston';
 import { AuthService } from '../auth';
 import {
     Controller,
+    HttpException,
     Middleware,
     WebsocketConnectionHandler,
     WebsocketMiddleware
@@ -23,7 +25,8 @@ import {
 import env from '../config';
 import logger from '../logger';
 import { User as DBUser } from '../user';
-const { PORT, SESSION_SECRET, REDIS_URL, REDIS_TLS_URL, CLIENT_URL } = env;
+const { NODE_ENV, PORT, SESSION_SECRET, REDIS_URL, REDIS_TLS_URL, CLIENT_URL } =
+    env;
 
 const RedisStore = ConnectRedis(session);
 
@@ -161,6 +164,28 @@ export class API {
         });
     }
 
+    private initErrorHandler() {
+        this.app.use(
+            (err: unknown, req: Request, res: Response, next: NextFunction) => {
+                if (err instanceof HttpException) {
+                    res.status(err.code).send({
+                        code: err.code,
+                        error: err.error
+                    });
+                } else {
+                    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
+                        code: StatusCodes.INTERNAL_SERVER_ERROR,
+                        error: NODE_ENV === 'development' ? err : undefined
+                    });
+
+                    logger.error(err);
+                }
+
+                next();
+            }
+        );
+    }
+
     private initSocketIO() {
         this.io.use(this.websocketMiddleware);
 
@@ -179,6 +204,7 @@ export class API {
         this.initPassport();
         this.initMiddlewares();
         this.initControllers();
+        this.initErrorHandler();
         this.initSocketIO();
 
         this.http.listen(PORT, () => {

@@ -1,9 +1,7 @@
-import { instanceToPlain, plainToInstance } from 'class-transformer';
-import { validateSync } from 'class-validator';
+import { instanceToPlain } from 'class-transformer';
 import { Request, Response } from 'express';
-import { StatusCodes } from 'http-status-codes';
 
-import { AuthMiddleware, Controller } from '../common';
+import { AuthMiddleware, Controller, validate } from '../common';
 import {
     CreatePostDto,
     PostAttachmentController,
@@ -32,55 +30,26 @@ export class PostController extends Controller {
     }
 
     async getPosts(req: Request, res: Response) {
-        const query = plainToInstance(QueryPostDto, req.query);
-        const errors = validateSync(query);
-        if (errors.length) {
-            return res.status(StatusCodes.BAD_REQUEST).json(errors);
-        }
+        const query = validate(QueryPostDto, req.query);
 
         const posts = await PostService.getPosts(query);
-
-        if (!posts) {
-            return res.status(StatusCodes.BAD_REQUEST).send();
-        }
 
         res.send(instanceToPlain(posts));
     }
 
     async createPost(req: Request, res: Response) {
-        const body = plainToInstance(CreatePostDto, req.body);
-        const errors = validateSync(body);
-        if (errors.length) {
-            return res.status(StatusCodes.BAD_REQUEST).json(errors);
-        }
+        const body = validate(CreatePostDto, req.body);
 
-        const post = await PostService.createPost(req.user!.id, body);
-
-        if (!post) {
-            return res.status(StatusCodes.FORBIDDEN).send();
-        }
+        const post = await PostService.createPost(req.user!, body);
 
         return res.send(instanceToPlain(post));
     }
 
     async updatePost(req: Request, res: Response) {
-        const body = plainToInstance(UpdatePostDto, req.body);
-        const errors = validateSync(body);
-        if (errors.length) {
-            return res.status(StatusCodes.BAD_REQUEST).json(errors);
-        }
-
+        const body = validate(UpdatePostDto, req.body);
         const postID = req.params.id;
 
-        const updated = await PostService.updatePost(
-            req.user!.id,
-            postID,
-            body
-        );
-
-        if (!updated) {
-            return res.status(StatusCodes.NOT_FOUND).send();
-        }
+        const updated = await PostService.updatePost(req.user!, postID, body);
 
         res.send(instanceToPlain(updated));
     }
@@ -88,11 +57,7 @@ export class PostController extends Controller {
     async removePost(req: Request, res: Response) {
         const postID = req.params.id;
 
-        const removed = await PostService.removePost(req.user!.id, postID);
-
-        if (!removed) {
-            return res.status(StatusCodes.NOT_FOUND).send();
-        }
+        await PostService.removePost(req.user!, postID);
 
         res.send();
     }

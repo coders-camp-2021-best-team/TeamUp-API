@@ -1,51 +1,40 @@
+import { BadRequestException, NotFoundException } from '../common';
 import { User } from '../user';
 import { UserBlock } from './entities';
 
 export const BlockService = new (class {
-    getUser(userID: string) {
-        return User.findOne(userID, {
-            relations: ['blockedUsers']
+    getBlockedUsers(user: User) {
+        return UserBlock.find({
+            where: { blockedBy: user },
+            relations: ['blockedBy']
         });
     }
 
-    async getBlockedUsers(userID: string) {
-        const user = await this.getUser(userID);
-
-        if (!user) return null;
-
-        return user.blockedUsers;
-    }
-
-    async blockUser(userID: string, targetID: string) {
-        if (!userID || !targetID || userID === targetID) return null;
-
-        const user = await this.getUser(userID);
-        const target = await this.getUser(targetID);
-
-        if (!user || !target) return null;
-
-        const block = new UserBlock();
-        block.target = target;
-
-        if (!user.blockedUsers.some((b) => b.target.id === target.id)) {
-            user.blockedUsers.push(block);
-        } else {
-            return null;
+    async blockUser(user: User, targetID: string) {
+        if (user.id === targetID) {
+            throw new BadRequestException('You cannot block yourself');
         }
 
-        await user.save();
-        return user.blockedUsers;
+        const target = await User.findOne(targetID);
+        if (!target) {
+            throw new NotFoundException();
+        }
+
+        const block = new UserBlock();
+        block.blockedBy = user;
+        block.target = target;
+        return block.save();
     }
 
-    async unblockUser(userID: string, blockID: string) {
-        const block = await UserBlock.findOne(blockID, {
-            where: {
-                blockedBy: { id: userID }
-            }
-        });
+    async unblockUser(user: User, blockID: string) {
+        try {
+            const block = await UserBlock.findOneOrFail(blockID, {
+                where: { blockedBy: user }
+            });
 
-        if (!block) return null;
-
-        return block.remove();
+            return block.remove();
+        } catch {
+            throw new NotFoundException();
+        }
     }
 })();
