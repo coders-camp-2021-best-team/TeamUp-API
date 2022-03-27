@@ -2,12 +2,12 @@ import { instanceToPlain, plainToInstance } from 'class-transformer';
 import { validateSync } from 'class-validator';
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
+import passport from 'passport';
 
 import { AuthMiddleware, Controller, LoggedOutMiddleware } from '../common';
-import { UserService, UserStatus } from '../user';
+import { UserService } from '../user';
 import {
     AuthService,
-    LoginDto,
     PasswordResetDto,
     PasswordResetRequestDto,
     RegisterDto
@@ -19,7 +19,12 @@ export class AuthController extends Controller {
 
         const router = this.getRouter();
 
-        router.post('/login', LoggedOutMiddleware, this.login);
+        router.post(
+            '/login',
+            LoggedOutMiddleware,
+            passport.authenticate('local'),
+            this.login
+        );
         router.post('/register', LoggedOutMiddleware, this.register);
         router.post('/logout', AuthMiddleware, this.logout);
         router.get('/websocket-jwt', AuthMiddleware, this.websocketJWT);
@@ -37,23 +42,8 @@ export class AuthController extends Controller {
         );
     }
 
-    async login(req: Request, res: Response) {
-        const body = plainToInstance(LoginDto, req.body);
-        const errors = validateSync(body);
-        if (errors.length) {
-            return res.status(StatusCodes.BAD_REQUEST).json(errors);
-        }
-
-        const user = await AuthService.login(body);
-
-        if (!user || user.status !== UserStatus.ACTIVE) {
-            return res.status(StatusCodes.UNAUTHORIZED).send();
-        }
-
-        req.session.userID = user.id;
-        req.session.loggedIn = true;
-
-        return res.json(instanceToPlain(user));
+    login(req: Request, res: Response) {
+        res.send(instanceToPlain(req.user));
     }
 
     async register(req: Request, res: Response) {
@@ -79,11 +69,7 @@ export class AuthController extends Controller {
     }
 
     websocketJWT(req: Request, res: Response) {
-        if (!req.session.userID) {
-            return res.status(StatusCodes.UNAUTHORIZED).send();
-        }
-
-        return res.send(AuthService.getWebsocketJWT(req.session.userID));
+        return res.send(AuthService.getWebsocketJWT(req.user!.id));
     }
 
     async activateUser(req: Request, res: Response) {

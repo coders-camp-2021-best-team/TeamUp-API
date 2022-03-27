@@ -5,22 +5,36 @@ import jwt, { SignOptions } from 'jsonwebtoken';
 import env from '../config';
 import { EmailService, Token, TokenType } from '../email';
 import { User, UserRegisterStatus, UserStatus } from '../user';
-import { LoginDto, RegisterDto } from '.';
+import { RegisterDto } from '.';
 const { NODE_ENV, JWT_ALGORITHM, JWT_PRIVATE_KEY, JWT_PUBLIC_KEY } = env;
 
 export const AuthService = new (class {
-    async login(data: LoginDto) {
-        const user = await this.getUserByEmail(data.email);
+    getUserByID(id: string) {
+        return User.findOneOrFail(id);
+    }
 
-        if (!user) {
-            return null;
-        }
+    getUser(usernameOrEmail: string) {
+        return User.findOneOrFail({
+            where: [{ username: usernameOrEmail }, { email: usernameOrEmail }]
+        });
+    }
 
-        const ok = this.verifyPassword(data.password, user.passwordHash);
-        if (!ok) {
-            return null;
+    async login(usernameOrEmail: string, password: string) {
+        try {
+            const user = await this.getUser(usernameOrEmail);
+
+            if (
+                user.status !== UserStatus.ACTIVE ||
+                user.registerStatus !== UserRegisterStatus.VERIFIED ||
+                !this.verifyPassword(password, user.passwordHash)
+            ) {
+                throw new Error();
+            }
+
+            return user;
+        } catch {
+            throw new Error();
         }
-        return user;
     }
 
     async register(data: RegisterDto) {

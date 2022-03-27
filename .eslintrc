@@ -16,6 +16,7 @@
     ],
     "rules": {
         "simple-import-sort/imports": ["warn"],
-        "simple-import-sort/exports": ["warn"]
+        "simple-import-sort/exports": ["warn"],
+        "@typescript-eslint/no-non-null-assertion": "off"
     }
 }

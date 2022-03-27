@@ -1,4 +1,4 @@
-import { AuthController } from './auth';
+import { AuthController, LocalStrategy } from './auth';
 import { BlockController } from './block';
 import { ChatController } from './chat';
 import { API } from './common';
@@ -26,6 +26,7 @@ const server = new API({
         new SwipeController(),
         new UserController()
     ],
+    passportStrategies: [LocalStrategy],
     onWebsocketConnection: ChatController.onWebsocketConnection,
     websocketMiddleware: ChatController.websocketAuthMiddleware
 });
