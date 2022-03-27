@@ -19,7 +19,7 @@ export class SwipeController extends Controller {
     }
 
     async getSwipes(req: Request, res: Response) {
-        const swipes = await SwipeService.getSwipes(req.session.userID || '');
+        const swipes = await SwipeService.getSwipes(req.user!.id);
 
         if (!swipes) {
             return res.status(StatusCodes.UNAUTHORIZED).send();
@@ -38,7 +38,7 @@ export class SwipeController extends Controller {
         const targetID = req.params.id;
 
         const created = await SwipeService.createSwipe(
-            req.session.userID || '',
+            req.user!.id,
             targetID,
             body.status
         );
@@ -53,10 +53,7 @@ export class SwipeController extends Controller {
     async removeSwipe(req: Request, res: Response) {
         const swipeID = req.params.id;
 
-        const removed = await SwipeService.removeSwipe(
-            req.session.userID || '',
-            swipeID
-        );
+        const removed = await SwipeService.removeSwipe(req.user!.id, swipeID);
 
         if (!removed) {
             return res.status(StatusCodes.NOT_FOUND).send();

@@ -30,10 +30,7 @@ export class ReportController extends Controller {
             return res.status(StatusCodes.BAD_REQUEST).json(errors);
         }
 
-        const reports = await ReportService.getReports(
-            req.session.userID || '',
-            query
-        );
+        const reports = await ReportService.getReports(req.user!.id, query);
         if (!reports) {
             return res.status(StatusCodes.UNAUTHORIZED).send();
         }
@@ -48,7 +45,7 @@ export class ReportController extends Controller {
             return res.status(StatusCodes.BAD_REQUEST).json(errors);
         }
 
-        const currentID = req.session.userID;
+        const currentID = req.user!.id;
         const targetID = req.params.id;
 
         if (!currentID) {
@@ -78,7 +75,7 @@ export class ReportController extends Controller {
         const id = req.params.id;
 
         const updated = await ReportService.updateReport(
-            req.session.userID || '',
+            req.user!.id,
             id,
             body
         );

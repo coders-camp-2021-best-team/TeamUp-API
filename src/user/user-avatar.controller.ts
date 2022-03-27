@@ -23,7 +23,7 @@ export class UserAvatarController extends Controller {
         }
 
         const updated = await UserAvatarService.createAvatar(
-            req.session.userID || '',
+            req.user!.id,
             req.file as Express.MulterS3.File
         );
 
@@ -35,9 +35,7 @@ export class UserAvatarController extends Controller {
     }
 
     async removeAvatar(req: Request, res: Response) {
-        const removed = await UserAvatarService.removeAvatar(
-            req.session.userID || ''
-        );
+        const removed = await UserAvatarService.removeAvatar(req.user!.id);
 
         if (!removed) {
             return res.status(StatusCodes.BAD_REQUEST).send();

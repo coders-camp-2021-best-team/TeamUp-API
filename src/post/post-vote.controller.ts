@@ -21,10 +21,7 @@ export class PostVoteController extends Controller {
     async getVotes(req: Request, res: Response) {
         const postID = req.params.id;
 
-        const vote_data = await PostVoteService.getVotes(
-            req.session.userID || '',
-            postID
-        );
+        const vote_data = await PostVoteService.getVotes(req.user!.id, postID);
 
         if (!vote_data) {
             return res.status(StatusCodes.NOT_FOUND).send();
@@ -43,7 +40,7 @@ export class PostVoteController extends Controller {
         }
 
         const vote = await PostVoteService.createVote(
-            req.session.userID || '',
+            req.user!.id,
             postID,
             body
         );
@@ -52,10 +49,7 @@ export class PostVoteController extends Controller {
             return res.status(StatusCodes.NOT_FOUND).send();
         }
 
-        const vote_data = await PostVoteService.getVotes(
-            req.session.userID || '',
-            postID
-        );
+        const vote_data = await PostVoteService.getVotes(req.user!.id, postID);
 
         if (!vote_data) {
             return res.status(StatusCodes.NOT_FOUND).send();
@@ -67,10 +61,7 @@ export class PostVoteController extends Controller {
     async removeVote(req: Request, res: Response) {
         const postID = req.params.id;
 
-        const vote = await PostVoteService.removeVote(
-            req.session.userID || '',
-            postID
-        );
+        const vote = await PostVoteService.removeVote(req.user!.id, postID);
 
         if (!vote) {
             return res.status(StatusCodes.NOT_FOUND).send();

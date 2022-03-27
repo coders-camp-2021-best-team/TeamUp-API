@@ -16,7 +16,7 @@ export class MatchController extends Controller {
     }
 
     async getMatch(req: Request, res: Response) {
-        const match = await MatchService.getMatch(req.session.userID || '');
+        const match = await MatchService.getMatch(req.user!.id);
 
         if (!match) {
             return res.status(StatusCodes.NOT_FOUND).send();

@@ -16,7 +16,7 @@ export class FeedController extends Controller {
     }
 
     async getFeed(req: Request, res: Response) {
-        const feed = await FeedService.getFeed(req.session.userID || '');
+        const feed = await FeedService.getFeed(req.user!.id);
 
         if (!feed) {
             return res.status(StatusCodes.NO_CONTENT).send();

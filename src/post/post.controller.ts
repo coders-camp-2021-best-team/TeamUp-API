@@ -54,10 +54,7 @@ export class PostController extends Controller {
             return res.status(StatusCodes.BAD_REQUEST).json(errors);
         }
 
-        const post = await PostService.createPost(
-            req.session.userID || '',
-            body
-        );
+        const post = await PostService.createPost(req.user!.id, body);
 
         if (!post) {
             return res.status(StatusCodes.FORBIDDEN).send();
@@ -76,7 +73,7 @@ export class PostController extends Controller {
         const postID = req.params.id;
 
         const updated = await PostService.updatePost(
-            req.session.userID || '',
+            req.user!.id,
             postID,
             body
         );
@@ -91,10 +88,7 @@ export class PostController extends Controller {
     async removePost(req: Request, res: Response) {
         const postID = req.params.id;
 
-        const removed = await PostService.removePost(
-            req.session.userID || '',
-            postID
-        );
+        const removed = await PostService.removePost(req.user!.id, postID);
 
         if (!removed) {
             return res.status(StatusCodes.NOT_FOUND).send();

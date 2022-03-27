@@ -45,7 +45,7 @@ export class UserController extends Controller {
 
         const id = req.params.id;
 
-        if (id !== req.session.userID) {
+        if (id !== req.user!.id) {
             return res.status(StatusCodes.FORBIDDEN).send();
         }
 
@@ -62,7 +62,7 @@ export class UserController extends Controller {
         const userID = req.params.id;
         const levelID = req.params.levelID;
 
-        if (!userID || userID !== req.session.userID) {
+        if (!userID || userID !== req.user!.id) {
             return res.status(StatusCodes.BAD_REQUEST).send();
         }
 
@@ -79,7 +79,7 @@ export class UserController extends Controller {
         const userID = req.params.id;
         const skillID = req.params.skillID;
 
-        if (!userID || userID !== req.session.userID) {
+        if (!userID || userID !== req.user!.id) {
             return res.status(StatusCodes.BAD_REQUEST).send();
         }
 

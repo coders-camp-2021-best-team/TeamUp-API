@@ -38,9 +38,7 @@ export class ChatController extends Controller {
     }
 
     async getChatRooms(req: Request, res: Response) {
-        const rooms = await ChatService.getUserChatRooms(
-            req.session.userID || ''
-        );
+        const rooms = await ChatService.getUserChatRooms(req.user!.id);
 
         if (!rooms) {
             return res.status(StatusCodes.BAD_REQUEST).send();

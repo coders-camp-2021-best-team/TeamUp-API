@@ -18,9 +18,7 @@ export class BlockController extends Controller {
     }
 
     async getBlockedUsers(req: Request, res: Response) {
-        const users = await BlockService.getBlockedUsers(
-            req.session.userID || ''
-        );
+        const users = await BlockService.getBlockedUsers(req.user!.id);
 
         if (!users) {
             return res.status(StatusCodes.UNAUTHORIZED).send();
@@ -32,10 +30,7 @@ export class BlockController extends Controller {
     async blockUser(req: Request, res: Response) {
         const targetID = req.params.id;
 
-        const blocks = await BlockService.blockUser(
-            req.session.userID || '',
-            targetID
-        );
+        const blocks = await BlockService.blockUser(req.user!.id, targetID);
 
         if (!blocks) {
             return res.status(StatusCodes.BAD_REQUEST).send();
@@ -47,10 +42,7 @@ export class BlockController extends Controller {
     async unblockUser(req: Request, res: Response) {
         const blockID = req.params.id;
 
-        const unblocked = await BlockService.unblockUser(
-            req.session.userID || '',
-            blockID
-        );
+        const unblocked = await BlockService.unblockUser(req.user!.id, blockID);
 
         if (!unblocked) {
             return res.status(StatusCodes.BAD_REQUEST).send();

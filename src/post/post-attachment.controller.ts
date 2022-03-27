@@ -40,7 +40,7 @@ export class PostAttachmentController extends Controller {
         }
 
         const attachment = await PostAttachmentService.createAttachment(
-            req.session.userID || '',
+            req.user!.id,
             req.params.id,
             req.file as Express.MulterS3.File
         );
@@ -54,7 +54,7 @@ export class PostAttachmentController extends Controller {
 
     async removeAttachment(req: Request, res: Response) {
         const removed = await PostAttachmentService.removeAttachment(
-            req.session.userID || '',
+            req.user!.id,
             req.params.id,
             req.params.key
         );

@@ -35,7 +35,7 @@ export class UserPhotoController extends Controller {
     }
 
     async createPhoto(req: Request, res: Response) {
-        const currentID = req.session.userID || '';
+        const currentID = req.user!.id;
 
         if (!req.file) {
             return res.status(StatusCodes.BAD_REQUEST).send();
@@ -54,7 +54,7 @@ export class UserPhotoController extends Controller {
     }
 
     async removePhoto(req: Request, res: Response) {
-        const currentID = req.session.userID || '';
+        const currentID = req.user!.id;
         const targetID = req.params.id;
         const photoID = req.params.pid;
 
