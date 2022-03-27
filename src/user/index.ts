@@ -6,3 +6,5 @@ export * from './user-avatar.controller';
 export * from './user-avatar.service';
 export * from './user-photo.controller';
 export * from './user-photo.service';
+export * from './user-skill.controller';
+export * from './user-skill.service';

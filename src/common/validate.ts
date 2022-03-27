@@ -9,9 +9,6 @@ export const validate = <T extends Object>(
     plain: unknown
 ) => {
     const data = plainToInstance(type, plain);
-    if (typeof data !== 'object') {
-        throw new ValidationException();
-    }
 
     const errors = validateSync(data);
     if (errors.length) {

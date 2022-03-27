@@ -1,6 +1,7 @@
 import { FindConditions, ILike } from 'typeorm';
 
-import { User, UserRank } from '../user';
+import { NotFoundException } from '../common';
+import { User } from '../user';
 import {
     CreatePostDto,
     Post,
@@ -24,11 +25,7 @@ export const PostService = new (class {
         });
     }
 
-    async createPost(userID: string, data: CreatePostDto) {
-        const user = await User.findOne(userID);
-
-        if (!user) return null;
-
+    async createPost(user: User, data: CreatePostDto) {
         const categories = await PostCategory.find<PostCategory>({
             where: data.categories.map((id) => ({ id }))
         });
@@ -41,14 +38,17 @@ export const PostService = new (class {
         return post.save();
     }
 
-    async updatePost(userID: string, postID: string, body: UpdatePostDto) {
+    async getPost(postID: string, author?: User) {
         const post = await Post.findOne(postID, {
-            where: {
-                author: { id: userID }
-            }
+            where: author ? { author } : undefined
         });
+        if (!post) throw new NotFoundException();
 
-        if (!post) return null;
+        return post;
+    }
+
+    async updatePost(user: User, postID: string, body: UpdatePostDto) {
+        const post = await this.getPost(postID, user);
 
         post.title = body.title || post.title;
         post.body = body.body || post.body;
@@ -64,21 +64,11 @@ export const PostService = new (class {
         return post.save();
     }
 
-    async removePost(userID: string, postID: string) {
-        const user = await User.findOne(userID);
-
-        if (!user) return null;
-
-        const where =
-            user.rank !== UserRank.ADMIN
-                ? { author: { id: userID } }
-                : undefined;
-
-        const post = await Post.findOne(postID, {
-            where
-        });
-
-        if (!post) return null;
+    async removePost(user: User, postID: string) {
+        const post = await this.getPost(
+            postID,
+            !user.isAdmin() ? user : undefined
+        );
 
         return post.remove();
     }

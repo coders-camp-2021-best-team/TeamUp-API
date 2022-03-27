@@ -1,12 +1,18 @@
-import { instanceToPlain, plainToInstance } from 'class-transformer';
-import { validateSync } from 'class-validator';
+import { instanceToPlain } from 'class-transformer';
 import { Request, Response } from 'express';
-import { StatusCodes } from 'http-status-codes';
 import { Server, Socket } from 'socket.io';
 
 import { AuthService } from '../auth';
-// import { JwtPayload } from 'jsonwebtoken';
-import { AuthMiddleware, Controller, WebsocketMiddleware } from '../common';
+import {
+    AuthMiddleware,
+    BadRequestException,
+    Controller,
+    HttpException,
+    InternalServerErrorException,
+    UnauthorizedException,
+    validate,
+    WebsocketMiddleware
+} from '../common';
 import env from '../config';
 import logger from '../logger';
 import { User } from '../user';
@@ -22,11 +28,13 @@ const { NODE_ENV, JWT_INSECURE } = env;
 
 declare module 'socket.io/dist/socket' {
     interface Handshake {
-        userID: string;
+        user: User;
         raw_token: string;
-        // decoded_token: JwtPayload;
     }
 }
+
+export type Ack = (resOrError?: unknown) => void;
+
 export class ChatController extends Controller {
     constructor() {
         super('/chat');
@@ -38,204 +46,208 @@ export class ChatController extends Controller {
     }
 
     async getChatRooms(req: Request, res: Response) {
-        const rooms = await ChatService.getUserChatRooms(req.user!.id);
+        const rooms = await ChatService.getUserChatRooms(req.user!);
 
-        if (!rooms) {
-            return res.status(StatusCodes.BAD_REQUEST).send();
-        }
-
-        return res.send(rooms);
+        return res.send(instanceToPlain(rooms));
     }
 
-    static websocketAuthMiddleware: WebsocketMiddleware = (socket, next) => {
-        const raw_token =
-            socket.handshake.auth.token ||
-            socket.handshake.headers.authorization;
+    static websocketAuthMiddleware: WebsocketMiddleware = async (
+        socket,
+        next
+    ) => {
+        try {
+            if (!socket.handshake.auth.token) {
+                const parts =
+                    socket.handshake.headers.authorization?.split(' ');
 
-        const decoded_token = AuthService.verifyWebsocketJWT(raw_token);
+                if (!parts || parts.length !== 2 || parts[0] !== 'Bearer') {
+                    throw new BadRequestException();
+                }
 
-        if (!decoded_token || typeof decoded_token === 'string') {
-            return next(new Error('Unauthorized'));
-        }
-
-        if (
-            Object.keys(decoded_token).length !== 3 ||
-            (decoded_token.exp || 0) - (decoded_token.iat || 0) > 60
-        ) {
-            logger.warn(`suspicious jwt detected ${raw_token}`);
-
-            if (NODE_ENV !== 'development' && JWT_INSECURE === false) {
-                return next(new Error('Unauthorized'));
+                socket.handshake.auth.token = parts[1];
             }
 
-            logger.warn(
-                'allowing to connect, because JWT_INSECURE=true or NODE_ENV=development'
-            );
-        }
+            const raw_token: string = socket.handshake.auth.token;
+            const decoded_token = AuthService.verifyWebsocketJWT(raw_token);
+            if (typeof decoded_token !== 'object') {
+                throw new BadRequestException();
+            }
 
-        socket.handshake.userID = decoded_token.sub as string;
-        socket.handshake.raw_token = raw_token;
-        // socket.handshake.decoded_token = decoded_token;
-        next();
+            const iat = decoded_token.iat || 0;
+            const exp = decoded_token.exp || 0;
+
+            if (Object.keys(decoded_token).length !== 3 || exp - iat > 60) {
+                logger.warn(`suspicious jwt detected ${raw_token}`);
+
+                if (NODE_ENV !== 'development' && JWT_INSECURE === false) {
+                    throw new BadRequestException();
+                }
+
+                logger.warn(
+                    'allowing to connect, because JWT_INSECURE=true or NODE_ENV=development'
+                );
+            }
+
+            const userID = decoded_token.sub || '';
+            const user = await User.findOneOrFail(userID);
+
+            socket.handshake.user = user;
+            socket.handshake.raw_token = raw_token;
+
+            return next();
+        } catch {
+            return next(new UnauthorizedException());
+        }
     };
 
     static async onWebsocketConnection(io: Server, socket: Socket) {
-        const userID = socket.handshake.userID;
+        const { user } = socket.handshake;
 
-        const user = await User.findOne(userID);
-        if (!user) {
-            socket.disconnect(true);
-            logger.warn(
-                `non-existent user tried to connect with valid jwt ${socket.handshake.raw_token}`
-            );
-        }
+        const handleError = (err: unknown, ack: Ack) => {
+            if (err instanceof HttpException) {
+                ack({
+                    code: err.code,
+                    error: err.error
+                });
+            } else {
+                ack(new InternalServerErrorException());
 
-        await socket.join(`user.${userID}`);
-        io.in(`user.${userID}`).emit('user.status', instanceToPlain(user));
+                logger.error(err);
+            }
+        };
 
-        socket.on('user.status.send', async (data) => {
-            const body = plainToInstance(UserStatusDto, data);
-            if (typeof body !== 'object') {
+        const handleSuccess = (ack: Ack) => {
+            ack({ code: 200 });
+        };
+
+        await socket.join(`user.${user.id}`);
+        io.in(`user.${user.id}`).emit('user.status', instanceToPlain(user));
+
+        socket.prependAny((_, data, ack: Ack) => {
+            if (typeof data !== 'object' || typeof ack !== 'function') {
                 return socket.disconnect(true);
             }
-            const errors = validateSync(body);
-            if (errors.length) {
-                return socket.disconnect(true);
-            }
-
-            const status = await ChatService.sendUserStatus(userID, body);
-
-            if (!status) {
-                return socket.disconnect(true);
-            }
-
-            io.in(`user.${userID}`).emit(
-                'user.status',
-                instanceToPlain(status)
-            );
         });
 
-        socket.on('user.status.subscribe', async (data) => {
-            const body = plainToInstance(UserSubscribeDto, data);
-            if (typeof body !== 'object') {
-                return socket.disconnect(true);
+        socket.on('user.status.send', async (data, ack: Ack) => {
+            try {
+                const body = validate(UserStatusDto, data);
+
+                const status = await ChatService.sendUserStatus(user, body);
+
+                io.in(`user.${user.id}`).emit(
+                    'user.status',
+                    instanceToPlain(status)
+                );
+
+                handleSuccess(ack);
+            } catch (err) {
+                handleError(err, ack);
             }
-            const errors = validateSync(body);
-            if (errors.length) {
-                return socket.disconnect(true);
-            }
-
-            const targetUserID = body.userID;
-
-            const room = await ChatService.getUserRoomWithUser(
-                userID,
-                targetUserID
-            );
-
-            if (!room) {
-                return socket.disconnect(true);
-            }
-
-            socket.join(`user.${targetUserID}`);
-
-            const targetUser = [room.recipient1, room.recipient2].find(
-                (r) => r.id === targetUserID
-            );
-            socket.emit('user.status', targetUser);
         });
 
-        socket.on('user.status.unsubscribe', async (data) => {
-            const body = plainToInstance(UserSubscribeDto, data);
-            if (typeof body !== 'object') {
-                return socket.disconnect(true);
-            }
-            const errors = validateSync(body);
-            if (errors.length) {
-                return socket.disconnect(true);
-            }
+        socket.on('user.status.subscribe', async (data, ack: Ack) => {
+            try {
+                const { userID: targetUserID } = validate(
+                    UserSubscribeDto,
+                    data
+                );
 
-            const targetUserID = body.userID;
+                const room = await ChatService.getUserRoomWithUser(
+                    user,
+                    targetUserID
+                );
 
-            socket.leave(`user.${targetUserID}`);
+                const targetUser = [room.recipient1, room.recipient2].find(
+                    (u) => u.id === targetUserID
+                )!;
+
+                socket.join(`user.${targetUserID}`);
+                socket.emit('user.status', targetUser);
+
+                handleSuccess(ack);
+            } catch (err) {
+                handleError(err, ack);
+            }
         });
 
-        socket.on('message.status.send', async (data) => {
-            const body = plainToInstance(MessageStatusDto, data);
-            if (typeof body !== 'object') {
-                return socket.disconnect(true);
-            }
-            const errors = validateSync(body);
-            if (errors.length) {
-                return socket.disconnect(true);
-            }
+        socket.on('user.status.unsubscribe', async (data, ack: Ack) => {
+            try {
+                const { userID: targetUserID } = validate(
+                    UserSubscribeDto,
+                    data
+                );
 
-            const status = await ChatService.sendMessageStatus(userID, body);
-            if (!status) {
-                return socket.disconnect(true);
-            }
+                await socket.leave(`user.${targetUserID}`);
 
-            socket.broadcast
-                .in(`room.${status.chatroom.id}`)
-                .emit('message.status', instanceToPlain(status));
+                handleSuccess(ack);
+            } catch (err) {
+                handleError(err, ack);
+            }
         });
 
-        socket.on('message.send', async (data) => {
-            const body = plainToInstance(CreateMessageDto, data);
-            if (typeof body !== 'object') {
-                return socket.disconnect(true);
-            }
-            const errors = validateSync(body);
-            if (errors.length) {
-                return socket.disconnect(true);
-            }
+        socket.on('message.status.send', async (data, ack: Ack) => {
+            try {
+                const body = validate(MessageStatusDto, data);
 
-            const sent = await ChatService.createMessage(userID, body);
+                const status = await ChatService.sendMessageStatus(user, body);
 
-            if (!sent) {
-                return socket.disconnect(true);
+                socket.broadcast
+                    .in(`room.${status.chatroom.id}`)
+                    .emit('message.status', instanceToPlain(status));
+
+                handleSuccess(ack);
+            } catch (err) {
+                handleError(err, ack);
             }
-
-            io.in(`room.${sent.chatroom.id}`).emit(
-                'message',
-                instanceToPlain(sent)
-            );
         });
 
-        socket.on('room.join', async (data) => {
-            const body = plainToInstance(JoinChatRoomDto, data);
-            if (typeof body !== 'object') {
-                return socket.disconnect(true);
+        socket.on('message.send', async (data, ack: Ack) => {
+            try {
+                const body = validate(CreateMessageDto, data);
+
+                const sent = await ChatService.createMessage(user, body);
+
+                io.in(`room.${sent.chatroom.id}`).emit(
+                    'message',
+                    instanceToPlain(sent)
+                );
+
+                handleSuccess(ack);
+            } catch (err) {
+                handleError(err, ack);
             }
-            const errors = validateSync(body);
-            if (errors.length) {
-                return socket.disconnect(true);
-            }
-
-            const { roomID } = body;
-            const room = await ChatService.getUserChatRoom(userID, roomID);
-            if (!room) {
-                return socket.disconnect(true);
-            }
-
-            socket.join(`room.${roomID}`);
-
-            const messages = await ChatService.getChatRoomMessages(roomID);
-            room.messages = messages;
-
-            socket.emit('room.details', instanceToPlain(room));
         });
 
-        socket.on('room.leave', async (data) => {
-            const body = plainToInstance(JoinChatRoomDto, data);
-            if (typeof body !== 'object') {
-                return socket.disconnect(true);
-            }
-            const errors = validateSync(body);
-            if (errors.length) {
-                return socket.disconnect(true);
-            }
+        socket.on('room.join', async (data, ack) => {
+            try {
+                const { roomID } = validate(JoinChatRoomDto, data);
 
-            socket.leave(`room.${body.roomID}`);
+                const room = await ChatService.getUserChatRoom(user, roomID);
+
+                socket.join(`room.${roomID}`);
+
+                const messages = await ChatService.getChatRoomMessages(room);
+                room.messages = messages;
+
+                socket.emit('room.details', instanceToPlain(room));
+
+                handleSuccess(ack);
+            } catch (err) {
+                handleError(err, ack);
+            }
+        });
+
+        socket.on('room.leave', async (data, ack) => {
+            try {
+                const { roomID } = validate(JoinChatRoomDto, data);
+
+                await socket.leave(`room.${roomID}`);
+
+                handleSuccess(ack);
+            } catch (err) {
+                handleError(err, ack);
+            }
         });
     }
 }

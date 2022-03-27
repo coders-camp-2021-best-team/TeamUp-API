@@ -1,9 +1,7 @@
-import { instanceToPlain, plainToInstance } from 'class-transformer';
-import { validateSync } from 'class-validator';
+import { instanceToPlain } from 'class-transformer';
 import { Request, Response } from 'express';
-import { StatusCodes } from 'http-status-codes';
 
-import { AuthMiddleware, Controller } from '../common';
+import { AuthMiddleware, Controller, validate } from '../common';
 import { SearchQueryDto, SearchService } from '.';
 
 export class SearchController extends Controller {
@@ -17,11 +15,7 @@ export class SearchController extends Controller {
     }
 
     async getResults(req: Request, res: Response) {
-        const query = plainToInstance(SearchQueryDto, req.query);
-        const errors = validateSync(query);
-        if (errors.length) {
-            return res.status(StatusCodes.BAD_REQUEST).json(errors);
-        }
+        const query = validate(SearchQueryDto, req.query);
 
         const results = await SearchService.getResults(query);
 

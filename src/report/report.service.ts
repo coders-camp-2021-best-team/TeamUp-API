@@ -1,35 +1,25 @@
-import { User, UserRank } from '../user';
+import { NotFoundException } from '../common';
+import { User } from '../user';
 import { CreateReportDto, GetReportsDto, UpdateReportDto, UserReport } from '.';
 import { UserReportStatus } from './entities';
 
 export const ReportService = new (class {
-    async getReports(userID: string, data: GetReportsDto) {
-        const user = await User.findOne(userID);
-        if (!user || user.rank !== UserRank.ADMIN) {
-            return null;
-        }
-
-        const reports = await UserReport.find({
+    async getReports(user: User, data: GetReportsDto) {
+        return UserReport.find({
             where: {
                 status: data.status || UserReportStatus.PENDING
             },
             relations: ['submittedBy', 'target']
         });
-
-        return reports;
     }
 
     async createReport(
-        currentID: string,
+        currentUser: User,
         targetID: string,
         data: CreateReportDto
     ) {
-        const currentUser = await User.findOne(currentID);
         const targetUser = await User.findOne(targetID);
-
-        if (!currentUser || !targetUser) {
-            return null;
-        }
+        if (!targetUser) throw new NotFoundException();
 
         const report = new UserReport();
         report.reason = data.reason;
@@ -39,16 +29,9 @@ export const ReportService = new (class {
         return report.save();
     }
 
-    async updateReport(userID: string, id: string, data: UpdateReportDto) {
-        const user = await User.findOne(userID);
-        if (!user || user.rank !== UserRank.ADMIN) {
-            return null;
-        }
-
+    async updateReport(user: User, id: string, data: UpdateReportDto) {
         const report = await UserReport.findOne(id);
-        if (!report) {
-            return null;
-        }
+        if (!report) throw new NotFoundException();
 
         report.status = data.status || report.status;
 

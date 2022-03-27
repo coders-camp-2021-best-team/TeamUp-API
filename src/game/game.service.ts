@@ -1,3 +1,4 @@
+import { ConflictException, NotFoundException } from '../common';
 import { AddGameDto, AddLevelDto, ExperienceLevel, Game } from '.';
 
 export const GameService = new (class {
@@ -11,9 +12,7 @@ export const GameService = new (class {
         const game = await Game.findOne(gameID, {
             relations: ['levels']
         });
-        if (!game) {
-            return null;
-        }
+        if (!game) throw new NotFoundException();
 
         return game;
     }
@@ -28,25 +27,16 @@ export const GameService = new (class {
 
     async removeGame(gameID: string) {
         const game = await Game.findOne(gameID);
-
-        if (!game) {
-            return null;
-        }
+        if (!game) throw new NotFoundException();
 
         return game.remove();
     }
 
     async addExperienceLevel(gameID: string, data: AddLevelDto) {
-        const game = await Game.findOne(gameID, {
-            relations: ['levels']
-        });
-
-        if (!game) {
-            return null;
-        }
+        const game = await this.getGame(gameID);
 
         if (game.levels.some((l) => l.name === data.name)) {
-            return null;
+            throw new ConflictException();
         }
 
         const level = new ExperienceLevel();
@@ -65,10 +55,7 @@ export const GameService = new (class {
                 }
             }
         });
-
-        if (!level) {
-            return null;
-        }
+        if (!level) throw new NotFoundException();
 
         return level.remove();
     }

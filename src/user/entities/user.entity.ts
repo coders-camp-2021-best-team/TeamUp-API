@@ -13,27 +13,13 @@ import { Token } from '../../email';
 import { Post } from '../../post';
 import { UserReport } from '../../report';
 import { UserSwipe } from '../../swipe';
-import { UserPhoto, UserSkill } from '.';
-
-export enum UserStatus {
-    BLOCKED = 'BLOCKED',
-    ACTIVE = 'ACTIVE'
-}
-
-export enum UserRegisterStatus {
-    UNVERIFIED = 'UNVERIFIED',
-    VERIFIED = 'VERIFIED'
-}
-
-export enum UserRank {
-    ADMIN = 'ADMIN',
-    USER = 'USER'
-}
-
-export enum UserActivityStatus {
-    ONLINE = 'ONLINE',
-    OFFLINE = 'OFFLINE'
-}
+import {
+    UserAccountRole,
+    UserAccountStatus,
+    UserActivityStatus,
+    UserPhoto,
+    UserSkill
+} from '.';
 
 @Entity('users')
 export class User extends BaseEntity {
@@ -62,23 +48,20 @@ export class User extends BaseEntity {
     @Column('longtext', { default: '' })
     biogram: string;
 
-    @Column('enum', { enum: UserRank, default: UserRank.USER })
-    rank: UserRank;
+    @Column('enum', { enum: UserAccountRole, default: UserAccountRole.USER })
+    role: UserAccountRole;
 
-    @Column('enum', { enum: UserStatus, default: UserStatus.ACTIVE })
-    status: UserStatus;
+    @Column('enum', {
+        enum: UserAccountStatus,
+        default: UserAccountStatus.UNVERIFIED
+    })
+    account_status: UserAccountStatus;
 
     @Column('enum', {
         enum: UserActivityStatus,
         default: UserActivityStatus.OFFLINE
     })
     activity_status: UserActivityStatus;
-
-    @Column('enum', {
-        enum: UserRegisterStatus,
-        default: UserRegisterStatus.UNVERIFIED
-    })
-    registerStatus: UserRegisterStatus;
 
     @Column({ nullable: true, default: null })
     avatar?: string;
@@ -118,4 +101,12 @@ export class User extends BaseEntity {
 
     @OneToMany(() => ChatRoom, (c) => c.recipient2)
     chatroomsWithMe: ChatRoom[];
+
+    isAdmin() {
+        return this.role === UserAccountRole.ADMIN;
+    }
+
+    isAbleToLogin() {
+        return this.account_status === UserAccountStatus.ACTIVE;
+    }
 }

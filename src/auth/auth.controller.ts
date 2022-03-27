@@ -1,11 +1,13 @@
-import { instanceToPlain, plainToInstance } from 'class-transformer';
-import { validateSync } from 'class-validator';
+import { instanceToPlain } from 'class-transformer';
 import { Request, Response } from 'express';
-import { StatusCodes } from 'http-status-codes';
 import passport from 'passport';
 
-import { AuthMiddleware, Controller, LoggedOutMiddleware } from '../common';
-import { UserService } from '../user';
+import {
+    AuthMiddleware,
+    Controller,
+    LoggedOutMiddleware,
+    validate
+} from '../common';
 import {
     AuthService,
     PasswordResetDto,
@@ -47,17 +49,9 @@ export class AuthController extends Controller {
     }
 
     async register(req: Request, res: Response) {
-        const body = plainToInstance(RegisterDto, req.body);
-        const errors = validateSync(body);
-        if (errors.length) {
-            return res.status(StatusCodes.BAD_REQUEST).json(errors);
-        }
+        const body = validate(RegisterDto, req.body);
 
         const user = await AuthService.register(body);
-
-        if (!user) {
-            return res.status(StatusCodes.CONFLICT).send();
-        }
 
         return res.json(instanceToPlain(user));
     }
@@ -74,43 +68,25 @@ export class AuthController extends Controller {
 
     async activateUser(req: Request, res: Response) {
         const id = req.params.id;
-        const user = await UserService.activateUser(id);
 
-        if (!user) {
-            return res.status(StatusCodes.NOT_FOUND).send();
-        }
+        await AuthService.activateUser(id);
 
         return res.send();
     }
 
     async requestPasswordReset(req: Request, res: Response) {
-        const body = plainToInstance(PasswordResetRequestDto, req.body);
-        const errors = validateSync(body);
-        if (errors.length) {
-            return res.status(StatusCodes.BAD_REQUEST).json(errors);
-        }
+        const { email } = validate(PasswordResetRequestDto, req.body);
 
-        const email = body.email;
-
-        await UserService.requestPasswordReset(email);
+        await AuthService.requestPasswordReset(email);
 
         return res.send();
     }
 
     async resetPassword(req: Request, res: Response) {
-        const body = plainToInstance(PasswordResetDto, req.body);
-        const errors = validateSync(body);
-        if (errors.length) {
-            return res.status(StatusCodes.BAD_REQUEST).json(errors);
-        }
-
         const id = req.params.id;
-        const password = body.password;
+        const { password } = validate(PasswordResetDto, req.body);
 
-        const user = await UserService.resetPassword(id, password);
-        if (!user) {
-            return res.status(StatusCodes.NOT_FOUND).send();
-        }
+        await AuthService.resetPassword(id, password);
 
         return res.send();
     }

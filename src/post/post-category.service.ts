@@ -1,5 +1,6 @@
 import { FindConditions, ILike } from 'typeorm';
 
+import { NotFoundException } from '../common';
 import {
     CreateCategoryDto,
     PostCategory,
@@ -28,10 +29,15 @@ export const PostCategoryService = new (class {
         return cat.save();
     }
 
-    async updateCategory(catID: string, body: UpdateCategoryDto) {
-        const cat = await PostCategory.findOne(catID);
+    async getCategory(categoryID: string) {
+        const cat = await PostCategory.findOne(categoryID);
+        if (!cat) throw new NotFoundException();
 
-        if (!cat) return null;
+        return cat;
+    }
+
+    async updateCategory(catID: string, body: UpdateCategoryDto) {
+        const cat = await this.getCategory(catID);
 
         cat.name = body.name || cat.name;
 
@@ -39,10 +45,7 @@ export const PostCategoryService = new (class {
     }
 
     async removeCategory(catID: string) {
-        const post = await PostCategory.findOne(catID);
-
-        if (!post) return null;
-
-        return post.remove();
+        const cat = await this.getCategory(catID);
+        return cat.remove();
     }
 })();
