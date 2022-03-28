@@ -92,7 +92,8 @@ export class API {
             secret: SESSION_SECRET,
             resave: false,
             cookie: {
-                httpOnly: true
+                httpOnly: true,
+                secure: 'auto'
             }
         });
 
