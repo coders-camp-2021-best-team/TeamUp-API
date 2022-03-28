@@ -75,7 +75,14 @@ export class API {
     }
 
     private initSession() {
-        const redis_client = new Redis(REDIS_TLS_URL || REDIS_URL);
+        const redis_client = new Redis(REDIS_TLS_URL || REDIS_URL, {
+            tls: REDIS_TLS_URL
+                ? {
+                      requestCert: true,
+                      rejectUnauthorized: false
+                  }
+                : undefined
+        });
 
         this.session_middleware = session({
             store: new RedisStore({
