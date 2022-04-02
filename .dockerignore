@@ -2,6 +2,6 @@ Dockerfile
 .dockerignore
 docker-compose.yml
 
+node_modules/
 build/
 logs/
-node_modules/
