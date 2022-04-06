@@ -21,12 +21,14 @@ services:
 
     api:
         container_name: api
-        build: .
+        build:
+            context: .
+            target: development
         ports:
             - 9229:9229
         volumes:
-            - ./src/:/app/src/
-            - ./logs/:/app/logs/
+            - ./src:/app/src
+            - ./logs:/app/logs
         env_file:
             - .env
         networks:
@@ -74,9 +76,6 @@ services:
         image: phpmyadmin/phpmyadmin:latest
         env_file:
             - .docker.env
-        environment:
-            - PMA_ABSOLUTE_URI=/dev/phpmyadmin/
-            - UPLOAD_LIMIT=256M
         networks:
             - mariadb
         depends_on:
