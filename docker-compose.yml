@@ -27,7 +27,7 @@ services:
         ports:
             - 9229:9229
         volumes:
-            - ./src:/app/src
+            - ./build:/app/build
             - ./logs:/app/logs
         env_file:
             - .env
