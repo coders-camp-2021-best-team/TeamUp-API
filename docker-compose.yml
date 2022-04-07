@@ -1,4 +1,4 @@
-version: '3'
+version: '3.2'
 
 services:
     nginx:
@@ -28,7 +28,6 @@ services:
             - 9229:9229
         volumes:
             - ./build:/app/build
-            - ./logs:/app/logs
         env_file:
             - .env
         networks:
@@ -40,6 +39,23 @@ services:
             - redis
             - mariadb
             - minio
+
+    # api:
+    #     container_name: api
+    #     build:
+    #         context: .
+    #         target: production
+    #     env_file:
+    #         - .env
+    #     networks:
+    #         - api
+    #         - redis
+    #         - mariadb
+    #         - minio
+    #     depends_on:
+    #         - redis
+    #         - mariadb
+    #         - minio
 
     redis:
         container_name: redis
