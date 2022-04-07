@@ -3,10 +3,10 @@ import { User, UserSkill } from '../user';
 import { Feed, FeedUser } from './entities';
 
 export const FeedService = new (class {
-    async getFeed(userID: string) {
-        const feed = await Feed.findOne(userID);
+    async getFeed(user: User) {
+        try {
+            const feed = await Feed.findOneOrFail(user.id);
 
-        if (feed) {
             const interval_ms = new Date().getTime() - feed.createdOn.getTime();
             const compare_ms = 8 * 60 * 60 * 1000;
 
@@ -19,23 +19,21 @@ export const FeedService = new (class {
                 feed.recommendedUser = feed.recommendedUsers[0]?.user || null;
 
                 return feed;
+            } else {
+                await feed.remove();
+                throw new Error();
             }
+        } catch {
+            const new_feed = await this.createFeed(user);
 
-            await feed.remove();
+            new_feed.recommendedUser =
+                new_feed.recommendedUsers[0]?.user || null;
+            return new_feed;
         }
-
-        const new_feed = await this.createFeed(userID);
-        if (!new_feed) return null;
-        if (!new_feed.recommendedUsers.length) return null;
-
-        await new_feed.save();
-
-        new_feed.recommendedUser = new_feed.recommendedUsers[0]?.user || null;
-        return new_feed;
     }
 
-    async createFeed(userID: string) {
-        const user = await User.findOne(userID, {
+    async createFeed(_user: User) {
+        const user = await User.findOneOrFail(_user.id, {
             relations: [
                 'skills',
                 'skills.level',
@@ -50,10 +48,6 @@ export const FeedService = new (class {
                 'chatroomsWithMe'
             ]
         });
-
-        if (!user) {
-            return null;
-        }
 
         const people_that_blocked_me = user.blockedBy.map(
             (b) => b.blockedBy.id
@@ -120,6 +114,6 @@ export const FeedService = new (class {
         const feed = new Feed();
         feed.user = user;
         feed.recommendedUsers = similar_users;
-        return feed;
+        return feed.save();
     }
 })();

@@ -1,9 +1,9 @@
-import { StatusCodes } from 'http-status-codes';
-
-import { Middleware } from '.';
+import { Middleware } from '..';
+import { UnauthorizedException } from '../exceptions';
 
 export const AuthMiddleware: Middleware = (req, res, next) => {
-    if (req.session.loggedIn) return next();
-
-    return res.status(StatusCodes.UNAUTHORIZED).send();
+    if (req.isAuthenticated()) {
+        return next();
+    }
+    throw new UnauthorizedException();
 };

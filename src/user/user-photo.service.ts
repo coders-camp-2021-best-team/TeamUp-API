@@ -1,21 +1,24 @@
+import { ForbiddenException, NotFoundException } from '../common';
 import { S3Service } from '../s3';
-import { User, UserPhoto, UserRank } from '.';
+import { User, UserPhoto } from '.';
+import { UserAccountRole } from './entities';
 
 export const UserPhotoService = new (class {
-    async getPhotos(userID: string) {
-        const user = await User.findOne(userID, {
+    async getUser(id: string) {
+        const user = await User.findOne(id, {
             relations: ['photos']
         });
-        if (!user) return null;
+        if (!user) throw new NotFoundException();
 
-        return user.photos;
+        return user;
     }
 
-    async createPhoto(userID: string, file: Express.MulterS3.File) {
-        const user = await User.findOne(userID, {
-            relations: ['photos']
-        });
-        if (!user) return null;
+    async getPhotos(userID: string) {
+        return (await this.getUser(userID)).photos;
+    }
+
+    async createPhoto({ id }: User, file: Express.MulterS3.File) {
+        const user = await this.getUser(id);
 
         const photo = new UserPhoto();
         photo.key = file.key;
@@ -27,22 +30,21 @@ export const UserPhotoService = new (class {
         return photo;
     }
 
-    async removePhoto(userID: string, targetID: string, photoID: string) {
-        const user = await User.findOne(userID);
-        if (!user || !targetID) return null;
+    async removePhoto(currentUser: User, targetID: string, photoID: string) {
+        const targetUser = await this.getUser(targetID);
 
-        if (user.rank !== UserRank.ADMIN && userID !== targetID) {
-            return null;
+        if (
+            currentUser.role !== UserAccountRole.ADMIN &&
+            currentUser.id !== targetID
+        ) {
+            throw new ForbiddenException();
         }
 
         const photo = await UserPhoto.findOne(photoID, {
-            where: {
-                user: { id: targetID }
-            },
+            where: { user: targetUser },
             relations: ['user']
         });
-
-        if (!photo) return null;
+        if (!photo) throw new NotFoundException();
 
         await S3Service.deleteFile(photo.key);
 

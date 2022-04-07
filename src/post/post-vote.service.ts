@@ -1,13 +1,19 @@
+import { NotFoundException } from '../common';
 import { User } from '../user';
 import { CreateVoteDto, Post, PostVote, PostVoteType } from '.';
 
 export const PostVoteService = new (class {
-    async getVotes(userID: string, postID: string) {
+    async getPost(postID: string) {
         const post = await Post.findOne(postID, {
             relations: ['votes']
         });
+        if (!post) throw new NotFoundException();
 
-        if (!post) return null;
+        return post;
+    }
+
+    async getVotes(user: User, postID: string) {
+        const post = await this.getPost(postID);
 
         return {
             upvotes: post.votes.reduce(
@@ -18,19 +24,14 @@ export const PostVoteService = new (class {
                 (sum, v) => (v.type === PostVoteType.DOWNVOTE ? sum + 1 : sum),
                 0
             ),
-            me: post.votes.find((v) => v.user.id === userID) || null
+            me: post.votes.find((v) => v.user.id === user.id) || null
         };
     }
 
-    async createVote(userID: string, postID: string, data: CreateVoteDto) {
-        const post = await Post.findOne(postID, {
-            relations: ['votes']
-        });
-        const user = await User.findOne(userID);
+    async createVote(user: User, postID: string, data: CreateVoteDto) {
+        const post = await this.getPost(postID);
 
-        if (!post || !user) return null;
-
-        const vote = post.votes.find((v) => v.user.id === userID);
+        const vote = post.votes.find((v) => v.user.id === user.id);
         if (!vote) {
             const vote = new PostVote();
             vote.user = user;
@@ -44,16 +45,15 @@ export const PostVoteService = new (class {
         return post.save();
     }
 
-    async removeVote(userID: string, postID: string) {
+    async removeVote(user: User, postID: string) {
         const vote = await PostVote.findOne({
             where: {
-                user: { id: userID },
+                user,
                 post: { id: postID }
             },
             relations: ['post']
         });
-
-        if (!vote) return null;
+        if (!vote) throw new NotFoundException();
 
         return vote.remove();
     }

@@ -1,9 +1,7 @@
-import { instanceToPlain, plainToInstance } from 'class-transformer';
-import { validateSync } from 'class-validator';
+import { instanceToPlain } from 'class-transformer';
 import { Request, Response } from 'express';
-import { StatusCodes } from 'http-status-codes';
 
-import { AuthMiddleware, Controller } from '../common';
+import { AuthMiddleware, Controller, validate } from '../common';
 import { CreateSwipeDto, SwipeService } from '.';
 
 export class SwipeController extends Controller {
@@ -19,33 +17,20 @@ export class SwipeController extends Controller {
     }
 
     async getSwipes(req: Request, res: Response) {
-        const swipes = await SwipeService.getSwipes(req.session.userID || '');
-
-        if (!swipes) {
-            return res.status(StatusCodes.UNAUTHORIZED).send();
-        }
+        const swipes = await SwipeService.getSwipes(req.user!);
 
         res.send(instanceToPlain(swipes));
     }
 
     async createSwipe(req: Request, res: Response) {
-        const body = plainToInstance(CreateSwipeDto, req.body);
-        const errors = validateSync(body);
-        if (errors.length) {
-            return res.status(StatusCodes.BAD_REQUEST).json(errors);
-        }
-
         const targetID = req.params.id;
+        const body = validate(CreateSwipeDto, req.body);
 
         const created = await SwipeService.createSwipe(
-            req.session.userID || '',
+            req.user!,
             targetID,
             body.status
         );
-
-        if (!created) {
-            return res.status(StatusCodes.BAD_REQUEST).send();
-        }
 
         return res.send(instanceToPlain(created));
     }
@@ -53,14 +38,7 @@ export class SwipeController extends Controller {
     async removeSwipe(req: Request, res: Response) {
         const swipeID = req.params.id;
 
-        const removed = await SwipeService.removeSwipe(
-            req.session.userID || '',
-            swipeID
-        );
-
-        if (!removed) {
-            return res.status(StatusCodes.NOT_FOUND).send();
-        }
+        await SwipeService.removeSwipe(req.user!, swipeID);
 
         res.send();
     }

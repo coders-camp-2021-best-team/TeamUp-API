@@ -1,9 +1,7 @@
-import { instanceToPlain, plainToInstance } from 'class-transformer';
-import { validateSync } from 'class-validator';
+import { instanceToPlain } from 'class-transformer';
 import { Request, Response } from 'express';
-import { StatusCodes } from 'http-status-codes';
 
-import { AuthMiddleware, Controller } from '../common';
+import { AuthMiddleware, Controller, validate } from '../common';
 import { CreateVoteDto, PostVoteService } from '.';
 
 export class PostVoteController extends Controller {
@@ -21,14 +19,7 @@ export class PostVoteController extends Controller {
     async getVotes(req: Request, res: Response) {
         const postID = req.params.id;
 
-        const vote_data = await PostVoteService.getVotes(
-            req.session.userID || '',
-            postID
-        );
-
-        if (!vote_data) {
-            return res.status(StatusCodes.NOT_FOUND).send();
-        }
+        const vote_data = await PostVoteService.getVotes(req.user!, postID);
 
         res.send(instanceToPlain(vote_data));
     }
@@ -36,30 +27,11 @@ export class PostVoteController extends Controller {
     async createVote(req: Request, res: Response) {
         const postID = req.params.id;
 
-        const body = plainToInstance(CreateVoteDto, req.body);
-        const errors = validateSync(body);
-        if (errors.length) {
-            return res.status(StatusCodes.BAD_REQUEST).json(errors);
-        }
+        const body = validate(CreateVoteDto, req.body);
 
-        const vote = await PostVoteService.createVote(
-            req.session.userID || '',
-            postID,
-            body
-        );
+        await PostVoteService.createVote(req.user!, postID, body);
 
-        if (!vote) {
-            return res.status(StatusCodes.NOT_FOUND).send();
-        }
-
-        const vote_data = await PostVoteService.getVotes(
-            req.session.userID || '',
-            postID
-        );
-
-        if (!vote_data) {
-            return res.status(StatusCodes.NOT_FOUND).send();
-        }
+        const vote_data = await PostVoteService.getVotes(req.user!, postID);
 
         res.send(instanceToPlain(vote_data));
     }
@@ -67,14 +39,7 @@ export class PostVoteController extends Controller {
     async removeVote(req: Request, res: Response) {
         const postID = req.params.id;
 
-        const vote = await PostVoteService.removeVote(
-            req.session.userID || '',
-            postID
-        );
-
-        if (!vote) {
-            return res.status(StatusCodes.NOT_FOUND).send();
-        }
+        await PostVoteService.removeVote(req.user!, postID);
 
         res.send();
     }

@@ -1,6 +1,5 @@
 import { instanceToPlain } from 'class-transformer';
 import { Request, Response } from 'express';
-import { StatusCodes } from 'http-status-codes';
 
 import { AuthMiddleware, Controller } from '../common';
 import { BlockService } from '.';
@@ -18,13 +17,7 @@ export class BlockController extends Controller {
     }
 
     async getBlockedUsers(req: Request, res: Response) {
-        const users = await BlockService.getBlockedUsers(
-            req.session.userID || ''
-        );
-
-        if (!users) {
-            return res.status(StatusCodes.UNAUTHORIZED).send();
-        }
+        const users = await BlockService.getBlockedUsers(req.user!);
 
         res.send(instanceToPlain(users));
     }
@@ -32,14 +25,7 @@ export class BlockController extends Controller {
     async blockUser(req: Request, res: Response) {
         const targetID = req.params.id;
 
-        const blocks = await BlockService.blockUser(
-            req.session.userID || '',
-            targetID
-        );
-
-        if (!blocks) {
-            return res.status(StatusCodes.BAD_REQUEST).send();
-        }
+        const blocks = await BlockService.blockUser(req.user!, targetID);
 
         return res.send(instanceToPlain(blocks));
     }
@@ -47,14 +33,7 @@ export class BlockController extends Controller {
     async unblockUser(req: Request, res: Response) {
         const blockID = req.params.id;
 
-        const unblocked = await BlockService.unblockUser(
-            req.session.userID || '',
-            blockID
-        );
-
-        if (!unblocked) {
-            return res.status(StatusCodes.BAD_REQUEST).send();
-        }
+        await BlockService.unblockUser(req.user!, blockID);
 
         return res.send();
     }

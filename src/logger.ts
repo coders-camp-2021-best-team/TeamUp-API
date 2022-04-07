@@ -13,16 +13,16 @@ const colors = {
 
 winston.addColors(colors);
 
-const console_format =
-    NODE_ENV === 'development'
-        ? format.combine(format.colorize(), format.simple())
-        : format.simple();
+const colorize = NODE_ENV === 'development' ? [format.colorize()] : [];
+
+const console_format = format.combine(...colorize, format.simple());
 
 const json_format = format.combine(format.timestamp(), format.json());
 
 const logger = createLogger({
     level: LOGGING_LEVEL,
     levels: LoggingLevels,
+    format: format.errors({ stack: true }),
     transports: [
         new transports.Console({
             format: console_format

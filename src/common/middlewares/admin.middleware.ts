@@ -1,21 +1,12 @@
-import { StatusCodes } from 'http-status-codes';
-
-import { UserRank, UserService } from '../../user';
-import { Middleware } from '.';
+import { Middleware } from '..';
+import { ForbiddenException, UnauthorizedException } from '../exceptions';
 
 export const AdminMiddleware: Middleware = (req, res, next) => {
-    if (req.session.loggedIn) {
-        const { userID } = req.session;
-
-        UserService.getUser(userID || '')
-            .then((user) => {
-                if (!user || user.rank !== UserRank.ADMIN) {
-                    return res.status(StatusCodes.UNAUTHORIZED).send();
-                }
-                next();
-            })
-            .catch(() => {
-                res.status(StatusCodes.UNAUTHORIZED).send();
-            });
+    if (req.isAuthenticated()) {
+        if (req.user.isAdmin()) {
+            return next();
+        }
+        throw new ForbiddenException();
     }
+    throw new UnauthorizedException();
 };

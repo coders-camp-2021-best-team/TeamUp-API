@@ -1,8 +1,12 @@
 import { instanceToPlain } from 'class-transformer';
 import { Request, Response } from 'express';
-import { StatusCodes } from 'http-status-codes';
 
-import { AuthMiddleware, Controller } from '../common';
+import {
+    AuthMiddleware,
+    BadRequestException,
+    Controller,
+    ForbiddenException
+} from '../common';
 import { S3Service } from '../s3';
 import { UserPhotoService } from '.';
 
@@ -15,7 +19,7 @@ export class UserPhotoController extends Controller {
 
         router.get('/:id/photo', this.getPhotos);
         router.post(
-            '/photo',
+            '/:id/photo',
             S3Service.upload.single('photo'),
             this.createPhoto
         );
@@ -27,46 +31,27 @@ export class UserPhotoController extends Controller {
 
         const photos = await UserPhotoService.getPhotos(targetID);
 
-        if (!photos) {
-            return res.status(StatusCodes.NOT_FOUND).send();
-        }
-
         res.send(instanceToPlain(photos));
     }
 
     async createPhoto(req: Request, res: Response) {
-        const currentID = req.session.userID || '';
+        if (!req.file) throw new BadRequestException();
 
-        if (!req.file) {
-            return res.status(StatusCodes.BAD_REQUEST).send();
-        }
+        if (req.params.id !== req.user!.id) throw new ForbiddenException();
 
         const photo = await UserPhotoService.createPhoto(
-            currentID,
+            req.user!,
             req.file as Express.MulterS3.File
         );
-
-        if (!photo) {
-            return res.status(StatusCodes.BAD_REQUEST).send();
-        }
 
         res.send(instanceToPlain(photo));
     }
 
     async removePhoto(req: Request, res: Response) {
-        const currentID = req.session.userID || '';
         const targetID = req.params.id;
         const photoID = req.params.pid;
 
-        const removed = await UserPhotoService.removePhoto(
-            currentID,
-            targetID,
-            photoID
-        );
-
-        if (!removed) {
-            return res.status(StatusCodes.NOT_FOUND).send();
-        }
+        await UserPhotoService.removePhoto(req.user!, targetID, photoID);
 
         res.send();
     }

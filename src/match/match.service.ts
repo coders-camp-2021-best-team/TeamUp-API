@@ -1,44 +1,48 @@
 import { ChatService } from '../chat';
-import { SwipeService, SwipeType } from '../swipe';
+import { InternalServerErrorException, NotFoundException } from '../common';
+import { Feed } from '../feed';
+import { SwipeType } from '../swipe';
 import { User } from '../user';
 
 export const MatchService = new (class {
-    async getMatch(userID: string) {
-        const feed = await SwipeService.getFeed(userID);
+    async getMatch(user: User) {
+        const feed = await Feed.findOne(user.id);
+        if (!feed) throw new NotFoundException();
 
-        if (!feed) return null;
-
-        if (
-            feed.recommendedUsers.every((fu) => fu.swiped === true) &&
-            feed.recommendedUsers.length
-        ) {
-            feed.recommendedUsers.sort(
-                (a, b) => b.common_skills - a.common_skills
+        try {
+            const everyone_swiped = feed.recommendedUsers.every(
+                (u) => u.swiped
             );
 
-            const user = await User.findOne(feed.user.id, {
-                relations: ['swipedUsers']
-            });
-            if (!user) return null;
-
-            for (const targetUser of feed.recommendedUsers) {
-                const swipe = user.swipedUsers.find(
-                    (s) => s.target.id === targetUser.user.id
+            if (everyone_swiped) {
+                feed.recommendedUsers.sort(
+                    (a, b) => b.common_skills - a.common_skills
                 );
 
-                if (swipe?.status === SwipeType.DISLIKE) continue;
+                const { swipedUsers } = await User.findOneOrFail(feed.user.id, {
+                    relations: ['swipedUsers']
+                });
 
-                await ChatService.createChatRoom(userID, targetUser.user.id);
+                for (const { user: targetUser } of feed.recommendedUsers) {
+                    const swipe = swipedUsers.find(
+                        (s) => s.target.id === targetUser.id
+                    );
+
+                    if (swipe?.status === SwipeType.DISLIKE) continue;
+
+                    await ChatService.createChatRoom(user, targetUser);
+
+                    await feed.remove();
+
+                    return targetUser;
+                }
 
                 await feed.remove();
-
-                return targetUser.user;
             }
-
-            await feed.remove();
-            return { error: 'No matches' };
+        } catch {
+            throw new InternalServerErrorException();
         }
 
-        return null;
+        throw new NotFoundException();
     }
 })();

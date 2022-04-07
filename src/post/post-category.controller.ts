@@ -1,9 +1,7 @@
-import { instanceToPlain, plainToInstance } from 'class-transformer';
-import { validateSync } from 'class-validator';
+import { instanceToPlain } from 'class-transformer';
 import { Request, Response } from 'express';
-import { StatusCodes } from 'http-status-codes';
 
-import { AuthMiddleware, Controller } from '../common';
+import { AuthMiddleware, Controller, validate } from '../common';
 import { AdminMiddleware } from '../common/middlewares/admin.middleware';
 import {
     CreateCategoryDto,
@@ -26,64 +24,35 @@ export class PostCategoryController extends Controller {
     }
 
     async getCategories(req: Request, res: Response) {
-        const query = plainToInstance(QueryPostDto, req.query);
-        const errors = validateSync(query);
-        if (errors.length) {
-            return res.status(StatusCodes.BAD_REQUEST).json(errors);
-        }
+        const query = validate(QueryPostDto, req.query);
 
         const posts = await PostCategoryService.getCategories(query);
-
-        if (!posts) {
-            return res.status(StatusCodes.BAD_REQUEST).send();
-        }
 
         res.send(instanceToPlain(posts));
     }
 
     async createCategory(req: Request, res: Response) {
-        const body = plainToInstance(CreateCategoryDto, req.body);
-        const errors = validateSync(body);
-        if (errors.length) {
-            return res.status(StatusCodes.BAD_REQUEST).json(errors);
-        }
+        const body = validate(CreateCategoryDto, req.body);
 
         const post = await PostCategoryService.createCategory(body);
-
-        if (!post) {
-            return res.status(StatusCodes.FORBIDDEN).send();
-        }
 
         return res.send(instanceToPlain(post));
     }
 
     async updateCategory(req: Request, res: Response) {
-        const body = plainToInstance(UpdateCategoryDto, req.body);
-        const errors = validateSync(body);
-        if (errors.length) {
-            return res.status(StatusCodes.BAD_REQUEST).json(errors);
-        }
-
         const postID = req.params.id;
+        const body = validate(UpdateCategoryDto, req.body);
 
         const updated = await PostCategoryService.updateCategory(postID, body);
 
-        if (!updated) {
-            return res.status(StatusCodes.NOT_FOUND).send();
-        }
-
-        res.send(instanceToPlain(updated));
+        return res.send(instanceToPlain(updated));
     }
 
     async removeCategory(req: Request, res: Response) {
         const postID = req.params.id;
 
-        const removed = await PostCategoryService.removeCategory(postID);
+        await PostCategoryService.removeCategory(postID);
 
-        if (!removed) {
-            return res.status(StatusCodes.NOT_FOUND).send();
-        }
-
-        res.send();
+        return res.send();
     }
 }

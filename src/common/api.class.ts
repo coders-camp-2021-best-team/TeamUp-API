@@ -2,37 +2,41 @@ import 'express-async-errors';
 
 import ConnectRedis from 'connect-redis';
 import cors from 'cors';
-import express from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import RateLimiter from 'express-rate-limit';
 import session from 'express-session';
 import SlowDown from 'express-slow-down';
 import { createServer } from 'http';
+import { StatusCodes } from 'http-status-codes';
 import Redis from 'ioredis';
-import { Server, Socket } from 'socket.io';
-import { ExtendedError } from 'socket.io/dist/namespace';
+import passport from 'passport';
+import { Server } from 'socket.io';
 import { createConnection, getConnectionOptions } from 'typeorm';
 import { WinstonAdaptor } from 'typeorm-logger-adaptor/logger/winston';
 
-import { Controller, Middleware } from '../common';
+import { AuthService } from '../auth';
+import {
+    Controller,
+    HttpException,
+    Middleware,
+    WebsocketConnectionHandler,
+    WebsocketMiddleware
+} from '../common';
 import env from '../config';
 import logger from '../logger';
-const { PORT, SESSION_SECRET, REDIS_URL, REDIS_TLS_URL, CLIENT_URL } = env;
+import { User as DBUser } from '../user';
+const { NODE_ENV, PORT, SESSION_SECRET, REDIS_URL, REDIS_TLS_URL, CLIENT_URL } =
+    env;
 
 const RedisStore = ConnectRedis(session);
 
-declare module 'express-session' {
-    interface SessionData {
-        loggedIn: boolean;
-        userID: string;
+declare global {
+    // eslint-disable-next-line @typescript-eslint/no-namespace
+    namespace Express {
+        // eslint-disable-next-line @typescript-eslint/no-empty-interface
+        interface User extends DBUser {}
     }
 }
-
-export type WebsocketConnectionHandler = (io: Server, socket: Socket) => void;
-
-export type WebsocketMiddleware = (
-    socket: Socket,
-    next: (err?: ExtendedError) => void
-) => void;
 
 export class API {
     private app = express();
@@ -42,19 +46,31 @@ export class API {
     private session_middleware: express.RequestHandler;
     private middlewares: Middleware[];
     private controllers: Controller[];
+    private passportStrategies: passport.Strategy[];
     private onWebsocketConnection: WebsocketConnectionHandler;
     private websocketMiddleware: WebsocketMiddleware;
 
     constructor(options: {
         middlewares: Middleware[];
         controllers: Controller[];
+        passportStrategies: passport.Strategy[];
         onWebsocketConnection: WebsocketConnectionHandler;
         websocketMiddleware: WebsocketMiddleware;
     }) {
         this.middlewares = options.middlewares;
         this.controllers = options.controllers;
+        this.passportStrategies = options.passportStrategies;
         this.onWebsocketConnection = options.onWebsocketConnection;
         this.websocketMiddleware = options.websocketMiddleware;
+    }
+
+    private async initDatabase() {
+        const options = await getConnectionOptions();
+
+        await createConnection({
+            logger: new WinstonAdaptor(logger, 'all'),
+            ...options
+        });
     }
 
     private initCORS() {
@@ -67,15 +83,6 @@ export class API {
                 ]
             })
         );
-    }
-
-    private async initDatabase() {
-        const options = await getConnectionOptions();
-
-        await createConnection({
-            logger: new WinstonAdaptor(logger, 'all'),
-            ...options
-        });
     }
 
     private initSession() {
@@ -105,9 +112,9 @@ export class API {
     }
 
     private initRateLimiter() {
-        // 600 req/min
-        const limit = 600;
-        const ms = 60 * 1000;
+        // 15 req / 10 s
+        const limit = 15;
+        const ms = 10 * 1000;
         const speed_limit_on_usage = 0.8;
 
         const rateLimiter = RateLimiter({
@@ -126,6 +133,26 @@ export class API {
 
         this.app.use(rateLimiter);
         this.app.use(speedLimiter);
+    }
+
+    private initPassport() {
+        this.app.use(passport.initialize());
+        this.app.use(passport.session());
+
+        passport.serializeUser((user, done) => done(null, user.id));
+
+        passport.deserializeUser(async (id: string, done) => {
+            try {
+                const user = await AuthService.getUserByID(id);
+                return done(null, user);
+            } catch {
+                return done(null, false);
+            }
+        });
+
+        this.passportStrategies.forEach((strategy) => {
+            passport.use(strategy);
+        });
     }
 
     private initMiddlewares() {
@@ -149,6 +176,28 @@ export class API {
         });
     }
 
+    private initErrorHandler() {
+        this.app.use(
+            (err: unknown, req: Request, res: Response, next: NextFunction) => {
+                if (err instanceof HttpException) {
+                    res.status(err.code).send({
+                        code: err.code,
+                        error: err.error
+                    });
+                } else {
+                    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
+                        code: StatusCodes.INTERNAL_SERVER_ERROR,
+                        error: NODE_ENV === 'development' ? err : undefined
+                    });
+
+                    logger.error(err);
+                }
+
+                next();
+            }
+        );
+    }
+
     private initSocketIO() {
         this.io.use(this.websocketMiddleware);
 
@@ -164,8 +213,10 @@ export class API {
         this.initCORS();
         this.initSession();
         this.initRateLimiter();
+        this.initPassport();
         this.initMiddlewares();
         this.initControllers();
+        this.initErrorHandler();
         this.initSocketIO();
 
         this.http.listen(PORT, () => {

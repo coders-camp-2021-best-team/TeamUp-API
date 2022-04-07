@@ -1,30 +1,34 @@
+import { ForbiddenException, NotFoundException } from '../common';
 import { Feed } from '../feed';
 import { User } from '../user';
 import { SwipeType, UserSwipe } from '.';
 
 export const SwipeService = new (class {
-    getFeed(userID: string) {
-        return Feed.findOne(userID);
+    async getFeed(user: User) {
+        const feed = await Feed.findOne(user.id);
+        if (!feed) throw new NotFoundException();
+
+        return feed;
     }
 
-    async getSwipes(userID: string) {
-        const user = await User.findOne(userID, {
+    async getSwipes({ id }: User) {
+        const user = await User.findOne(id, {
             relations: ['swipedUsers']
         });
-        if (!user) return null;
+        if (!user) throw new NotFoundException();
 
         return user.swipedUsers;
     }
 
-    async createSwipe(userID: string, targetID: string, status: SwipeType) {
-        const feed = await this.getFeed(userID);
+    async createSwipe(user: User, targetID: string, status: SwipeType) {
+        const feed = await this.getFeed(user);
 
-        if (!feed) return null;
-
-        const target_feeduser = feed.recommendedUsers.find(
-            (r) => r.user.id === targetID
-        );
-        if (!target_feeduser) return null;
+        const target_feeduser = feed.recommendedUsers[0];
+        if (!target_feeduser || target_feeduser.user.id !== targetID) {
+            throw new ForbiddenException(
+                'You cannot swipe user that is not in your feed'
+            );
+        }
 
         target_feeduser.swiped = true;
         target_feeduser.save();
@@ -36,15 +40,12 @@ export const SwipeService = new (class {
         return swipe.save();
     }
 
-    async removeSwipe(userID: string, swipeID: string) {
+    async removeSwipe(user: User, swipeID: string) {
         const swipe = await UserSwipe.findOne(swipeID, {
-            where: {
-                submittedBy: { id: userID }
-            },
+            where: { submittedBy: user },
             relations: ['submittedBy']
         });
-
-        if (!swipe) return null;
+        if (!swipe) throw new NotFoundException();
 
         return swipe.remove();
     }

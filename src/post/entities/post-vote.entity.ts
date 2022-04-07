@@ -7,12 +7,7 @@ import {
 } from 'typeorm';
 
 import { User } from '../../user';
-import { Post } from '.';
-
-export enum PostVoteType {
-    UPVOTE = 'UPVOTE',
-    DOWNVOTE = 'DOWNVOTE'
-}
+import { Post, PostVoteType } from '.';
 
 @Entity('post_votes')
 export class PostVote extends BaseEntity {

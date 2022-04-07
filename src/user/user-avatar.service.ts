@@ -1,11 +1,9 @@
+import { NotFoundException } from '../common';
 import { S3Service } from '../s3';
 import { User } from './entities';
 
 export const UserAvatarService = new (class {
-    async createAvatar(userID: string, file: Express.MulterS3.File) {
-        const user = await User.findOne(userID);
-        if (!user) return null;
-
+    async createAvatar(user: User, file: Express.MulterS3.File) {
         if (user.avatar) {
             await S3Service.deleteFile(user.avatar);
         }
@@ -17,9 +15,7 @@ export const UserAvatarService = new (class {
 
     async removeAvatar(userID: string) {
         const user = await User.findOne(userID);
-        if (!user) return null;
-
-        if (!user.avatar) return null;
+        if (!user || !user.avatar) throw new NotFoundException();
 
         await S3Service.deleteFile(user.avatar);
 

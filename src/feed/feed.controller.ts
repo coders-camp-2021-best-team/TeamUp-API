@@ -1,6 +1,5 @@
 import { instanceToPlain } from 'class-transformer';
 import { Request, Response } from 'express';
-import { StatusCodes } from 'http-status-codes';
 
 import { AuthMiddleware, Controller } from '../common';
 import { FeedService } from '.';
@@ -16,11 +15,7 @@ export class FeedController extends Controller {
     }
 
     async getFeed(req: Request, res: Response) {
-        const feed = await FeedService.getFeed(req.session.userID || '');
-
-        if (!feed) {
-            return res.status(StatusCodes.NO_CONTENT).send();
-        }
+        const feed = await FeedService.getFeed(req.user!);
 
         return res.json(instanceToPlain(feed));
     }

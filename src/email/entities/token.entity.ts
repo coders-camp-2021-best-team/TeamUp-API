@@ -1,4 +1,11 @@
-import { BaseEntity, Column, Entity, ManyToOne, PrimaryColumn } from 'typeorm';
+import {
+    BaseEntity,
+    Column,
+    CreateDateColumn,
+    Entity,
+    ManyToOne,
+    PrimaryColumn
+} from 'typeorm';
 
 import { User } from '../../user';
 
@@ -17,6 +24,16 @@ export class Token extends BaseEntity {
     })
     token_type: TokenType;
 
+    @CreateDateColumn({ type: 'timestamp' })
+    createdOn: Date;
+
     @ManyToOne(() => User, (u) => u.tokens, { onDelete: 'CASCADE' })
     user: User;
+
+    isValid() {
+        const interval_ms = new Date().getTime() - this.createdOn.getTime();
+        const compare_ms = 8 * 60 * 60 * 1000;
+
+        return interval_ms < compare_ms;
+    }
 }
