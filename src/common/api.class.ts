@@ -76,7 +76,11 @@ export class API {
     private initCORS() {
         this.app.use(
             cors({
-                origin: [CLIENT_URL, 'http://localhost']
+                origin: [
+                    CLIENT_URL,
+                    'http://localhost',
+                    'http://localhost:3000'
+                ]
             })
         );
     }
