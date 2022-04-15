@@ -80,7 +80,8 @@ export class API {
                     CLIENT_URL,
                     'http://localhost',
                     'http://localhost:3000'
-                ]
+                ],
+                credentials: true
             })
         );
     }
