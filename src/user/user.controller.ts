@@ -33,7 +33,7 @@ export class UserController extends Controller {
     async getUser(req: Request, res: Response) {
         const id = req.params.id;
 
-        const user = await UserService.getUser(id);
+        const user = await UserService.getUser(id == '@me' ? req.user!.id : id);
 
         return res.send(instanceToPlain(user));
     }
