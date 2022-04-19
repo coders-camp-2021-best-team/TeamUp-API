@@ -113,9 +113,9 @@ export class API {
     }
 
     private initRateLimiter() {
-        // 15 req / 10 s
-        const limit = 15;
-        const ms = 10 * 1000;
+        // 50 req / s
+        const limit = 50;
+        const ms = 1000;
         const speed_limit_on_usage = 0.8;
 
         const rateLimiter = RateLimiter({
