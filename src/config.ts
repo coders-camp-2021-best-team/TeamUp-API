@@ -28,6 +28,7 @@ export interface EnvVariables {
     EMAIL_FROM: string;
 
     CLIENT_URL: string;
+    CLIENT_CORS_WILDCARD_URL: string;
     API_URL: string;
 
     JWT_ALGORITHM: string;
@@ -71,6 +72,7 @@ const envSchema = Joi.object<EnvVariables>({
     EMAIL_FROM: Joi.string().required(),
 
     CLIENT_URL: Joi.string().required().uri(),
+    CLIENT_CORS_WILDCARD_URL: Joi.string().required(),
     API_URL: Joi.string().required().uri(),
 
     JWT_ALGORITHM: Joi.string()

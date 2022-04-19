@@ -25,8 +25,15 @@ import {
 import env from '../config';
 import logger from '../logger';
 import { User as DBUser } from '../user';
-const { NODE_ENV, PORT, SESSION_SECRET, REDIS_URL, REDIS_TLS_URL, CLIENT_URL } =
-    env;
+const {
+    NODE_ENV,
+    PORT,
+    SESSION_SECRET,
+    REDIS_URL,
+    REDIS_TLS_URL,
+    CLIENT_URL,
+    CLIENT_CORS_WILDCARD_URL
+} = env;
 
 const RedisStore = ConnectRedis(session);
 
@@ -78,6 +85,7 @@ export class API {
             cors({
                 origin: [
                     CLIENT_URL,
+                    new RegExp(CLIENT_CORS_WILDCARD_URL),
                     'http://localhost',
                     'http://localhost:3000'
                 ],
