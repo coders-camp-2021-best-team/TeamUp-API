@@ -31,9 +31,9 @@ export const PostVoteService = new (class {
     async createVote(user: User, postID: string, data: CreateVoteDto) {
         const post = await this.getPost(postID);
 
-        const vote = post.votes.find((v) => v.user.id === user.id);
+        let vote = post.votes.find((v) => v.user.id === user.id);
         if (!vote) {
-            const vote = new PostVote();
+            vote = new PostVote();
             vote.user = user;
             vote.type = data.type;
 
@@ -42,7 +42,9 @@ export const PostVoteService = new (class {
             vote.type = data.type;
         }
 
-        return post.save();
+        await post.save();
+
+        return vote;
     }
 
     async removeVote(user: User, postID: string) {
