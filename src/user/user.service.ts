@@ -12,6 +12,16 @@ export const UserService = new (class {
         return user;
     }
 
+    async getUserByUsername(username: string) {
+        const user = await User.findOne({
+            where: { username },
+            relations: ['skills', 'skills.level', 'skills.level.game']
+        });
+        if (!user) throw new NotFoundException();
+
+        return user;
+    }
+
     async updateUser(user: User, userData: UpdateUserDto) {
         if (
             !AuthService.verifyPassword(

@@ -26,14 +26,32 @@ export class UserController extends Controller {
         const router = this.getRouter();
         router.use(AuthMiddleware);
 
+        router.get('/@me', this.getMe);
         router.get('/:id', this.getUser);
+        router.get('/by-username/:username', this.getUserByUsername);
         router.put('/:id', this.updateUser);
+    }
+
+    async getMe(req: Request, res: Response) {
+        const id = req.user!.id;
+
+        const user = await UserService.getUser(id);
+
+        return res.send(instanceToPlain(user));
     }
 
     async getUser(req: Request, res: Response) {
         const id = req.params.id;
 
-        const user = await UserService.getUser(id == '@me' ? req.user!.id : id);
+        const user = await UserService.getUser(id);
+
+        return res.send(instanceToPlain(user));
+    }
+
+    async getUserByUsername(req: Request, res: Response) {
+        const username = req.params.username;
+
+        const user = await UserService.getUserByUsername(username);
 
         return res.send(instanceToPlain(user));
     }
