@@ -113,7 +113,8 @@ export class API {
             resave: false,
             cookie: {
                 httpOnly: true,
-                secure: 'auto'
+                secure: 'auto',
+                sameSite: 'none'
             }
         });
 
