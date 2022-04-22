@@ -16,7 +16,7 @@ const {
     SMTP_USERNAME,
     SMTP_PASSWORD,
     EMAIL_FROM,
-    API_URL
+    CLIENT_URL
 } = env;
 
 export const EmailService = new (class {
@@ -36,27 +36,23 @@ export const EmailService = new (class {
     }
 
     registrationEmail(to: string, username: string, activateID: string) {
-        // TODO: in future we won't use API_URL, we need to make a pretty page that will not display json response from api
-
         return this.sendEmail(
             to,
             RegistrationEmailSubject,
             RegistrationEmailTemplate(
                 username,
-                `${API_URL}/auth/activate/${activateID}`
+                `${CLIENT_URL}/activate-account/${activateID}`
             )
         );
     }
 
     resetPasswordEmail(to: string, username: string, resetID: string) {
-        // TODO: in future we won't use API_URL, we need to make a pretty page that will not display json response from api
-
         return this.sendEmail(
             to,
             ResetPasswordEmailSubject,
             ResetPasswordEmailTemplate(
                 username,
-                `${API_URL}/auth/password-reset/${resetID}`
+                `${CLIENT_URL}/reset-password/${resetID}`
             )
         );
     }
