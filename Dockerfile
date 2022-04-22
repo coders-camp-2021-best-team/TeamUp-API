@@ -11,6 +11,15 @@ COPY . .
 RUN yarn build
 
 
+FROM node:16-alpine AS development
+
+WORKDIR /app
+
+COPY --from=build /app ./
+
+CMD ["yarn", "start:dev"]
+
+
 FROM node:16-alpine AS production
 
 WORKDIR /app
@@ -22,12 +31,3 @@ COPY --from=build /app/README.md /app/LICENSE ./
 RUN yarn install --frozen-lockfile --production
 
 CMD ["yarn", "start"]
-
-
-FROM node:16-alpine AS development
-
-WORKDIR /app
-
-COPY --from=build /app ./
-
-CMD ["yarn", "start:dev"]
