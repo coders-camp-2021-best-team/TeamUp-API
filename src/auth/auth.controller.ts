@@ -37,7 +37,7 @@ export class AuthController extends Controller {
             LoggedOutMiddleware,
             this.requestPasswordReset
         );
-        router.get(
+        router.post(
             '/password-reset/:id',
             LoggedOutMiddleware,
             this.resetPassword
