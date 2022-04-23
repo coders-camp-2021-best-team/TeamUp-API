@@ -114,7 +114,7 @@ export class API {
             cookie: {
                 httpOnly: true,
                 secure: 'auto',
-                sameSite: 'none'
+                sameSite: NODE_ENV === 'development' ? undefined : 'none'
             }
         });
 
