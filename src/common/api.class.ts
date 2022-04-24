@@ -45,10 +45,20 @@ declare global {
     }
 }
 
+const corsOptions: cors.CorsOptions = {
+    origin: [
+        CLIENT_URL,
+        new RegExp(CLIENT_CORS_WILDCARD_URL),
+        'http://localhost',
+        'http://localhost:3000'
+    ],
+    credentials: true
+};
+
 export class API {
     private app = express();
     private http = createServer(this.app);
-    private io = new Server(this.http);
+    private io = new Server(this.http, { cors: corsOptions });
 
     private session_middleware: express.RequestHandler;
     private middlewares: Middleware[];
@@ -81,17 +91,7 @@ export class API {
     }
 
     private initCORS() {
-        this.app.use(
-            cors({
-                origin: [
-                    CLIENT_URL,
-                    new RegExp(CLIENT_CORS_WILDCARD_URL),
-                    'http://localhost',
-                    'http://localhost:3000'
-                ],
-                credentials: true
-            })
-        );
+        this.app.use(cors(corsOptions));
     }
 
     private initSession() {
