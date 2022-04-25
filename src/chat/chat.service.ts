@@ -44,7 +44,7 @@ export const ChatService = new (class {
     getChatRoomMessages(chatroom: ChatRoom, skip = 0) {
         return Message.find({
             where: { chatroom },
-            relations: ['chatroom'],
+            relations: ['chatroom', 'author'],
             order: { createdOn: 'DESC' },
             take: 50,
             skip
