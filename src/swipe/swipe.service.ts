@@ -23,7 +23,9 @@ export const SwipeService = new (class {
     async createSwipe(user: User, targetID: string, status: SwipeType) {
         const feed = await this.getFeed(user);
 
-        const target_feeduser = feed.recommendedUsers[0];
+        const target_feeduser = feed.recommendedUsers.filter(
+            (fu) => !fu.swiped
+        )[0];
         if (!target_feeduser || target_feeduser.user.id !== targetID) {
             throw new ForbiddenException(
                 'You cannot swipe user that is not in your feed'
