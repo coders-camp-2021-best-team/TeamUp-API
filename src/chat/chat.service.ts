@@ -45,8 +45,8 @@ export const ChatService = new (class {
         return Message.find({
             where: { chatroom },
             relations: ['chatroom', 'author'],
-            order: { createdOn: 'DESC' },
-            take: 50,
+            order: { createdOn: 'ASC' },
+            take: 200,
             skip
         });
     }
